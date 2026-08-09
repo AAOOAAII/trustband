@@ -22,7 +22,11 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["a sibling project*"]
+# `a sibling project*` is REQUIRED, not optional: a sibling project/rotation.py imports
+# a sibling project.core.rotation at module level. Packaging a sibling project alone produced an
+# install that reported success and then failed on `import a sibling project` from any
+# directory other than the repo root, where a sibling project/ happens to be on sys.path.
+include = ["a sibling project*", "a sibling project*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
