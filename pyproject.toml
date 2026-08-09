@@ -12,6 +12,10 @@ dependencies = [
     "numpy>=2.0",
     "faiss-cpu>=1.8",
     "cryptography>=42.0",
+    # a sibling project is a PRIVATE repo -- installing this package needs SSH access to it.
+    # Pinned to a COMMIT, not a branch: a floating branch would make every install
+    # a different install. Bump deliberately.
+    "a sibling project @ git+ssh://git@github.com/AAOOAAII/a sibling project.git@2fafd5630fb2c038202cdb0fff05fb6ac9cc7c35",
 ]
 
 [project.optional-dependencies]
