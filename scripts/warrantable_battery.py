@@ -1,0 +1,336 @@
+#!/usr/bin/env python3
+"""Warrantable v1 — the measured battery. Six routes, ungated and gated.
+
+    python scripts/warrantable_battery.py
+
+GATE 0 IS ENFORCED PER ROUTE. Every attack must SUCCEED against the ungated
+baseline before its gated refusal means anything. A route whose ungated arm
+fails has no power: its clean gated result is an artifact of a broken attack,
+not evidence of a defence, and this harness marks it VOID and refuses to count
+it. That discipline has caught nine instrument defects across this portfolio and
+is not skipped here.
+
+The ungated baseline is not a strawman — it is what an agent looks like when it
+takes provenance from the message: band read from the payload's own claim, no
+MAC verification, no epoch check, no tier check, no mint budget.
+"""
+from __future__ import annotations
+
+import json
+import sys
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO))
+
+from warrantable.gate import (  # noqa: E402
+    Band, Cap, Channel, Decision, Entry, EpochKeyStore, Gate,
+    compute_tag, structural_selftest,
+)
+
+SESS, EID = 7, 100
+
+
+@dataclass
+class Envelope:
+    """What arrives. `claims` is ATTACKER-CONTROLLED and the gate never reads it."""
+
+    channel: Channel
+    cap: Cap
+    claims: Dict[str, Any] = field(default_factory=dict)
+
+
+class UngatedBaseline:
+    """An agent with no gate: provenance comes from the message.
+
+    Every check the gate performs is absent here, and each absence is the
+    ordinary way such a system gets built rather than a deliberate hole:
+      * band is whatever the payload says it is
+      * a tag is a string nobody verifies
+      * an epoch is a number nobody compares
+      * a tier is a claim nobody bounds
+      * minting is unbounded
+    """
+
+    def __init__(self) -> None:
+        self.store: Dict[int, Entry] = {}
+        self.elev: set = set()
+        self.minted = 0
+
+    def write(self, tier: int, eid: int) -> None:
+        self.store[eid] = Entry(tier=tier)
+
+    def govern_issue(self, sess: int, tier: int, nonce: int, epoch: int = 0) -> Cap:
+        self.minted += 1                       # no budget
+        return Cap(sess=sess, tier=tier, nonce=nonce, epoch=epoch, tag=b"whatever")
+
+    def authorize(self, env: Envelope, sess: int, eid: int, r_tier: int) -> Decision:
+        band = env.claims.get("band")          # <-- THE VULNERABILITY: from payload
+        if band != Band.SESSION.value:
+            return Decision(False, f"ungated: band claim {band!r} not session")
+        if eid not in self.store:
+            return Decision(False, "ungated: no entry")
+        self.elev.add((eid, r_tier))           # no MAC, no epoch, no tier check
+        return Decision(True, "ungated: elevation granted on the payload's own claim")
+
+
+# --------------------------------------------------------------------------
+
+ROUTES: List[Dict[str, Any]] = []
+
+
+def route(n: int, name: str):
+    def deco(fn):
+        ROUTES.append({"n": n, "name": name, "fn": fn})
+        return fn
+    return deco
+
+
+def fresh_gate(budget: int = 8, stateless: bool = False):
+    g = Gate(budget=budget, stateless_verification=stateless)
+    g.write(2, EID)
+    return g
+
+
+def fresh_ungated():
+    u = UngatedBaseline()
+    u.write(2, EID)
+    return u
+
+
+# ---- 1 -------------------------------------------------------------------
+@route(1, "Forged band — payload claims a higher-trust provenance")
+def r1():
+    # Ungated: a tool return claims it arrived on the session channel.
+    u = fresh_ungated()
+    cap = u.govern_issue(SESS, 2, 1)
+    env = Envelope(Channel.TOOL_RETURN, cap, claims={"band": "session"})
+    ung = u.authorize(env, SESS, EID, 2)
+
+    # Gated: the same bytes on the same channel. The claim is never read.
+    g = fresh_gate()
+    _, gcap = g.govern_issue(SESS, 2, 1)
+    p = g.ingest(Channel.TOOL_RETURN, gcap)     # claims={"band":"session"} discarded
+    gat = g.authorize(p, SESS, EID, 2)
+    return ung, gat, {
+        "attacker_claim": "band=session",
+        "band_actually_stamped": p.via.value,
+        "note": "the claim never reaches the band derivation — "
+                "_band_for_channel does not take the payload as a parameter",
+    }
+
+
+# ---- 2 -------------------------------------------------------------------
+@route(2, "Forged capability — a fabricated tag presented directly")
+def r2():
+    u = fresh_ungated()
+    forged_u = Cap(SESS, 2, 99, 0, b"\xde\xad\xbe\xef" * 8)
+    ung = u.authorize(Envelope(Channel.SESSION_DEMUX, forged_u, {"band": "session"}),
+                      SESS, EID, 2)
+
+    # Gated, STATELESS: the MAC is the only thing standing between the
+    # adversary and the elevation. This is the deployment shape that relies on
+    # A1, and the one the route is about.
+    g = fresh_gate(stateless=True)
+    forged = Cap(SESS, 2, 99, g.gov_epoch, b"\xde\xad\xbe\xef" * 8)
+    p = g.ingest(Channel.SESSION_DEMUX, forged)
+    gat = g.authorize(p, SESS, EID, 2)
+
+    # And with the model's `issued` set present, for the record.
+    g2 = fresh_gate(stateless=False)
+    p2 = g2.ingest(Channel.SESSION_DEMUX, Cap(SESS, 2, 99, g2.gov_epoch, b"\x00" * 32))
+    gat2 = g2.authorize(p2, SESS, EID, 2)
+    return ung, gat, {
+        "stateless_refusal": f"[{gat.conjunct}] {gat.reason}",
+        "with_issued_set_refusal": f"[{gat2.conjunct}] {gat2.reason}",
+        "note": "stateless is the honest test of the MAC; the set catches it too "
+                "and does so without relying on A1 at all",
+    }
+
+
+# ---- 3 -------------------------------------------------------------------
+@route(3, "Retired-epoch replay — a genuine capability from a previous epoch")
+def r3():
+    u = fresh_ungated()
+    old = u.govern_issue(SESS, 2, 5, epoch=0)
+    ung = u.authorize(Envelope(Channel.SESSION_DEMUX, old, {"band": "session"}),
+                      SESS, EID, 2)          # ungated never compares epochs
+
+    g = fresh_gate()
+    _, cap0 = g.govern_issue(SESS, 2, 5)     # genuine, epoch 0
+    g.govern_rotate()                        # -> epoch 1
+    p = g.ingest(Channel.SESSION_DEMUX, cap0)
+    gat = g.authorize(p, SESS, EID, 2)
+
+    # THE LEAKED-KEY SCENARIO, made explicit. An adversary holding k_gov(e)
+    # forges VALID epoch-e tags at will. Stateless, so the MAC is the only
+    # barrier — which is exactly what a key leak removes.
+    gl = fresh_gate(stateless=True)
+    leaked = gl.keys.leak(gl.gov_epoch)
+    forged_now = Cap(SESS, 2, 4242, gl.gov_epoch,
+                     compute_tag(leaked, SESS, 2, 4242))
+    during = gl.authorize(gl.ingest(Channel.SESSION_DEMUX, forged_now), SESS, EID, 2)
+    gl.govern_rotate()
+    after = gl.authorize(gl.ingest(Channel.SESSION_DEMUX, forged_now), SESS, EID, 2)
+    # ...and the adversary cannot re-forge for the NEW epoch: it holds k_gov(0).
+    still_old = Cap(SESS, 2, 4243, 0, compute_tag(leaked, SESS, 2, 4243))
+    after2 = gl.authorize(gl.ingest(Channel.SESSION_DEMUX, still_old), SESS, EID, 2)
+    return ung, gat, {
+        "leaked_key_forgery_during_epoch": f"allowed={during.allowed} ({during.reason})",
+        "same_forgery_after_rotation": f"allowed={after.allowed} [{after.conjunct}] {after.reason}",
+        "new_forgery_under_the_leaked_key": f"allowed={after2.allowed} [{after2.conjunct}]",
+        "note": "a leaked epoch key mints freely WHILE its epoch is current — that "
+                "is what a leak means — and every capability it ever produces dies "
+                "at rotation by integer comparison, no MAC property used",
+    }
+
+
+# ---- 4 -------------------------------------------------------------------
+@route(4, "Tier escalation — a low-tier capability presented for a high-tier action")
+def r4():
+    u = fresh_ungated()
+    low = u.govern_issue(SESS, 0, 11)
+    ung = u.authorize(Envelope(Channel.SESSION_DEMUX, low, {"band": "session"}),
+                      SESS, EID, 2)          # asks for tier 2 with a tier-0 cap
+
+    g = fresh_gate()
+    _, cap = g.govern_issue(SESS, 0, 11)     # genuine tier-0 capability
+    p = g.ingest(Channel.SESSION_DEMUX, cap)
+    gat = g.authorize(p, SESS, EID, 2)       # presented for tier 2
+    return ung, gat, {"capability_tier": 0, "action_tier": 2}
+
+
+# ---- 5 -------------------------------------------------------------------
+@route(5, "Budget exhaustion — minting past gov_budget without rotating")
+def r5():
+    BUDGET = 3
+    u = fresh_ungated()
+    for i in range(BUDGET + 2):
+        u.govern_issue(SESS, 1, 200 + i)
+    ung = Decision(u.minted > BUDGET,
+                   f"ungated: minted {u.minted} with no budget at all")
+
+    g = fresh_gate(budget=BUDGET)
+    outcomes = []
+    for i in range(BUDGET + 2):
+        d, _ = g.govern_issue(SESS, 1, 200 + i)
+        outcomes.append(d.allowed)
+    gat = Decision(all(outcomes[:BUDGET]) and not any(outcomes[BUDGET:]),
+                   f"minted {sum(outcomes)}/{BUDGET}, then refused")
+    # the refusal reason itself
+    d_ref, _ = g.govern_issue(SESS, 1, 999)
+    # and rotation restores capacity, which is the point of the budget
+    g.govern_rotate()
+    d_after, _ = g.govern_issue(SESS, 1, 999)
+    # `allowed` means DID THE ATTACK SUCCEED, uniformly across routes. Passing
+    # `not d_ref.allowed` here inverted it and made a correct refusal print as
+    # "*** ALLOWED ***" — a harness bug that would have read as a product
+    # failure in the report.
+    return ung, Decision(d_ref.allowed, d_ref.reason, d_ref.conjunct), {
+        "per_attempt_allowed": outcomes,
+        "refusal": f"[{d_ref.conjunct}] {d_ref.reason}",
+        "mint_after_rotation": f"allowed={d_after.allowed}",
+        "note": "the epoch bounds damage by MINT COUNT, not elapsed time — "
+                "gov_budget is the operator's most consequential choice",
+    }
+
+
+# ---- 6 -------------------------------------------------------------------
+@route(6, "Replay within an epoch — the same capability presented twice")
+def r6():
+    u = fresh_ungated()
+    cap = u.govern_issue(SESS, 2, 77)
+    e = Envelope(Channel.SESSION_DEMUX, cap, {"band": "session"})
+    u.authorize(e, SESS, EID, 2)
+    ung = u.authorize(e, SESS, EID, 2)       # second use
+
+    g = fresh_gate()
+    _, gcap = g.govern_issue(SESS, 2, 77)
+    p = g.ingest(Channel.SESSION_DEMUX, gcap)
+    first = g.authorize(p, SESS, EID, 2)
+    second = g.authorize(p, SESS, EID, 2)    # the SAME capability, again
+    # minting the same (sess,tier,nonce) twice IS refused — that is a different
+    # thing from replaying an already-minted one, and conflating them would
+    # overstate what the model gives.
+    dup, _ = g.govern_issue(SESS, 2, 77)
+    return ung, second, {
+        "first_presentation": f"allowed={first.allowed}",
+        "second_presentation": f"allowed={second.allowed}",
+        "re_mint_same_nonce": f"allowed={dup.allowed} — {dup.reason}",
+        "note": "NOT REFUSED. The model has no spent-nonce set and no theorem "
+                "about replay; `nonce` is bound into the tag but never checked "
+                "for freshness. The implementation matches the model, which "
+                "means it inherits this gap. Stated rather than implied away.",
+    }
+
+
+# --------------------------------------------------------------------------
+
+def main() -> int:
+    print("=" * 78)
+    print("WARRANTABLE v1 — measured battery")
+    print("=" * 78)
+
+    st = structural_selftest()
+    print("\nstructural selftest (the band property, checked not claimed)")
+    for k in ("band_derivation_takes_only_channel", "band_derivation_params",
+              "band_derivation_is_total_over_channels",
+              "presented_requires_ingest_token", "presented_via_is_readonly"):
+        print(f"  {k:42s} {st[k]}")
+    if not st["all_pass"]:
+        print("  *** STRUCTURAL SELFTEST FAILED — battery results are void ***")
+        return 2
+
+    print("\ncustody of k_gov (MEASURED from the live key store)")
+    for k, v in EpochKeyStore().describe_custody().items():
+        if k != "note":
+            print(f"  {k:38s} {v}")
+
+    rows, void = [], 0
+    print("\n" + "=" * 78)
+    for r in ROUTES:
+        ung, gat, extra = r["fn"]()
+        gate0 = bool(ung)
+        status = "OK" if gate0 else "VOID"
+        if not gate0:
+            void += 1
+        print(f"\n[{r['n']}] {r['name']}")
+        print(f"    GATE 0 (ungated must succeed) : {'PASS' if gate0 else '*** FAIL ***'} "
+              f"— {ung.reason}")
+        if gate0:
+            verdict = "REFUSED" if not gat.allowed else "*** ALLOWED ***"
+            print(f"    gated                         : {verdict}"
+                  + (f"  [{gat.conjunct}]" if gat.conjunct else ""))
+            print(f"    reason                        : {gat.reason}")
+        else:
+            print("    gated                         : NOT QUOTED — the attack has no "
+                  "power ungated, so a clean gated result is an instrument artifact")
+        for k, v in extra.items():
+            print(f"      {k}: {v}")
+        rows.append({"route": r["n"], "name": r["name"], "gate0": gate0,
+                     "ungated": ung.reason, "gated_allowed": gat.allowed,
+                     "conjunct": gat.conjunct, "gated_reason": gat.reason,
+                     "status": status, **{f"x_{k}": v for k, v in extra.items()}})
+
+    print("\n" + "=" * 78)
+    quoted = [r for r in rows if r["gate0"]]
+    refused = [r for r in quoted if not r["gated_allowed"]]
+    print(f"  routes           : {len(rows)}")
+    print(f"  Gate 0 passed    : {len(quoted)}/{len(rows)}"
+          + (f"   ({void} VOID, results not quoted)" if void else ""))
+    print(f"  gated refusals   : {len(refused)}/{len(quoted)}")
+    allowed = [r for r in quoted if r["gated_allowed"]]
+    if allowed:
+        print(f"  NOT REFUSED      : {[r['route'] for r in allowed]} "
+              f"— reported as-is, see route notes")
+
+    out = REPO / "warrantable/battery_results.json"
+    out.write_text(json.dumps(rows, indent=2, default=str))
+    print(f"\n  results: {out}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
