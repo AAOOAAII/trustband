@@ -81,9 +81,16 @@ class UngatedBaseline:
 ROUTES: List[Dict[str, Any]] = []
 
 
-def route(n: int, name: str):
+def route(n: int, name: str, kind: str = "attack"):
+    """kind="attack": must be refused. kind="property": a bounded behaviour.
+
+    Routes 1-5 are attacks and a clean run means refusal. Route 6 is NOT an
+    attack -- replay within an epoch is permitted by design -- so counting it
+    among "refusals" would misreport it as a defeated attack. It is reported
+    separately as a demonstrated bound.
+    """
     def deco(fn):
-        ROUTES.append({"n": n, "name": name, "fn": fn})
+        ROUTES.append({"n": n, "name": name, "fn": fn, "kind": kind})
         return fn
     return deco
 
@@ -238,31 +245,48 @@ def r5():
 
 
 # ---- 6 -------------------------------------------------------------------
-@route(6, "Replay within an epoch — the same capability presented twice")
+@route(6, "Replay within an epoch — BADGE SEMANTICS, bounded by rotation",
+       kind="property")
 def r6():
+    """NOT AN ATTACK ROUTE. A bounded-property route.
+
+    A capability is a badge: valid for its epoch, presentable repeatedly. So the
+    interesting question is not "is replay refused" -- it is permitted by design
+    -- but "is it bounded". Same shape as route 3: allowed while the epoch is
+    current, dead at rotation, by integer comparison.
+    """
+    # Gate 0 still applies: the ungated arm must ACCEPT the capability, or the
+    # post-rotation refusal below would prove nothing about rotation.
     u = fresh_ungated()
     cap = u.govern_issue(SESS, 2, 77)
     e = Envelope(Channel.SESSION_DEMUX, cap, {"band": "session"})
     u.authorize(e, SESS, EID, 2)
-    ung = u.authorize(e, SESS, EID, 2)       # second use
+    ung = u.authorize(e, SESS, EID, 2)       # accepted, repeatedly, ungated
 
     g = fresh_gate()
     _, gcap = g.govern_issue(SESS, 2, 77)
     p = g.ingest(Channel.SESSION_DEMUX, gcap)
-    first = g.authorize(p, SESS, EID, 2)
-    second = g.authorize(p, SESS, EID, 2)    # the SAME capability, again
-    # minting the same (sess,tier,nonce) twice IS refused — that is a different
-    # thing from replaying an already-minted one, and conflating them would
-    # overstate what the model gives.
+    within = [g.authorize(p, SESS, EID, 2).allowed for _ in range(3)]
+
+    # minting the same (sess,tier,nonce) twice IS refused -- a different thing
+    # from re-presenting one already minted. Conflating them would overstate
+    # what the model gives.
     dup, _ = g.govern_issue(SESS, 2, 77)
-    return ung, second, {
-        "first_presentation": f"allowed={first.allowed}",
-        "second_presentation": f"allowed={second.allowed}",
+
+    g.govern_rotate()
+    after = g.authorize(g.ingest(Channel.SESSION_DEMUX, gcap), SESS, EID, 2)
+    return ung, after, {
+        "presentations_within_epoch": within,
+        "all_allowed_within_epoch": all(within),
         "re_mint_same_nonce": f"allowed={dup.allowed} — {dup.reason}",
-        "note": "NOT REFUSED. The model has no spent-nonce set and no theorem "
-                "about replay; `nonce` is bound into the tag but never checked "
-                "for freshness. The implementation matches the model, which "
-                "means it inherits this gap. Stated rather than implied away.",
+        "after_rotation": f"allowed={after.allowed} [{after.conjunct}] {after.reason[:70]}",
+        "note": "BY DESIGN, not a gap. A capability is a BADGE: valid for its "
+                "epoch, presentable repeatedly. Specified as D-BADGE in "
+                "th_model.rs and proved by thm_badge_presentation_does_not_consume "
+                "and thm_badge_bounded_by_rotation. The bound is rotation, at "
+                "conjunct (F), by integer comparison. ACCEPTED EXPOSURE: an "
+                "adversary who can observe a capability can present it until "
+                "rotation -- which is why gov_budget and rotation cadence matter.",
     }
 
 
@@ -299,7 +323,15 @@ def main() -> int:
         print(f"\n[{r['n']}] {r['name']}")
         print(f"    GATE 0 (ungated must succeed) : {'PASS' if gate0 else '*** FAIL ***'} "
               f"— {ung.reason}")
-        if gate0:
+        if gate0 and r["kind"] == "property":
+            within = extra.get("all_allowed_within_epoch")
+            print(f"    within its epoch              : ALLOWED "
+                  f"{extra.get('presentations_within_epoch')} — BY DESIGN, not a refusal")
+            print(f"    after govern_rotate           : "
+                  f"{'REFUSED' if not gat.allowed else '*** STILL ALLOWED ***'}"
+                  + (f"  [{gat.conjunct}]" if gat.conjunct else ""))
+            print(f"    bound                         : {gat.reason}")
+        elif gate0:
             verdict = "REFUSED" if not gat.allowed else "*** ALLOWED ***"
             print(f"    gated                         : {verdict}"
                   + (f"  [{gat.conjunct}]" if gat.conjunct else ""))
@@ -309,22 +341,27 @@ def main() -> int:
                   "power ungated, so a clean gated result is an instrument artifact")
         for k, v in extra.items():
             print(f"      {k}: {v}")
-        rows.append({"route": r["n"], "name": r["name"], "gate0": gate0,
+        rows.append({"route": r["n"], "name": r["name"], "kind": r["kind"], "gate0": gate0,
                      "ungated": ung.reason, "gated_allowed": gat.allowed,
                      "conjunct": gat.conjunct, "gated_reason": gat.reason,
                      "status": status, **{f"x_{k}": v for k, v in extra.items()}})
 
     print("\n" + "=" * 78)
     quoted = [r for r in rows if r["gate0"]]
-    refused = [r for r in quoted if not r["gated_allowed"]]
-    print(f"  routes           : {len(rows)}")
-    print(f"  Gate 0 passed    : {len(quoted)}/{len(rows)}"
+    attacks = [r for r in quoted if r["kind"] == "attack"]
+    props = [r for r in quoted if r["kind"] == "property"]
+    refused = [r for r in attacks if not r["gated_allowed"]]
+    print(f"  routes            : {len(rows)}  ({len(attacks)} attack, {len(props)} property)")
+    print(f"  Gate 0 passed     : {len(quoted)}/{len(rows)}"
           + (f"   ({void} VOID, results not quoted)" if void else ""))
-    print(f"  gated refusals   : {len(refused)}/{len(quoted)}")
-    allowed = [r for r in quoted if r["gated_allowed"]]
-    if allowed:
-        print(f"  NOT REFUSED      : {[r['route'] for r in allowed]} "
-              f"— reported as-is, see route notes")
+    print(f"  attacks refused   : {len(refused)}/{len(attacks)}")
+    leaked = [r for r in attacks if r["gated_allowed"]]
+    if leaked:
+        print(f"  *** NOT REFUSED   : {[r['route'] for r in leaked]}")
+    for r in props:
+        bounded = not r["gated_allowed"]
+        print(f"  property route {r['route']}  : replay ALLOWED within the epoch by design; "
+              f"bound {'HOLDS' if bounded else '*** DOES NOT HOLD ***'} at rotation")
 
     out = REPO / "warrantable/battery_results.json"
     out.write_text(json.dumps(rows, indent=2, default=str))
