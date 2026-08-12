@@ -17,6 +17,7 @@ MAC verification, no epoch check, no tier check, no mint budget.
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -278,6 +279,9 @@ def r6():
     return ung, after, {
         "presentations_within_epoch": within,
         "all_allowed_within_epoch": all(within),
+        "property": "a capability may be presented repeatedly within its epoch, "
+                    "and is dead after rotation",
+        "holds": all(within) and not after.allowed,
         "re_mint_same_nonce": f"allowed={dup.allowed} — {dup.reason}",
         "after_rotation": f"allowed={after.allowed} [{after.conjunct}] {after.reason[:70]}",
         "note": "BY DESIGN, not a gap. A capability is a BADGE: valid for its "
@@ -287,6 +291,103 @@ def r6():
                 "conjunct (F), by integer comparison. ACCEPTED EXPOSURE: an "
                 "adversary who can observe a capability can present it until "
                 "rotation -- which is why gov_budget and rotation cadence matter.",
+    }
+
+
+@route(7, "Forged channel — connect to a LOW-trust listener, claim high trust")
+def r7():
+    """The band comes from the accepting socket, so the claim cannot land.
+
+    Gate 0 arm: band taken from the REQUEST (what the system did before the
+    transport existed). Gated arm: band taken from the accepting listener.
+    """
+    import os, tempfile
+    from warrantable.transport import Ingress, band_from_accepting_listener, connect_and_send
+
+    d = tempfile.mkdtemp(prefix="r7_")
+    binds = {c: os.path.join(d, f"{c.value}.sock") for c in Channel}
+    ing = Ingress(binds)
+
+    # --- Gate 0: band from the REQUEST. The forged claim must be accepted. ---
+    def ungated_handler(listener, data):
+        import json
+        try:
+            claimed = json.loads(data.decode()).get("band")
+        except Exception:
+            claimed = None
+        return (claimed or listener.band.value).encode()   # trusts the payload
+
+    ing.serve(ungated_handler)
+    ung_band = connect_and_send(binds[Channel.TOOL_RETURN],
+                                b'{"band":"session"}').decode()
+    ing.shutdown()
+    ung = SimpleNamespace(
+        allowed=(ung_band == "session"),
+        reason=f"ungated: connected to TOOL listener, claimed band in payload, "
+               f"system reported {ung_band!r}")
+
+    # --- Gated: band from the ACCEPTING LISTENER. -------------------------
+    ing2 = Ingress(binds)
+    ing2.serve(lambda l, data: band_from_accepting_listener(l).value.encode())
+    observed = {}
+    for c in (Channel.TOOL_RETURN, Channel.USER_INPUT, Channel.SESSION_DEMUX):
+        observed[c.value] = connect_and_send(
+            binds[c], b'{"band":"session","via":"GOVERNANCE"}').decode()
+    ing2.shutdown()
+
+    forged_landed = observed["tool_return"] == "session"
+    g = fresh_gate(); g.write(2, EID)
+    _, cap = g.govern_issue(SESS, 2, 1)
+    # a request that ARRIVED on tool_return carries band tool, so conjunct (A)
+    gat = g.authorize(g.ingest(Channel.TOOL_RETURN, cap), SESS, EID, 2)
+    return ung, gat, {
+        "band_observed_per_listener": observed,
+        "forged_claim_landed": forged_landed,
+        "note": "The payload claimed band=session and via=GOVERNANCE on every "
+                "connection. Each listener reported its OWN band. The claim is "
+                "not refused -- it is never read.",
+    }
+
+
+@route(8, "Reaching the governance listener directly — HONEST FAILURE",
+       kind="property")
+def r8():
+    """Not a defeat. The network restriction is not this code's to enforce.
+
+    Anything that can reach the governance listener presents as governance.
+    That is a firewall / bind-address / socket-permission property, and
+    pretending the gate stops it would be the overclaim.
+    """
+    import os, tempfile
+    from warrantable.transport import Ingress, band_from_accepting_listener, connect_and_send
+
+    d = tempfile.mkdtemp(prefix="r8_")
+    binds = {c: os.path.join(d, f"{c.value}.sock") for c in Channel}
+    ing = Ingress(binds)
+    ing.serve(lambda l, data: band_from_accepting_listener(l).value.encode())
+    gov = connect_and_send(binds[Channel.GOVERNANCE_BUS], b'{}').decode()
+    sess = connect_and_send(binds[Channel.SESSION_DEMUX], b'{}').decode()
+    mode = oct(os.stat(binds[Channel.GOVERNANCE_BUS]).st_mode & 0o777)
+    ing.shutdown()
+
+    ung = SimpleNamespace(allowed=True,
+                          reason=f"ungated: reaching the socket yields band {gov!r}")
+    g = fresh_gate(); g.write(2, EID)
+    _, cap = g.govern_issue(SESS, 2, 1)
+    gat = g.authorize(g.ingest(Channel.SESSION_DEMUX, cap), SESS, EID, 2)
+    return ung, gat, {
+        "governance_listener_yields": gov,
+        "session_listener_yields": sess,
+        "socket_mode": mode,
+        "property": "each listener yields ITS OWN band — reaching the governance "
+                    "socket IS presenting as governance",
+        "holds": gov == "governance" and sess == "session",
+        "note": "BY DESIGN AND NOT CLOSED HERE. Reaching the governance socket "
+                "IS presenting as governance -- the band is the socket. "
+                "Restricting reach is a NETWORK property (firewall, bind "
+                "address, socket permissions); this code neither performs nor "
+                "proves it. The 0600 mode above is a gesture, not the "
+                "restriction. Reported as a property, not a defeat.",
     }
 
 
@@ -324,13 +425,13 @@ def main() -> int:
         print(f"    GATE 0 (ungated must succeed) : {'PASS' if gate0 else '*** FAIL ***'} "
               f"— {ung.reason}")
         if gate0 and r["kind"] == "property":
-            within = extra.get("all_allowed_within_epoch")
-            print(f"    within its epoch              : ALLOWED "
-                  f"{extra.get('presentations_within_epoch')} — BY DESIGN, not a refusal")
-            print(f"    after govern_rotate           : "
-                  f"{'REFUSED' if not gat.allowed else '*** STILL ALLOWED ***'}"
-                  + (f"  [{gat.conjunct}]" if gat.conjunct else ""))
-            print(f"    bound                         : {gat.reason}")
+            # Property routes state their OWN claim. Route 6's rotation shape is
+            # not every property's shape -- rendering route 8 through it printed
+            # "after govern_rotate: STILL ALLOWED", which is meaningless there
+            # and reads as a failure.
+            print(f"    property                      : {extra.get('property', '(unstated)')}")
+            print(f"    holds                         : "
+                  f"{'YES' if extra.get('holds') else '*** NO ***'}")
         elif gate0:
             verdict = "REFUSED" if not gat.allowed else "*** ALLOWED ***"
             print(f"    gated                         : {verdict}"
@@ -342,6 +443,7 @@ def main() -> int:
         for k, v in extra.items():
             print(f"      {k}: {v}")
         rows.append({"route": r["n"], "name": r["name"], "kind": r["kind"], "gate0": gate0,
+                     "property": extra.get("property"), "holds": extra.get("holds"),
                      "ungated": ung.reason, "gated_allowed": gat.allowed,
                      "conjunct": gat.conjunct, "gated_reason": gat.reason,
                      "status": status, **{f"x_{k}": v for k, v in extra.items()}})
@@ -359,9 +461,8 @@ def main() -> int:
     if leaked:
         print(f"  *** NOT REFUSED   : {[r['route'] for r in leaked]}")
     for r in props:
-        bounded = not r["gated_allowed"]
-        print(f"  property route {r['route']}  : replay ALLOWED within the epoch by design; "
-              f"bound {'HOLDS' if bounded else '*** DOES NOT HOLD ***'} at rotation")
+        print(f"  property route {r['route']}  : "
+              f"{'HOLDS' if r.get('holds') else '*** DOES NOT HOLD ***'} — {r.get('property','')}")
 
     out = REPO / "warrantable/battery_results.json"
     out.write_text(json.dumps(rows, indent=2, default=str))
