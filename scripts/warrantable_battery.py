@@ -486,8 +486,15 @@ def main() -> int:
         sources[rel] = (hashlib.sha256(f.read_bytes()).hexdigest()
                         if f.exists() else "missing")
 
-    dirty = _git("status", "--porcelain",
-                 "warrantable", "scripts/warrantable_battery.py")
+    # Exclude the results file from its own clean check. Writing it necessarily
+    # dirties it, so counting that would make tree_clean permanently False and
+    # therefore meaningless -- a flag that is always false says nothing about
+    # whether the CODE matches the commit, which is the question it exists to
+    # answer.
+    dirty = "\n".join(
+        ln for ln in _git("status", "--porcelain", "warrantable",
+                          "scripts/warrantable_battery.py").splitlines()
+        if "battery_results.json" not in ln)
     attacks_ = [r for r in rows if r["kind"] == "attack"]
     props_ = [r for r in rows if r["kind"] == "property"]
     envelope = {
