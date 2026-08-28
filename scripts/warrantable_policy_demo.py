@@ -321,6 +321,52 @@ def main() -> int:
                     args={"payee": r_t.value}, fn=lambda **k: "sent")
     check("and survives a second hop", r_t2.result_band, Band.TOOL)
 
+    print("== sweep findings, each as a regression ==")
+    from warrantable.audit import AuditLog, AuditError
+    from warrantable.gate import Gate as _G
+
+    # 1. re-tagging must be monotone -- the laundering hole.
+    laundered = Tainted(Tainted("attacker text", Band.TOOL), Band.SESSION)
+    check("re-tagging cannot RAISE trust", laundered.band, Band.TOOL,
+          "Tainted(Tainted(x, TOOL), SESSION) reported SESSION and walked "
+          "through a min_band=session gate; wrapping now flattens to the meet")
+    rt_l = Runtime(RP, budget=9); rt_l.register(EID)
+    check("...and the laundered value is refused",
+          bool(rt_l.call(session=SESS, action="transfer", tier=2, eid=EID,
+                         args={"amount": Tainted(1, Band.SESSION),
+                               "payee": laundered}, fn=tool)), False)
+
+    # 2. a no-argument effectful tool must be able to declare its output band.
+    RP3 = {"version": 1, "grants": [{"sess": SESS, "max_tier": 2,
+                                     "actions": ["fetch"]}]}
+    rt_o = Runtime(RP3, budget=9); rt_o.register(EID)
+    r_o = rt_o.call(session=SESS, action="fetch", tier=2, eid=EID, args={},
+                    fn=lambda **k: "from the web", output_band=Band.TOOL)
+    check("declared output_band overrides the empty meet",
+          r_o.result_band, Band.TOOL,
+          "combine() of no arguments is GOVERNANCE, so a no-arg tool that "
+          "reaches the world returned a trusted-looking value")
+
+    # 3. sealing an empty log refuses instead of crashing.
+    try:
+        AuditLog().seal(_G(budget=2).audit_keys, 0)
+        check("empty-log seal refuses cleanly", False, True)
+    except AuditError:
+        check("empty-log seal refuses cleanly", True, True,
+              "it raised OverflowError before: (-1).to_bytes(8, 'big')")
+
+    # 4. two Runtimes on one Gate must not collide on nonces.
+    shared = _G(budget=32); shared.write(2, EID)
+    ra = Runtime(RP, gate=shared); rb = Runtime(RP, gate=shared)
+    a_ok = bool(ra.call(session=SESS, action="transfer", tier=2, eid=EID,
+                        args=good, fn=tool))
+    b_ok = bool(rb.call(session=SESS, action="transfer", tier=2, eid=EID,
+                        args=good, fn=tool))
+    check("two Runtimes on one Gate both work", a_ok and b_ok, True,
+          "both started their nonce at 0, so the second minted an identical "
+          "capability and was refused as a duplicate -- fail-closed, but a "
+          "legitimate runtime silently could not work")
+
     print("== the finding that is DISCLOSED, not fixed ==")
     before_elev = rt.elevations()
     rt.revoke_all()
