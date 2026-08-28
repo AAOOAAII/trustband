@@ -367,6 +367,45 @@ def main() -> int:
           "capability and was refused as a duplicate -- fail-closed, but a "
           "legitimate runtime silently could not work")
 
+    print("== Phase 3 + 4, ported from the proofs ==")
+    gp = _G(budget=32); gp.write(2, EID); gp.write(2, 2)
+    d7, c7 = gp.govern_issue(SESS, 2, 1)
+    d8, c8 = gp.govern_issue(8, 2, 2)
+    check("both sessions authorised before revocation",
+          bool(gp.authorize(gp.ingest(Channel.SESSION_DEMUX, c7), SESS, EID, 2)) and
+          bool(gp.authorize(gp.ingest(Channel.SESSION_DEMUX, c8), 8, 2, 2)), True)
+    gp.revoke_session(SESS)
+    r_rev = gp.authorize(gp.ingest(Channel.SESSION_DEMUX, c7), SESS, EID, 2)
+    check("revoked session refused", bool(r_rev), False)
+    check("...by conjunct (H)", r_rev.conjunct, "H")
+    check("OTHER session untouched -- revocation is local",
+          bool(gp.authorize(gp.ingest(Channel.SESSION_DEMUX, c8), 8, 2, 2)), True,
+          "thm_session_revocation_is_local, and the property Phase 3 exists for")
+    d7b, c7b = gp.govern_issue(SESS, 2, 3)
+    check("a revoked session can be issued fresh capabilities",
+          bool(gp.authorize(gp.ingest(Channel.SESSION_DEMUX, c7b), SESS, EID, 2)), True,
+          "revocation kills outstanding capabilities, it does not ban the session")
+
+    check("influence holds before withdrawal", bool(gp.influence(0, 2, 2)), True)
+    gp.withdraw_elevation(2, 2)
+    check("withdrawal removes the EFFECT", bool(gp.influence(0, 2, 2)), False,
+          "what revoke_all could not do -- thm_withdrawn_not_influential")
+    check("withdrawal is idempotent", gp.withdraw_elevation(2, 2).allowed, True)
+    check("and a valid capability can re-authorise",
+          bool(gp.authorize(gp.ingest(Channel.SESSION_DEMUX, c8), 8, 2, 2)), True,
+          "withdrawal undoes an effect; it is not capability revocation -- "
+          "thm_withdrawal_permits_reauthorization")
+
+    print("== the audit argument-shift regression ==")
+    ga2 = _G(budget=9); ga2.write(2, EID)
+    ga2.govern_issue(SESS, 2, 1); ga2.seal_audit()
+    check("seal verifies after a signature change",
+          ga2.verify_audit()[0], True,
+          "porting Phase 3 added a parameter to keys.verify and the positional "
+          "call in audit.py silently shifted the seal message into `policy` -- "
+          "every seal then failed on a CLEAN log. Calls are keyword-based now, "
+          "so the next signature change is a TypeError, not a false alarm")
+
     print("== the finding that is DISCLOSED, not fixed ==")
     before_elev = rt.elevations()
     rt.revoke_all()
