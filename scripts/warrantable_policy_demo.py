@@ -256,6 +256,57 @@ def main() -> int:
           "truncating an unsealed tail leaves a valid chain; the seal interval "
           "is the exposure window and is an operator choice")
 
+    print("== END-TO-END: the guarded call, and what it refuses ==")
+    from warrantable.runtime import Runtime
+    RP = {"version": 1, "grants": [{"sess": SESS, "max_tier": 2,
+                                    "actions": ["transfer"],
+                                    "min_band": "session"}]}
+    ran: List[Any] = []
+    def tool(amount, payee):
+        ran.append((amount, payee)); return f"sent {amount} to {payee}"
+
+    rt = Runtime(RP, budget=32); rt.register(EID)
+    good = {"amount": Tainted(100, Band.SESSION),
+            "payee": Tainted("acct-1", Band.SESSION)}
+    r_ok = rt.call(session=SESS, action="transfer", tier=2, eid=EID,
+                   args=good, fn=tool)
+    check("authorised call executes", bool(r_ok) and r_ok.ran, True)
+    check("result inherits the argument band", r_ok.result_band, Band.SESSION)
+
+    n_before = len(ran)
+    r_inj = rt.call(session=SESS, action="transfer", tier=2, eid=EID,
+                    args={"amount": Tainted(1, Band.SESSION),
+                          "payee": Tainted("attacker@evil", Band.TOOL)}, fn=tool)
+    check("injected payee refused", bool(r_inj), False)
+    check("...and the tool NEVER RAN", len(ran), n_before,
+          "the single property this surface exists to provide")
+    check("...refused before minting", r_inj.stage, "issue",
+          "a refused call produces no capability at all")
+
+    n_before = len(ran)
+    r_un = rt.call(session=SESS, action="transfer", tier=2, eid=EID,
+                   args={"amount": Tainted(1, Band.SESSION),
+                         "payee": "attacker@evil"}, fn=tool)   # UNTAGGED
+    check("untagged argument refused", bool(r_un), False,
+          "found by attacking this surface: it was ALLOWED before the fix, "
+          "because the lattice trusts untagged values by design")
+    check("...and the tool NEVER RAN", len(ran), n_before)
+
+    print("== the finding that is DISCLOSED, not fixed ==")
+    before_elev = rt.elevations()
+    rt.revoke_all()
+    check("revocation kills capabilities but NOT elevations",
+          rt.elevations(), before_elev,
+          "the capability is dead; its effect is not. Faithful to the model — "
+          "authorize_elevation is the sole writer of elev and nothing removes "
+          "from it — so this is Phase 4 work, not a silent implementation fix")
+
+    rt.seal()
+    ok_rt, rep_rt = rt.verify_audit()
+    check("the whole session's audit verifies", ok_rt, True)
+    check("refusals are in it", any(e.body.get("allowed") is False
+                                    for e in rt.gate.audit.entries), True)
+
     def _git(*a: str) -> str:
         try:
             return subprocess.run(("git", *a), cwd=str(REPO), capture_output=True,
