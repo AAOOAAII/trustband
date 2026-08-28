@@ -292,6 +292,35 @@ def main() -> int:
           "because the lattice trusts untagged values by design")
     check("...and the tool NEVER RAN", len(ran), n_before)
 
+    print("== two more composition defects, found and fixed ==")
+    from warrantable.taint import combine as tcombine
+    # A. sealing under the epoch key made rotation destroy verifiability.
+    rt2 = Runtime(RP, budget=32); rt2.register(EID)
+    rt2.call(session=SESS, action="transfer", tier=2, eid=EID, args=good, fn=tool)
+    rt2.seal()
+    check("audit verifies before rotation", rt2.verify_audit()[0], True)
+    rt2.revoke_all(); rt2.revoke_all()
+    check("audit STILL verifies after two rotations", rt2.verify_audit()[0], True,
+          "sealing under the epoch key made rotation discard the key the seal "
+          "was made with, so a legitimate log reported FAILURE -- a false alarm, "
+          "and precisely when history most needs checking. Audit keys and "
+          "capability keys now have separate lifecycles")
+
+    # B. the result dropped its taint at the boundary.
+    RP2 = {"version": 1, "grants": [{"sess": SESS, "max_tier": 2,
+                                     "actions": ["transfer"]}]}   # no min_band
+    rt3 = Runtime(RP2, budget=32); rt3.register(EID)
+    r_t = rt3.call(session=SESS, action="transfer", tier=2, eid=EID,
+                   args={"payee": Tainted("x", Band.TOOL)},
+                   fn=lambda **k: "attacker text")
+    check("the result carries its band", tcombine(r_t.value), Band.TOOL,
+          "returning it bare laundered the taint; the untagged guard caught the "
+          "specific case only where a grant declares min_band, so the "
+          "propagation is fixed rather than the guard relied on")
+    r_t2 = rt3.call(session=SESS, action="transfer", tier=2, eid=EID,
+                    args={"payee": r_t.value}, fn=lambda **k: "sent")
+    check("and survives a second hop", r_t2.result_band, Band.TOOL)
+
     print("== the finding that is DISCLOSED, not fixed ==")
     before_elev = rt.elevations()
     rt.revoke_all()
