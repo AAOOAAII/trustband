@@ -162,6 +162,40 @@ def main() -> int:
           "capability bound the gate's own current digest by construction")
     check("...and names why", "out of step" in d_desync.reason, True)
 
+    print("== TAINT: an action can refuse tool-derived arguments ==")
+    from warrantable.taint import Band, Tainted, combine, meet
+    PT = {"version": 1, "grants": [
+        {"sess": SESS, "max_tier": 2, "actions": ["transfer"],
+         "min_band": "session"}]}
+    gt = Gate(budget=20); gt.write(2, EID)
+    it = Issuer(gt); it.adopt(PT)
+    clean = {"amount": Tainted(100, Band.SESSION),
+             "payee": Tainted("acct-1", Band.SESSION)}
+    dirty = {"amount": Tainted(100, Band.SESSION),
+             "payee": Tainted("attacker@evil", Band.TOOL)}
+    check("lattice: meet takes the least trusted",
+          meet(Band.SESSION, Band.TOOL), Band.TOOL)
+    check("one tainted input taints the derivation",
+          combine(Tainted("ok", Band.SESSION), Tainted("x", Band.TOOL)), Band.TOOL)
+    check("granted: all arguments session-band",
+          bool(it.issue(SESS, 2, "transfer", 1, clean)[0]), True)
+    check("REFUSED: payee derived from tool output",
+          bool(it.issue(SESS, 2, "transfer", 2, dirty)[0]), False,
+          "the injected value reaches the gate and is refused by band, not by "
+          "inspecting its content")
+
+    print("== the two soundness holes, demonstrated not described ==")
+    untrusted = Tainted("yes", Band.TOOL)
+    laundered = "APPROVED" if untrusted.value == "yes" else "DENIED"
+    check("implicit flow LAUNDERS taint (not caught)",
+          combine(laundered), Band.GOVERNANCE,
+          "branching on tainted data and returning a constant defeats every "
+          "dynamic taint system, this one included")
+    check("untagged input defaults to trusted (fails OPEN)",
+          combine("raw string from anywhere"), Band.GOVERNANCE,
+          "the burden is on ingestion to tag; defaulting to USER would fail "
+          "closed but taint every literal and get the checks disabled")
+
     def _git(*a: str) -> str:
         try:
             return subprocess.run(("git", *a), cwd=str(REPO), capture_output=True,
