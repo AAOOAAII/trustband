@@ -125,6 +125,43 @@ def main() -> int:
     check("enforced policy unchanged after the refusal", g.gov_policy == before, True,
           "no partial adoption")
 
+    print("== ISSUANCE: the policy decides, not the caller ==")
+    from warrantable.issuance import Issuer, PolicySchemaError
+    P = {"version": 1,
+         "grants": [{"sess": SESS, "max_tier": 1, "actions": ["read", "list"]}]}
+    gi = Gate(budget=20); gi.write(2, EID)
+    iss = Issuer(gi); iss.adopt(P)
+    check("granted: tier 1 read", bool(iss.issue(SESS, 1, "read", 1)[0]), True)
+    check("refused: tier 2 over max_tier", bool(iss.issue(SESS, 2, "read", 2)[0]), False)
+    check("refused: ungranted action", bool(iss.issue(SESS, 1, "transfer", 3)[0]), False)
+    check("refused: session in no grant", bool(iss.issue(99, 1, "read", 4)[0]), False,
+          "absence is refusal; there is no default grant")
+    check("closed by default with no policy",
+          bool(Issuer(Gate(budget=2)).issue(SESS, 0, "read", 1)[0]), False)
+    for bad, why in (({"version": 2, "grants": []}, "wrong schema version"),
+                     ({"version": 1}, "grants missing"),
+                     ({"version": 1, "grants": [{"sess": 7, "max_tier": 9,
+                                                 "actions": []}]}, "tier out of range")):
+        try:
+            Issuer(Gate(budget=2)).adopt(bad); check(f"refused at adoption: {why}", False, True)
+        except PolicySchemaError:
+            check(f"refused at adoption: {why}", True, True)
+
+    print("== the composition defect, as a regression test ==")
+    # Both components were correct and the PAIR was not. Conjunct (G) proves a
+    # capability was minted while a policy was in force; it does not prove the
+    # rules evaluated were that policy's rules. Governance calling
+    # govern_repolicy directly desynced them, and a capability was minted and
+    # ACCEPTED granting access the enforced policy forbade.
+    gd = Gate(budget=9); gd.write(2, EID)
+    isd = Issuer(gd); isd.adopt(P)
+    gd.govern_repolicy({"version": 1, "grants": []})   # lock down, bypassing the issuer
+    d_desync, c_desync = isd.issue(SESS, 1, "read", 1)
+    check("desynced evaluator refuses to mint", bool(d_desync), False,
+          "before the guard this MINTED, and the gate ACCEPTED it, because the "
+          "capability bound the gate's own current digest by construction")
+    check("...and names why", "out of step" in d_desync.reason, True)
+
     def _git(*a: str) -> str:
         try:
             return subprocess.run(("git", *a), cwd=str(REPO), capture_output=True,
