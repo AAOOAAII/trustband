@@ -16,7 +16,11 @@ MAC verification, no epoch check, no tier check, no mint budget.
 """
 from __future__ import annotations
 
+import datetime
+import hashlib
 import json
+import platform
+import subprocess
 from types import SimpleNamespace
 import sys
 from dataclasses import dataclass, field
@@ -464,9 +468,64 @@ def main() -> int:
         print(f"  property route {r['route']}  : "
               f"{'HOLDS' if r.get('holds') else '*** DOES NOT HOLD ***'} — {r.get('property','')}")
 
+    # PROVENANCE ENVELOPE. The results file used to be a bare list: no date, no
+    # commit, no environment, and untracked. That made it unfalsifiable -- it
+    # could have come from any code at any time, and nothing could tell you
+    # otherwise. Everything below is MEASURED at write time, never passed in.
+    def _git(*a: str) -> str:
+        try:
+            return subprocess.run(("git", *a), cwd=str(REPO), capture_output=True,
+                                  text=True, timeout=10).stdout.strip()
+        except Exception:
+            return "unavailable"
+
+    sources = {}
+    for rel in ("warrantable/gate.py", "warrantable/transport.py",
+                "scripts/warrantable_battery.py"):
+        f = REPO / rel
+        sources[rel] = (hashlib.sha256(f.read_bytes()).hexdigest()
+                        if f.exists() else "missing")
+
+    dirty = _git("status", "--porcelain",
+                 "warrantable", "scripts/warrantable_battery.py")
+    attacks_ = [r for r in rows if r["kind"] == "attack"]
+    props_ = [r for r in rows if r["kind"] == "property"]
+    envelope = {
+        "artifact": "warrantable attack battery",
+        "generated_utc": datetime.datetime.now(datetime.timezone.utc)
+                                  .strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "commit": _git("rev-parse", "HEAD"),
+        "branch": _git("rev-parse", "--abbrev-ref", "HEAD"),
+        # A dirty tree means the rows below were NOT produced by the commit
+        # named above. Recorded, not hidden.
+        "tree_clean_for_these_paths": (dirty == ""),
+        "uncommitted_paths": dirty.splitlines(),
+        "python": platform.python_version(),
+        "platform": f"{platform.system()} {platform.machine()}",
+        "source_sha256": sources,
+        "summary": {
+            "routes": len(rows),
+            "attacks": len(attacks_),
+            "properties": len(props_),
+            "gate0_passed": sum(1 for r in rows if r.get("gate0")),
+            "attacks_refused": sum(1 for r in attacks_
+                                   if r.get("gated_allowed") is False),
+            "properties_holding": sum(1 for r in props_ if r.get("holds")),
+        },
+        "reading_rule": (
+            "Gate 0 is the battery's own control: every attack must SUCCEED "
+            "ungated before its gated refusal counts for anything. A route "
+            "whose gate0 is false proves nothing, however the gated arm "
+            "behaves."
+        ),
+        "routes": rows,
+    }
     out = REPO / "warrantable/battery_results.json"
-    out.write_text(json.dumps(rows, indent=2, default=str))
+    out.write_text(json.dumps(envelope, indent=2, default=str))
     print(f"\n  results: {out}")
+    print(f"  commit {envelope['commit'][:12]} "
+          f"tree_clean={envelope['tree_clean_for_these_paths']} "
+          f"{envelope['generated_utc']}")
     return 0
 
 
