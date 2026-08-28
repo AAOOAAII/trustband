@@ -69,7 +69,8 @@ class UngatedBaseline:
 
     def govern_issue(self, sess: int, tier: int, nonce: int, epoch: int = 0) -> Cap:
         self.minted += 1                       # no budget
-        return Cap(sess=sess, tier=tier, nonce=nonce, epoch=epoch, tag=b"whatever")
+        return Cap(sess=sess, tier=tier, nonce=nonce, epoch=epoch,
+                   policy=b"", tag=b"whatever")
 
     def authorize(self, env: Envelope, sess: int, eid: int, r_tier: int) -> Decision:
         band = env.claims.get("band")          # <-- THE VULNERABILITY: from payload
@@ -138,7 +139,7 @@ def r1():
 @route(2, "Forged capability — a fabricated tag presented directly")
 def r2():
     u = fresh_ungated()
-    forged_u = Cap(SESS, 2, 99, 0, b"\xde\xad\xbe\xef" * 8)
+    forged_u = Cap(SESS, 2, 99, 0, b"", b"\xde\xad\xbe\xef" * 8)
     ung = u.authorize(Envelope(Channel.SESSION_DEMUX, forged_u, {"band": "session"}),
                       SESS, EID, 2)
 
@@ -146,13 +147,15 @@ def r2():
     # adversary and the elevation. This is the deployment shape that relies on
     # A1, and the one the route is about.
     g = fresh_gate(stateless=True)
-    forged = Cap(SESS, 2, 99, g.gov_epoch, b"\xde\xad\xbe\xef" * 8)
+    # policy held CURRENT so this route tests the MAC, not conjunct (G).
+    forged = Cap(SESS, 2, 99, g.gov_epoch, g.gov_policy, b"\xde\xad\xbe\xef" * 8)
     p = g.ingest(Channel.SESSION_DEMUX, forged)
     gat = g.authorize(p, SESS, EID, 2)
 
     # And with the model's `issued` set present, for the record.
     g2 = fresh_gate(stateless=False)
-    p2 = g2.ingest(Channel.SESSION_DEMUX, Cap(SESS, 2, 99, g2.gov_epoch, b"\x00" * 32))
+    p2 = g2.ingest(Channel.SESSION_DEMUX,
+                   Cap(SESS, 2, 99, g2.gov_epoch, g2.gov_policy, b"\x00" * 32))
     gat2 = g2.authorize(p2, SESS, EID, 2)
     return ung, gat, {
         "stateless_refusal": f"[{gat.conjunct}] {gat.reason}",
@@ -181,13 +184,14 @@ def r3():
     # barrier — which is exactly what a key leak removes.
     gl = fresh_gate(stateless=True)
     leaked = gl.keys.leak(gl.gov_epoch)
-    forged_now = Cap(SESS, 2, 4242, gl.gov_epoch,
-                     compute_tag(leaked, SESS, 2, 4242))
+    forged_now = Cap(SESS, 2, 4242, gl.gov_epoch, gl.gov_policy,
+                     compute_tag(leaked, SESS, 2, 4242, gl.gov_policy))
     during = gl.authorize(gl.ingest(Channel.SESSION_DEMUX, forged_now), SESS, EID, 2)
     gl.govern_rotate()
     after = gl.authorize(gl.ingest(Channel.SESSION_DEMUX, forged_now), SESS, EID, 2)
     # ...and the adversary cannot re-forge for the NEW epoch: it holds k_gov(0).
-    still_old = Cap(SESS, 2, 4243, 0, compute_tag(leaked, SESS, 2, 4243))
+    still_old = Cap(SESS, 2, 4243, 0, gl.gov_policy,
+                    compute_tag(leaked, SESS, 2, 4243, gl.gov_policy))
     after2 = gl.authorize(gl.ingest(Channel.SESSION_DEMUX, still_old), SESS, EID, 2)
     return ung, gat, {
         "leaked_key_forgery_during_epoch": f"allowed={during.allowed} ({during.reason})",
