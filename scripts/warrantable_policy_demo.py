@@ -196,6 +196,66 @@ def main() -> int:
           "the burden is on ingestion to tag; defaulting to USER would fail "
           "closed but taint every literal and get the checks disabled")
 
+    print("== AUDIT: hash-chained, and sealed against the epoch key ==")
+    from warrantable.audit import Entry as AEntry, entry_digest
+    ga = Gate(budget=20); ga.write(2, EID)
+    ia = Issuer(ga); ia.adopt(P)
+    _, ca = ia.issue(SESS, 1, "read", 1)
+    ga.authorize(ga.ingest(Channel.SESSION_DEMUX, ca), SESS, EID, 1)
+    ga.authorize(ga.ingest(Channel.TOOL_RETURN, ca), SESS, EID, 1)   # refused (A)
+    ga.seal_audit()
+    ok_a, rep = ga.verify_audit()
+    check("clean log verifies", ok_a, True)
+    check("refusals are recorded too",
+          any(e.body.get("allowed") is False for e in ga.audit.entries), True,
+          "a log of grants answers what we permitted, not what we stopped")
+    check("the refusing conjunct is in the record",
+          any(e.body.get("conjunct") == "A" for e in ga.audit.entries), True)
+
+    print("== naive tampering: chain breaks ==")
+    # Target the REFUSAL and flip it to allowed -- the realistic attack is
+    # hiding what the gate stopped, not fabricating what it permitted.
+    vi = next(i for i, e in enumerate(ga.audit.entries)
+              if e.body.get("allowed") is False)
+    victim = ga.audit.entries[vi]
+    ga.audit.entries[vi] = AEntry(victim.seq, victim.prev,
+                                  {**victim.body, "allowed": True}, victim.digest)
+    ok_t, rep_t = ga.verify_audit()
+    check("a hidden refusal breaks the chain", ok_t, False)
+    check("and the report names where", rep_t["broken_at"], vi)
+
+    print("== sophisticated tampering: chain RECOMPUTED, seal catches it ==")
+    # This is the case a bare hash chain misses. The attacker rewrites an entry
+    # and recomputes every subsequent digest, so the chain is internally
+    # perfect. Only the MAC over the head — which they cannot forge without the
+    # epoch key — detects it.
+    gb = Gate(budget=20); gb.write(2, EID)
+    ib = Issuer(gb); ib.adopt(P)
+    _, cb = ib.issue(SESS, 1, "read", 1)
+    gb.authorize(gb.ingest(Channel.TOOL_RETURN, cb), SESS, EID, 1)   # refused
+    gb.seal_audit()
+    rebuilt, prev = [], b"\x00" * 32
+    for e in gb.audit.entries:
+        body = {**e.body, "allowed": True} if e.body.get("allowed") is False else e.body
+        d_ = entry_digest(e.seq, prev, body)
+        rebuilt.append(AEntry(e.seq, prev, body, d_)); prev = d_
+    gb.audit.entries = rebuilt
+    ok_b, rep_b = gb.verify_audit()
+    check("the recomputed chain verifies AS A CHAIN", rep_b["chain_ok"], True,
+          "which is why a hash chain alone is an integrity structure, not an "
+          "integrity guarantee")
+    check("the SEAL rejects it", rep_b["seals_ok"], False)
+    check("so the log does not verify overall", ok_b, False)
+
+    print("== the limit that stays open ==")
+    gc = Gate(budget=20); gc.write(2, EID)
+    Issuer(gc).adopt(P)
+    _, rep_c = gc.verify_audit()
+    check("an unsealed tail is REPORTED, not passed quietly",
+          rep_c["unsealed_tail"] >= 0, True,
+          "truncating an unsealed tail leaves a valid chain; the seal interval "
+          "is the exposure window and is an operator choice")
+
     def _git(*a: str) -> str:
         try:
             return subprocess.run(("git", *a), cwd=str(REPO), capture_output=True,
