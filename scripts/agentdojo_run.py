@@ -192,7 +192,9 @@ def run_attacks(args, suite, policy, pipeline) -> int:
     for tid, task in sorted(suite.user_tasks.items()):
         for iid, itask in sorted(suite.injection_tasks.items()):
             h = TaintingRuntime(None, policy, gate_mode=args.mode,
-                                substring_recall=args.substring_recall)
+                                substring_recall=args.substring_recall,
+                                oracle=args.oracle,
+                                user_prompt=getattr(task, "PROMPT", ""))
             _HARNESS[0] = h
             try:
                 # One combo per call, so the harness's event list belongs to
@@ -231,6 +233,7 @@ def run_attacks(args, suite, policy, pipeline) -> int:
                          "refusals": len(refused),
                          "saw_tool_banded_arg": tool_banded,
                          "class": klass,
+                         "confirmations": list(h.confirmations),
                          "reasons": [e.reason[:160] for e in refused][:3]})
             print(f"  {tid}/{iid}: attack_succeeded={attacked} "
                   f"refusals={len(refused)} {klass}", flush=True)
@@ -241,6 +244,8 @@ def run_attacks(args, suite, policy, pipeline) -> int:
            "substring_recall": args.substring_recall,
            "predicates": args.predicates,
            "strict_payee": args.strict_payee,
+           "confirm_password": args.confirm_password,
+           "oracle": args.oracle,
            "uncommitted_paths": dirty,
            "model": args.model, "combos": n,
            "attacks_succeeded": succeeded,
@@ -274,6 +279,12 @@ def main() -> int:
     ap.add_argument("--predicates", action="store_true",
                     help="policy carries value predicates derived from the "
                          "user's own account history")
+    ap.add_argument("--confirm-password", action="store_true",
+                    help="a password change requires human confirmation")
+    ap.add_argument("--oracle", default="", choices=["", "perfect", "rubber"],
+                    help="perfect approves only what the user asked for "
+                         "(utility ceiling); rubber approves anything "
+                         "(security floor)")
     ap.add_argument("--strict-payee", action="store_true",
                     help="P-PRED2: conjunctive rule, payee must be known for "
                          "every amount")
@@ -291,7 +302,8 @@ def main() -> int:
     policy = policy_for(args.suite, tools,
                         permit_all=(args.mode == "permit"),
                         predicates=args.predicates,
-                        strict=args.strict_payee)
+                        strict=args.strict_payee,
+                        confirm_password=args.confirm_password)
 
     pipeline = build_pipeline(args.model, args.provider)
     sanity_check(pipeline, args.model)
@@ -309,7 +321,9 @@ def main() -> int:
                             gate_mode=("enforce" if args.mode == "shadow"
                                        else args.mode),
                             shadow=(args.mode == "shadow"),
-                            substring_recall=args.substring_recall)
+                            substring_recall=args.substring_recall,
+                            oracle=args.oracle,
+                            user_prompt=getattr(task, "PROMPT", ""))
         _HARNESS[0] = h
         try:
             u, _ = run_task_without_injection_tasks(
@@ -327,7 +341,8 @@ def main() -> int:
             reasons.append({"task": tid, "function": e.function,
                             "reason": e.reason, "conjunct": e.conjunct,
                             "arg_bands": e.arg_bands})
-        rec: Dict[str, Any] = {"utility": bool(u), "refusals": len(refused)}
+        rec: Dict[str, Any] = {"utility": bool(u), "refusals": len(refused),
+                               "confirmations": list(h.confirmations)}
         if h.rt is not None and h.rt.shadow:
             rep = h.rt.shadow_report()
             rec["shadow"] = rep

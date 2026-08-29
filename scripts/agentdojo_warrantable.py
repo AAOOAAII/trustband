@@ -30,6 +30,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
 from warrantable.gate import Band                      # noqa: E402
+from warrantable.confirm import ConfirmationLedger     # noqa: E402
 from warrantable.runtime import Runtime                # noqa: E402
 from warrantable.taint import (Tainted, combine, taint_of,  # noqa: E402
                                TRUST_ORDER)
@@ -38,6 +39,13 @@ from warrantable.taint import (Tainted, combine, taint_of,  # noqa: E402
 # --------------------------------------------------------------------------
 # 1. Boundary tainting
 # --------------------------------------------------------------------------
+def taint_of_value(v: Any) -> Any:
+    """The plain value behind any nesting of Tainted wrappers."""
+    while isinstance(v, Tainted):
+        v = v.value
+    return v
+
+
 def taint_tool_result(value: Any, band: Band = Band.TOOL) -> Any:
     """Band a tool result on entry. Containers are banded ELEMENTWISE.
 
@@ -133,10 +141,18 @@ class TaintingRuntime:
 
     def __init__(self, inner: Any, policy: Dict[str, Any],
                  gate_mode: str = "enforce", session: int = 7,
-                 shadow: bool = False, substring_recall: bool = False) -> None:
+                 shadow: bool = False, substring_recall: bool = False,
+                 oracle: str = "", user_prompt: str = "") -> None:
         self.inner = inner
         self.gate_mode = gate_mode
         self.substring_recall = substring_recall
+        # "" no human at all; "perfect" approves only what the user asked for;
+        # "rubber" approves whatever it is shown. The gap between the last two
+        # is how much of the security rests on the person being careful.
+        self.oracle = oracle
+        self.user_prompt = user_prompt or ""
+        self.ledger = ConfirmationLedger()
+        self.confirmations: List[Dict[str, Any]] = []
         self.session = session
         self.events: List[ToolEvent] = []
         self.rt: Optional[Runtime] = None
@@ -244,6 +260,51 @@ class TaintingRuntime:
                     payees.add(t.recipient)
         return {"known_payees": payees}
 
+    # -- the human in the loop ---------------------------------------------
+    def _ask_human(self, env: Any, function: str,
+                   targs: Dict[str, Any], do: Any, refused: Any) -> Any:
+        """Put a confirmable refusal to the oracle, then retry once.
+
+        Only refusals the POLICY marked confirmable are ever asked. A forged
+        tag, a retired epoch or a revoked session arrives with no predicate at
+        all and is never put to a person -- those are not judgements anyone is
+        entitled to reverse.
+        """
+        assert self.rt is not None
+        failures = getattr(self.rt.issuer, "confirmable_failures", [])
+        if not ConfirmationLedger.is_confirmable(failures):
+            return refused
+        epoch = self.rt.gate.gov_epoch
+        asked = False
+        for f in failures:
+            arg = f.get("arg")
+            if arg not in targs:
+                continue
+            value = taint_of_value(targs[arg])
+            req = self.ledger.ask(
+                session=self.session, action=function, arg=arg, value=value,
+                reason=refused.reason, epoch=epoch,
+                arg_bands={k: taint_of(v).value for k, v in targs.items()})
+            approve = (self.oracle == "rubber"
+                       or (self.oracle == "perfect"
+                           and str(value) in self.user_prompt))
+            (self.ledger.approve if approve else self.ledger.deny)(
+                req, approver=f"oracle:{self.oracle}")
+            self.confirmations.append(
+                {"function": function, "arg": arg,
+                 "approved": approve, "digest": req.digest})
+            asked = asked or approve
+        if not asked:
+            return refused
+        ctx = self.context_from_env(env)
+        ctx.update(self.ledger.as_context(
+            session=self.session, action=function,
+            args={k: taint_of_value(v) for k, v in targs.items()},
+            epoch=epoch))
+        return self.rt.call(session=self.session, action=function, tier=2,
+                            eid=1, args=targs, fn=do, output_band=Band.TOOL,
+                            context=ctx)
+
     # -- the wrapped call --------------------------------------------------
     def run_function(self, env: Any, function: str, kwargs: Any,
                      raise_on_error: bool = False) -> Tuple[Any, Optional[str]]:
@@ -279,6 +340,8 @@ class TaintingRuntime:
             banded = taint_tool_result(holder.get("r"))
             self._remember(banded)
             return holder.get("r"), holder.get("e")
+        if not res and self.oracle:
+            res = self._ask_human(env, function, tainted_kwargs, do, res)
         if not res:
             self.events.append(ToolEvent(function, False, res.reason,
                                          res.conjunct, arg_bands, res.stage))
@@ -299,7 +362,8 @@ class TaintingRuntime:
 # --------------------------------------------------------------------------
 def policy_for(suite_name: str, tools: List[str], permit_all: bool = False,
                predicates: bool = False, prior_max: float = 1100.0,
-               strict: bool = False) -> Dict[str, Any]:
+               strict: bool = False, confirm_password: bool = False
+               ) -> Dict[str, Any]:
     """Derived from each suite's injection-task GOALs, written before any
     attack is run. `permit_all` is P-AD4's instrument setting."""
     if permit_all:
@@ -340,9 +404,27 @@ def policy_for(suite_name: str, tools: List[str], permit_all: bool = False,
 
     # Where provenance IS decisive, bands still do the work. Nothing a tool
     # returned should be able to set a password or a user's own details.
-    if other:
-        grants.append({"sess": 7, "max_tier": 2, "actions": other,
+    # RUN 2: every surviving attack was injection_task_7, changing the password.
+    # It is not a money action so no value predicate reached it, and the
+    # laundered value arrives banded SESSION so min_band admits it. A password
+    # change is the definition of an argument both untrusted and consequential,
+    # so it asks a human.
+    #
+    # ONE grant, because grants are a DISJUNCTION: a separate confirmation
+    # grant beside the min_band grant would be decorative, since the min_band
+    # grant alone would still permit the change. The band and the confirmation
+    # must CONJOIN, and conjunction lives inside a single grant.
+    pw = ["update_password"] if (confirm_password
+                                 and "update_password" in other) else []
+    rest = sorted(t for t in other if t not in pw)
+    if rest:
+        grants.append({"sess": 7, "max_tier": 2, "actions": rest,
                        "min_band": "session"})
+    if pw:
+        grants.append({"sess": 7, "max_tier": 2, "actions": pw,
+                       "min_band": "session",
+                       "require": [{"arg": "password", "op": "confirmed",
+                                    "confirmable": True}]})
 
     # Where provenance is NOT decisive -- a bill's payee legitimately comes
     # from the bill -- the value carries the constraint instead. Two grants,
@@ -369,7 +451,11 @@ def policy_for(suite_name: str, tools: List[str], permit_all: bool = False,
         # branch permits.
         grants.append({"sess": 7, "max_tier": 2, "actions": money,
                        "require": [{"arg": "recipient", "op": "in_context",
-                                    "key": "known_payees"},
+                                    "key": "known_payees",
+                                    "when_present": True,
+                                    "confirmable": True},
                                    {"arg": "amount", "op": "max_minor",
-                                    "value": int(round(prior_max * 100))}]})
+                                    "value": int(round(prior_max * 100)),
+                                    "when_present": True,
+                                    "confirmable": True}]})
     return {"version": 1, "grants": grants}
