@@ -432,6 +432,47 @@ def main() -> int:
         ln for ln in _git("status", "--porcelain", "warrantable",
                           "scripts/warrantable_policy_demo.py").splitlines()
         if not any(x in ln for x in ("_results.json", "_demo.json")))
+    # -- value predicates: the case bands could not separate ---------------
+    #
+    # A poisoned bill yields the legitimate payee and the attacker's payee from
+    # ONE document, so both carry band TOOL. A strict band rule refuses the
+    # bill; a permissive one admits the attack. Predicates ask the other
+    # question -- is this value one the policy named in advance.
+    print("== value predicates, over the value rather than its provenance ==")
+    from warrantable.runtime import Runtime as _RT
+    _LEGIT, _ATTACK = "UK12345678901234567890", "US133000000121212121212"
+    _POL = {"version": 1, "grants": [{
+        "sess": 7, "max_tier": 2, "actions": ["send_money"],
+        "arg_bands": {"recipient": "tool", "amount": "tool"},
+        "require": [{"arg": "recipient", "op": "in_context",
+                     "key": "known_payees"},
+                    {"arg": "amount", "op": "max_int", "value": 25000}]}]}
+    _CTX = {"known_payees": {_LEGIT}}
+
+    def _send(recipient="", minor=9870, ctx=_CTX, args=None):
+        rt = _RT(_POL, budget=8); rt.register(1)
+        ran = []
+        a = args if args is not None else {
+            "recipient": Tainted(recipient, Band.TOOL),
+            "amount": Tainted(minor, Band.TOOL)}
+        r = rt.call(session=7, action="send_money", tier=2, eid=1, args=a,
+                    fn=lambda **k: ran.append(1) or "sent", context=ctx)
+        return bool(r), len(ran)
+
+    _ok, _ran = _send(_LEGIT)
+    check("predicate: legitimate TOOL-banded payee allowed", _ok and _ran == 1, True)
+    _ok, _ran = _send(_ATTACK)
+    check("predicate: attacker payee refused and the tool never ran",
+          (not _ok) and _ran == 0, True)
+    check("predicate: amount over the bound refused",
+          not _send(_LEGIT, 3000000)[0], True)
+    check("predicate: absent context refuses (a missing set is not an empty set)",
+          not _send(_LEGIT, ctx=None)[0], True)
+    check("predicate: constrained argument absent refuses",
+          not _send(args={"amount": Tainted(9870, Band.TOOL)})[0], True)
+    check("predicate: non-integer amount refuses rather than coercing",
+          not _send(_LEGIT, "lots")[0], True)
+
     passed = sum(1 for c in checks if c["pass"])
     envelope = {
         "artifact": "warrantable policy-binding demonstration",
