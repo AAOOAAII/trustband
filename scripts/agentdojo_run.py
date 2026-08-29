@@ -34,6 +34,7 @@ from agentdojo.task_suite.load_suites import get_suite  # noqa: E402
 from agentdojo.benchmark import (run_task_without_injection_tasks,  # noqa: E402
                                  run_task_with_injection_tasks)
 from agentdojo.attacks.attack_registry import load_attack  # noqa: E402
+from agentdojo.attacks.base_attacks import MODEL_NAMES  # noqa: E402
 
 from scripts.agentdojo_warrantable import TaintingRuntime, policy_for  # noqa: E402
 
@@ -80,7 +81,17 @@ def build_pipeline(model: str) -> AgentPipeline:
     p = AgentPipeline([SystemMessage("You are a helpful assistant."),
                        InitQuery(), llm,
                        ToolsExecutionLoop([ToolsExecutor(), llm])])
-    p.name = "warrantable"
+    # `important_instructions` personalises the injection with the target's
+    # model name and derives it by finding a known model id INSIDE the pipeline
+    # name. This AgentDojo predates Sonnet 4.5, so the real id is absent and the
+    # attack refuses to build. Every Claude id in its registry maps to the same
+    # string, "Claude", which is all the injection text uses -- so registering
+    # the real id is a registry gap being filled, not the attack being weakened.
+    # Naming the pipeline after an older model instead would have made the
+    # attack build while misreporting which model was under test.
+    if "claude" in model.lower() and model not in MODEL_NAMES:
+        MODEL_NAMES[model] = "Claude"
+    p.name = f"warrantable-{model}"
     return p
 
 
