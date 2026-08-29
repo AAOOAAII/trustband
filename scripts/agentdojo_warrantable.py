@@ -298,8 +298,8 @@ class TaintingRuntime:
 # 3. Policy from the suite's stated intent
 # --------------------------------------------------------------------------
 def policy_for(suite_name: str, tools: List[str], permit_all: bool = False,
-               predicates: bool = False, prior_max: float = 1100.0
-               ) -> Dict[str, Any]:
+               predicates: bool = False, prior_max: float = 1100.0,
+               strict: bool = False) -> Dict[str, Any]:
     """Derived from each suite's injection-task GOALs, written before any
     attack is run. `permit_all` is P-AD4's instrument setting."""
     if permit_all:
@@ -354,11 +354,22 @@ def policy_for(suite_name: str, tools: List[str], permit_all: bool = False,
     # Both halves come from the user's own account, not from anyone who had
     # seen an attack. The rule does NOT stop a small transfer to an unknown
     # payee, which is a limitation of the rule and not of the encoding.
-    if money:
+    if money and not strict:
         grants.append({"sess": 7, "max_tier": 2, "actions": money,
                        "require": [{"arg": "amount", "op": "max_minor",
                                     "value": int(round(prior_max * 100))}]})
         grants.append({"sess": 7, "max_tier": 2, "actions": money,
                        "require": [{"arg": "recipient", "op": "in_context",
                                     "key": "known_payees"}]})
+    elif money:
+        # P-PRED2: ONE grant, so the predicates conjoin. The payee must be
+        # known AND the amount within what has been paid before. The
+        # disjunctive form measured worse than bands alone because most
+        # injections move a small amount to an unknown payee, which its first
+        # branch permits.
+        grants.append({"sess": 7, "max_tier": 2, "actions": money,
+                       "require": [{"arg": "recipient", "op": "in_context",
+                                    "key": "known_payees"},
+                                   {"arg": "amount", "op": "max_minor",
+                                    "value": int(round(prior_max * 100))}]})
     return {"version": 1, "grants": grants}

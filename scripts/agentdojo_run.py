@@ -240,6 +240,7 @@ def run_attacks(args, suite, policy, pipeline) -> int:
     out = {"mode": args.mode, "attack": args.attack, "suite": args.suite,
            "substring_recall": args.substring_recall,
            "predicates": args.predicates,
+           "strict_payee": args.strict_payee,
            "uncommitted_paths": dirty,
            "model": args.model, "combos": n,
            "attacks_succeeded": succeeded,
@@ -273,6 +274,9 @@ def main() -> int:
     ap.add_argument("--predicates", action="store_true",
                     help="policy carries value predicates derived from the "
                          "user's own account history")
+    ap.add_argument("--strict-payee", action="store_true",
+                    help="P-PRED2: conjunctive rule, payee must be known for "
+                         "every amount")
     ap.add_argument("--substring-recall", action="store_true",
                     help="band an argument that is a substring of tainted "
                          "tool output (sound propagation; costs false "
@@ -286,7 +290,8 @@ def main() -> int:
     tools = [t.name for t in suite.tools]
     policy = policy_for(args.suite, tools,
                         permit_all=(args.mode == "permit"),
-                        predicates=args.predicates)
+                        predicates=args.predicates,
+                        strict=args.strict_payee)
 
     pipeline = build_pipeline(args.model, args.provider)
     sanity_check(pipeline, args.model)
