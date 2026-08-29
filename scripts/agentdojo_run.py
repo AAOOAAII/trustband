@@ -21,7 +21,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
@@ -76,6 +76,23 @@ class _Bound:
 FunctionsRuntime.run_function = _patched
 
 
+def provenance() -> Tuple[str, List[str]]:
+    """HEAD, and which of the paths THIS RESULT DEPENDS ON are uncommitted.
+
+    Scoped to warrantable/ and scripts/ rather than the whole repo. A
+    whole-repo flag reads dirty forever because of unrelated result files, so
+    it gets ignored -- and it was being ignored on the day the issuance fix
+    that P-AD2 depends on sat uncommitted while runs were stamped against a
+    commit that did not contain it.
+    """
+    sha = subprocess.run(["git", "rev-parse", "--short=12", "HEAD"], cwd=REPO,
+                         capture_output=True, text=True).stdout.strip()
+    out = subprocess.run(["git", "status", "--porcelain", "--",
+                          "warrantable", "scripts"],
+                         cwd=REPO, capture_output=True, text=True).stdout
+    return sha, [ln.strip() for ln in out.splitlines() if ln.strip()]
+
+
 def build_pipeline(model: str) -> AgentPipeline:
     llm = AnthropicLLM(__import__("anthropic").Anthropic(), model)
     p = AgentPipeline([SystemMessage("You are a helpful assistant."),
@@ -110,6 +127,14 @@ def run_attacks(args, suite, policy, pipeline) -> int:
       LAUNDERED the argument was model-authored, banded SESSION, carrying no
                 provenance -- the gate never had the information to refuse
     """
+    sha, dirty = provenance()
+    if dirty and not args.allow_dirty:
+        print("REFUSING TO RUN: code this result depends on is uncommitted:")
+        for d in dirty:
+            print(f"    {d}")
+        print("Commit it, or pass --allow-dirty to stamp the result as "
+              "unreproducible.")
+        return 2
     attack = load_attack(args.attack, suite, pipeline)
     rows: List[Dict[str, Any]] = []
     for tid, task in sorted(suite.user_tasks.items()):
@@ -160,6 +185,7 @@ def run_attacks(args, suite, policy, pipeline) -> int:
     succeeded = sum(1 for r in rows if r.get("attack_succeeded"))
     counts = collections.Counter(r["class"] for r in rows if "class" in r)
     out = {"mode": args.mode, "attack": args.attack, "suite": args.suite,
+           "uncommitted_paths": dirty,
            "model": args.model, "combos": n,
            "attacks_succeeded": succeeded,
            "attacks_contained": n - succeeded,
@@ -168,9 +194,7 @@ def run_attacks(args, suite, policy, pipeline) -> int:
            "laundered_through": counts.get("LAUNDERED", 0),
            "contained_without_gate": counts.get("MODEL_DECLINED", 0),
            "rows": rows,
-           "commit": subprocess.run(["git", "rev-parse", "--short=12", "HEAD"],
-                                    cwd=REPO, capture_output=True,
-                                    text=True).stdout.strip()}
+           "commit": sha}
     print(json.dumps({k: out[k] for k in
                       ("attack", "combos", "attacks_succeeded",
                        "attacks_contained", "direct_refused",
@@ -189,6 +213,8 @@ def main() -> int:
     ap.add_argument("--model", default="claude-sonnet-4-5-20250929")
     ap.add_argument("--attack", default="",
                     help="injection attack name; empty runs the benign suite")
+    ap.add_argument("--allow-dirty", action="store_true",
+                    help="run even though depended-on code is uncommitted")
     ap.add_argument("--out", default="")
     args = ap.parse_args()
 
@@ -238,15 +264,13 @@ def main() -> int:
         print(f"  {tid}: utility={'PASS' if u else 'fail'} "
               f"refusals={len(refused)}", flush=True)
 
-    sha = subprocess.run(["git", "rev-parse", "--short=12", "HEAD"], cwd=REPO,
-                         capture_output=True, text=True).stdout.strip()
-    dirty = subprocess.run(["git", "status", "--porcelain"], cwd=REPO,
-                           capture_output=True, text=True).stdout.strip()
+    sha, dirty = provenance()
     out = {"mode": args.mode, "suite": args.suite, "model": args.model,
            "n": len(suite.user_tasks), "utility": utility,
            "refusals": refusals, "per_task": per_task,
            "refusal_reasons": reasons, "shadow": shadow_obs,
-           "commit": sha, "tree_clean": not dirty}
+           "commit": sha, "tree_clean": not dirty,
+           "uncommitted_paths": dirty}
     print(json.dumps({k: out[k] for k in
                       ("mode", "n", "utility", "refusals", "commit", "tree_clean")}))
     if args.out:
