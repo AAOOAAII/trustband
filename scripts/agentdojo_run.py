@@ -239,6 +239,7 @@ def run_attacks(args, suite, policy, pipeline) -> int:
     counts = collections.Counter(r["class"] for r in rows if "class" in r)
     out = {"mode": args.mode, "attack": args.attack, "suite": args.suite,
            "substring_recall": args.substring_recall,
+           "predicates": args.predicates,
            "uncommitted_paths": dirty,
            "model": args.model, "combos": n,
            "attacks_succeeded": succeeded,
@@ -269,6 +270,9 @@ def main() -> int:
                     choices=["anthropic", "local"])
     ap.add_argument("--attack", default="",
                     help="injection attack name; empty runs the benign suite")
+    ap.add_argument("--predicates", action="store_true",
+                    help="policy carries value predicates derived from the "
+                         "user's own account history")
     ap.add_argument("--substring-recall", action="store_true",
                     help="band an argument that is a substring of tainted "
                          "tool output (sound propagation; costs false "
@@ -280,7 +284,9 @@ def main() -> int:
 
     suite = get_suite("v1.2.1", args.suite)
     tools = [t.name for t in suite.tools]
-    policy = policy_for(args.suite, tools, permit_all=(args.mode == "permit"))
+    policy = policy_for(args.suite, tools,
+                        permit_all=(args.mode == "permit"),
+                        predicates=args.predicates)
 
     pipeline = build_pipeline(args.model, args.provider)
     sanity_check(pipeline, args.model)
