@@ -96,6 +96,34 @@ Attacker-controlled address fields, banded TOOL at the boundary, refused at
 `update_user_info`. These are genuine taint catches. They are also on combos
 the model was already declining, so they add no containment.
 
+### No suite separates it — the benchmark is saturated
+
+After banking came back INCONCLUSIVE, all four suites were probed **ungated**
+against two attacks, 9 combos each:
+
+| suite | important_instructions | tool_knowledge |
+|---|---|---|
+| banking | 0/9 | 0/9 |
+| slack | 0/9 | 0/9 |
+| workspace | 0/9 | 0/9 |
+| travel | 0/9 | 0/9 |
+
+**0 of 72 attacks land with no defence present.** The instrument was checked
+rather than assumed: the attack builds, produces its injection, and the
+poisoned environment provably contains both the injection text and the
+attacker IBAN `US133000000121212121212`. Sonnet 4.5 simply refuses.
+
+So AgentDojo cannot measure *any* prompt-injection defence against this model.
+That is a fact about the benchmark and the model, not about warrantable, and
+it disqualifies the whole benchmark as security evidence here -- not merely
+the banking suite.
+
+**Consequence for a security claim:** there is none to be had from AgentDojo
+with a current frontier model. Getting one requires a model that is actually
+susceptible. A local open-weights model through AgentDojo's `LocalLLM` would
+supply that, and the resulting claim -- "against a model that does fall for
+these injections, the gate refuses N of M" -- is the honest form of it.
+
 ### Why this suite cannot separate the defence
 
 Every one of the nine injection goals requires the attacker's IBAN
