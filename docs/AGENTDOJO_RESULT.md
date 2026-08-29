@@ -140,13 +140,76 @@ boundary tainting.
 
 ---
 
+## P-AD3 on a susceptible model — the measurable run
+
+Frontier models cannot measure this defence, so the matrix was repeated against
+**Qwen2.5-14B-Instruct** served by vLLM 0.9.2 on an H100. Benign utility
+ungated: **9/16**, so the model is capable enough for the attacks to matter.
+
+| | attacks succeeding / 144 | benign utility |
+|---|---|---|
+| ungated baseline | **36** (25%) | 9/16 |
+| enforced, whole-value recall | 37 | — |
+| enforced, **sound** recall | **17** (11.8%) | **8/16** |
+
+**Warrantable cuts successful attacks by 53%, at a cost of one benign task.**
+The ungated baseline has real headroom, so unlike the Sonnet run these refusals
+are attributable.
+
+### The null result that came first, and why it was wrong
+
+Whole-value recall produced **37 against an ungated 36** — the gate changing
+nothing. The cause was not the gate: **34 of 37 successful attacks reached it
+with no tainted argument at all.** The attacker's IBAN arrives *embedded* in a
+poisoned document, so the harness remembered the document and never the bare
+IBAN, and the argument read as model-authored.
+
+Whole-value matching is an **unsound under-approximation**: a substring of
+tainted text is derived from tainted text. Correcting the propagation rule took
+successful attacks from 37 to 17 and `DIRECT` catches from 4 to 32.
+
+This was a defect in the adapter's propagation, not a tuning of the policy
+against attack outcomes. Enforcement and policy are unchanged.
+
+### What the remaining 17 are
+
+Genuinely **LAUNDERED** — the model paraphrased the payload rather than copying
+it, so no provenance survives. Not closable by boundary tainting at any
+granularity; it needs the quarantined-model split.
+
+### The cost, stated plainly
+
+Sound propagation taints anything derived from tool output, so it **costs false
+positives** — one benign task here. That is the direct argument for
+per-argument bands: a payment's recipient can demand SESSION while its amount,
+which legitimately comes from the document, does not.
+
+### Instrument failures worth recording
+
+**`vllm/vllm-openai:latest` was numerically broken on this H100** (CUDA 13.2
+driver): healthy server, full-speed tokens, and `"[]([]([]("` in reply to every
+prompt. Two benign baselines were recorded against it before anyone asked the
+model a question with a known answer. The runner now refuses to benchmark a
+model that cannot answer two. v0.9.2 is sound.
+
+**An SSH tunnel suppressed utility** — 6/16 tunnelled against 9/16 on the host,
+because AgentDojo sends no `max_tokens` and long generations drop. Fixed in the
+transport; capping generation would have changed what was measured.
+
+---
+
 ## What may be said outside this file
 
-**Usable:** P-AD2. The gate costs **zero benign utility** on AgentDojo banking
-— 13/16 with and without enforcement, same three failures.
+**Usable — utility.** The gate costs **zero benign utility** on Sonnet 4.5:
+13/16 with and without enforcement, same three failures.
 
-**Not usable:** any containment or attack-success rate from P-AD3, including
-99.3%. There is no ungated headroom, so the number describes the model.
+**Usable — security, with its scope attached.** Against Qwen2.5-14B, a model
+that actually falls for these injections, warrantable takes successful attacks
+from **36/144 to 17/144, a 53% reduction, for one benign task of sixteen**.
+Always quote the ungated baseline beside it; the number is meaningless alone.
+
+**Not usable:** any containment rate from the Sonnet run, including 99.3%.
+There is no ungated headroom there, so the number describes the model.
 
 Per the gates: a good AgentDojo score is a weak security claim regardless —
 adaptive attackers recover high success rates against defences they were tested
