@@ -327,23 +327,38 @@ def policy_for(suite_name: str, tools: List[str], permit_all: bool = False,
                        "min_band": "session"})
         return {"version": 1, "grants": grants}
 
-    # VALUE PREDICATES, as two grants, because grants are a DISJUNCTION and
-    # the real rule is a disjunction:
+    # Predicates COMPOSE with bands, they do not replace them. Applying a
+    # money rule to every state-changing action was an authoring error worth
+    # keeping in view: update_password takes neither `amount` nor `recipient`,
+    # so both money grants refused it by the fail-closed rule -- correct
+    # behaviour on a nonsensical policy, and 60 of 97 refusals in the first
+    # integration run.
+    MONEY = {"send_money", "schedule_transaction",
+             "update_scheduled_transaction"}
+    money = sorted(t for t in changing if t in MONEY)
+    other = sorted(t for t in changing if t not in MONEY)
+
+    # Where provenance IS decisive, bands still do the work. Nothing a tool
+    # returned should be able to set a password or a user's own details.
+    if other:
+        grants.append({"sess": 7, "max_tier": 2, "actions": other,
+                       "min_band": "session"})
+
+    # Where provenance is NOT decisive -- a bill's payee legitimately comes
+    # from the bill -- the value carries the constraint instead. Two grants,
+    # because grants are a disjunction and the bank rule is one:
     #
     #   "anyone may be paid an amount you have paid before, and larger sums
     #    only to a counterparty you have paid before"
     #
-    # That is an ordinary bank rule, written from the user's own history --
-    # `prior_max` is the largest amount already in the account, not a number
-    # chosen by anyone who had seen an attack. It is stated here in full
-    # because a limit picked to fit the outcome would be worthless.
-    #
-    # It does NOT stop a small transfer to an unknown payee. That is a real
-    # limitation of the rule, not an accident of the encoding.
-    grants.append({"sess": 7, "max_tier": 2, "actions": changing,
-                   "require": [{"arg": "amount", "op": "max_minor",
-                                "value": int(round(prior_max * 100))}]})
-    grants.append({"sess": 7, "max_tier": 2, "actions": changing,
-                   "require": [{"arg": "recipient", "op": "in_context",
-                                "key": "known_payees"}]})
+    # Both halves come from the user's own account, not from anyone who had
+    # seen an attack. The rule does NOT stop a small transfer to an unknown
+    # payee, which is a limitation of the rule and not of the encoding.
+    if money:
+        grants.append({"sess": 7, "max_tier": 2, "actions": money,
+                       "require": [{"arg": "amount", "op": "max_minor",
+                                    "value": int(round(prior_max * 100))}]})
+        grants.append({"sess": 7, "max_tier": 2, "actions": money,
+                       "require": [{"arg": "recipient", "op": "in_context",
+                                    "key": "known_payees"}]})
     return {"version": 1, "grants": grants}
