@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import collections
+import os
 import json
 import subprocess
 import sys
@@ -52,7 +53,8 @@ NullLogger.logdir = None
 # FunctionsRuntime.run_function, so patching it here bands all output and gates
 # all calls with NO suite modification -- which is P-AD1's condition.
 # --------------------------------------------------------------------------
-LOCAL_BASE = "http://localhost:11434/v1"
+LOCAL_BASE = os.environ.get("WARRANTABLE_LLM_BASE",
+                            "http://localhost:11434/v1")
 
 _ORIGINAL = FunctionsRuntime.run_function
 _HARNESS: List[Any] = [None]
