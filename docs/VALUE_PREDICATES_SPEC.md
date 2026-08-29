@@ -127,3 +127,39 @@ and bands alone cannot separate two values from one document.
    different digests, and key order does not matter.
 3. Every fail-closed rule above has a test.
 4. No regression: battery, policy demo, custody, sweep, pairs.
+
+---
+
+## P-PRED2 — registered 2026-08-29, after the first integration, before the run
+
+The first integration measured **26 attacks succeeding against taint-only's
+17**, at equal benign utility (8/16). The rule under test was a **disjunction**:
+
+> anyone may be paid an amount you have paid before, **or** any amount to a
+> counterparty you have paid before
+
+Most injection tasks move a *small* amount to an unknown payee, which the first
+branch permits. So the rule is weaker than `min_band: session` on this suite.
+That is a finding about the rule, not about the mechanism: 27 DIRECT catches
+fired correctly.
+
+**The observation that motivates the next run:** `LAUNDERED` was **17 in both**
+runs. Predicates did not touch the laundered set — but they are the only
+mechanism that *can*, because they test the value and ignore the band, and a
+laundered value is precisely one whose band is uninformative.
+
+**P-PRED2, registered before running:** a **conjunctive** rule — the payee must
+be known, for every amount — will refuse laundered attacks that taint cannot
+reach, and will cost benign utility where a legitimate payee is new.
+
+Pre-committed readings:
+
+* **LAUNDERED falls below 17** → predicates reach what provenance structurally
+  cannot, and the composition claim holds in the form the measurement supports.
+* **LAUNDERED stays at 17** → the laundered attacks are reaching an action the
+  predicate does not constrain, and the claim fails.
+* **Utility falls below 8/16** → the cost is real and is reported beside the
+  security number, never without it.
+
+Registering this before the run because changing a rule *after* seeing attack
+outcomes and reporting the better number is tuning, and would be worthless.
