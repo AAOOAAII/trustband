@@ -473,6 +473,70 @@ def main() -> int:
     check("predicate: non-integer amount refuses rather than coercing",
           not _send(_LEGIT, "lots")[0], True)
 
+    # -- confirmation: a refusal a human may answer ------------------------
+    #
+    # The conjunctive rule cost two benign tasks, both the same shape: a payee
+    # never paid before. That is the rule working on a payment a person would
+    # approve in one click. An escape hatch is only safe if it is narrow, so
+    # each narrowing is a check.
+    print("== confirmation, and the four things that keep it from being an override ==")
+    from warrantable.confirm import ConfirmationLedger as _CL
+    _CPOL = {"version": 1, "grants": [
+        {"sess": 7, "max_tier": 2, "actions": ["send_money"],
+         "require": [{"arg": "recipient", "op": "in_context",
+                      "key": "known_payees", "confirmable": True}]},
+        {"sess": 7, "max_tier": 2, "actions": ["send_money"],
+         "require": [{"arg": "recipient", "op": "confirmed"}]},
+        {"sess": 7, "max_tier": 2, "actions": ["update_password"],
+         "min_band": "session"}]}
+    _led = _CL()
+
+    def _try(recipient, action="send_money"):
+        rt = _RT(_CPOL, budget=8); rt.register(1)
+        ran = []
+        ctx = {"known_payees": {"UK123"}}
+        ctx.update(_led.as_context(session=7, action=action,
+                                   args={"recipient": recipient},
+                                   epoch=rt.gate.gov_epoch))
+        r = rt.call(session=7, action=action, tier=2, eid=1,
+                    args={"recipient": Tainted(recipient, Band.TOOL),
+                          "amount": Tainted(50.0, Band.TOOL)},
+                    fn=lambda **k: ran.append(1) or "sent", context=ctx)
+        return rt, bool(r), len(ran)
+
+    _NEW = "UK999"
+    _rt, _ok, _ran = _try(_NEW)
+    check("confirm: an unknown payee is refused before anyone is asked",
+          (not _ok) and _ran == 0, True)
+    check("confirm: that refusal is one a human is allowed to answer",
+          _CL.is_confirmable(_rt.issuer.confirmable_failures), True)
+    _req = _led.ask(session=7, action="send_money", arg="recipient",
+                    value=_NEW, reason="payee not known",
+                    arg_bands={"recipient": "tool"}, epoch=_rt.gate.gov_epoch)
+    _led.approve(_req, approver="test")
+    _ok, _ran = _try(_NEW)[1:]
+    check("confirm: after approval the payment executes", _ok and _ran == 1, True)
+    check("confirm: the approval is SINGLE USE, a replay is refused",
+          not _try(_NEW)[1], True)
+
+    _rt2 = _try(_NEW)[0]
+    _led.approve(_led.ask(session=7, action="send_money", arg="recipient",
+                          value=_NEW, reason="x", arg_bands={},
+                          epoch=_rt2.gate.gov_epoch), approver="test")
+    check("confirm: approving one payee does NOT permit another",
+          not _try("US133000000121212121212")[1], True)
+
+    _rt3 = _try(_NEW)[0]
+    _led.approve(_led.ask(session=7, action="send_money", arg="recipient",
+                          value=_NEW, reason="x", arg_bands={},
+                          epoch=_rt3.gate.gov_epoch + 1), approver="test")
+    check("confirm: an approval from another epoch does not carry over",
+          not _try(_NEW)[1], True)
+
+    check("confirm: a structural refusal is never confirmable",
+          not _CL.is_confirmable(_try("x", "update_password")[0]
+                                 .issuer.confirmable_failures), True)
+
     passed = sum(1 for c in checks if c["pass"])
     envelope = {
         "artifact": "warrantable policy-binding demonstration",
