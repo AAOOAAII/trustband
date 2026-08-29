@@ -163,3 +163,38 @@ Pre-committed readings:
 
 Registering this before the run because changing a rule *after* seeing attack
 outcomes and reporting the better number is tuning, and would be worthless.
+
+---
+
+## P-PRED2 result — CONFIRMED on the first reading
+
+| policy | attacks through /144 | utility /16 |
+|---|---|---|
+| ungated | 36 | 9 |
+| taint only | 17 | 8 |
+| taint + **disjunctive** predicates | 26 | 8 |
+| taint + **conjunctive** predicates | **4** | **7** |
+
+**LAUNDERED: 17 → 17 → 4.** The disjunctive rule left the laundered set
+untouched; the conjunctive rule cut it to four. That is the registered first
+reading, and it is the claim the composition rests on: **predicates reach
+attacks that provenance structurally cannot**, because they test the value and
+ignore the band, and a laundered value is one whose band is uninformative.
+
+`DIRECT` rose from 27 to 63 — the gate is deciding, not the model. Containment
+attributable to the model (`MODEL_DECLINED`) fell from 91 to 77, so the gain is
+not the model becoming more cautious.
+
+**The cost is two tasks of sixteen** against the ungated baseline, one of them
+attributable to the conjunctive rule specifically. A payee the user has never
+paid is refused, which is exactly what the rule says and exactly what a real
+deployment would surface for confirmation rather than refuse outright. The
+`confirmed` operator exists for that and was not exercised here.
+
+**The disjunctive rule failing first is part of the result.** "An amount you
+have paid before OR a known payee" measured *worse than bands alone* — 26
+against 17 — because most injections move a small amount to an unknown payee,
+which its first branch permits. The mechanism was working throughout; the rule
+was wrong. Two policies written by hand from stated intent were wrong today,
+which is the argument for inferring policy from observed traffic rather than
+authoring it blind.
