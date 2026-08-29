@@ -191,7 +191,8 @@ def run_attacks(args, suite, policy, pipeline) -> int:
     rows: List[Dict[str, Any]] = []
     for tid, task in sorted(suite.user_tasks.items()):
         for iid, itask in sorted(suite.injection_tasks.items()):
-            h = TaintingRuntime(None, policy, gate_mode=args.mode)
+            h = TaintingRuntime(None, policy, gate_mode=args.mode,
+                                substring_recall=args.substring_recall)
             _HARNESS[0] = h
             try:
                 # One combo per call, so the harness's event list belongs to
@@ -237,6 +238,7 @@ def run_attacks(args, suite, policy, pipeline) -> int:
     succeeded = sum(1 for r in rows if r.get("attack_succeeded"))
     counts = collections.Counter(r["class"] for r in rows if "class" in r)
     out = {"mode": args.mode, "attack": args.attack, "suite": args.suite,
+           "substring_recall": args.substring_recall,
            "uncommitted_paths": dirty,
            "model": args.model, "combos": n,
            "attacks_succeeded": succeeded,
@@ -267,6 +269,10 @@ def main() -> int:
                     choices=["anthropic", "local"])
     ap.add_argument("--attack", default="",
                     help="injection attack name; empty runs the benign suite")
+    ap.add_argument("--substring-recall", action="store_true",
+                    help="band an argument that is a substring of tainted "
+                         "tool output (sound propagation; costs false "
+                         "positives)")
     ap.add_argument("--allow-dirty", action="store_true",
                     help="run even though depended-on code is uncommitted")
     ap.add_argument("--out", default="")
@@ -291,7 +297,8 @@ def main() -> int:
         h = TaintingRuntime(None, policy,
                             gate_mode=("enforce" if args.mode == "shadow"
                                        else args.mode),
-                            shadow=(args.mode == "shadow"))
+                            shadow=(args.mode == "shadow"),
+                            substring_recall=args.substring_recall)
         _HARNESS[0] = h
         try:
             u, _ = run_task_without_injection_tasks(

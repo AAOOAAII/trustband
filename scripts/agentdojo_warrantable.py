@@ -31,7 +31,8 @@ sys.path.insert(0, str(REPO))
 
 from warrantable.gate import Band                      # noqa: E402
 from warrantable.runtime import Runtime                # noqa: E402
-from warrantable.taint import Tainted, combine, taint_of  # noqa: E402
+from warrantable.taint import (Tainted, combine, taint_of,  # noqa: E402
+                               TRUST_ORDER)
 
 
 # --------------------------------------------------------------------------
@@ -132,9 +133,10 @@ class TaintingRuntime:
 
     def __init__(self, inner: Any, policy: Dict[str, Any],
                  gate_mode: str = "enforce", session: int = 7,
-                 shadow: bool = False) -> None:
+                 shadow: bool = False, substring_recall: bool = False) -> None:
         self.inner = inner
         self.gate_mode = gate_mode
+        self.substring_recall = substring_recall
         self.session = session
         self.events: List[ToolEvent] = []
         self.rt: Optional[Runtime] = None
@@ -150,6 +152,23 @@ class TaintingRuntime:
 
     def __getattr__(self, name: str) -> Any:
         return getattr(self.inner, name)
+
+    def _substring_band(self, value: str) -> Optional[Band]:
+        """Least-trusted band of any remembered value containing `value`.
+
+        Costs false positives: an argument that legitimately equals a fragment
+        of tool output is banded TOOL and refused. That is the price of sound
+        propagation, and it is why the band must be declared PER ARGUMENT --
+        a payment's recipient can require SESSION while its amount, which
+        genuinely comes from the document, does not.
+        """
+        worst: Optional[Band] = None
+        for (kind, seen), band in self._seen.items():
+            if kind != "s" or not isinstance(seen, str) or value not in seen:
+                continue
+            if worst is None or TRUST_ORDER.index(band) > TRUST_ORDER.index(worst):
+                worst = band
+        return worst
 
     # -- provenance recall ------------------------------------------------
     def _remember(self, value: Any) -> None:
@@ -177,6 +196,17 @@ class TaintingRuntime:
         for k, v in kwargs.items():
             if isinstance(v, Tainted):
                 out[k] = v
+            elif (self.substring_recall and isinstance(v, str)
+                  and len(v) >= 8 and _key(v) not in self._seen
+                  and self._substring_band(v) is not None):
+                # DERIVED-VALUE PROVENANCE. Whole-value matching is an unsound
+                # under-approximation: the attacker's IBAN arrives EMBEDDED in
+                # a poisoned document, so the document is remembered and the
+                # bare IBAN is not, and the argument reads as model-authored.
+                # Measured: 34 of 37 successful attacks reached the gate with
+                # no tainted argument at all for exactly this reason.
+                # A substring of tainted text is derived from tainted text.
+                out[k] = Tainted(v, self._substring_band(v))
             elif isinstance(v, (str, int, float, bool)):
                 # EVERY scalar is banded. Letting non-strings fall through
                 # untagged made `send_money(amount=...)` read as having no
