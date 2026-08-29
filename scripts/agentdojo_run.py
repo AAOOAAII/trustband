@@ -28,7 +28,8 @@ sys.path.insert(0, str(REPO))
 
 from agentdojo.agent_pipeline import (AgentPipeline, InitQuery,  # noqa: E402
                                       SystemMessage, ToolsExecutionLoop,
-                                      ToolsExecutor, AnthropicLLM)
+                                      ToolsExecutor, AnthropicLLM,
+                                      LocalLLM)
 from agentdojo.functions_runtime import FunctionsRuntime  # noqa: E402
 from agentdojo.task_suite.load_suites import get_suite  # noqa: E402
 from agentdojo.benchmark import (run_task_without_injection_tasks,  # noqa: E402
@@ -51,6 +52,8 @@ NullLogger.logdir = None
 # FunctionsRuntime.run_function, so patching it here bands all output and gates
 # all calls with NO suite modification -- which is P-AD1's condition.
 # --------------------------------------------------------------------------
+LOCAL_BASE = "http://localhost:11434/v1"
+
 _ORIGINAL = FunctionsRuntime.run_function
 _HARNESS: List[Any] = [None]
 
@@ -93,8 +96,19 @@ def provenance() -> Tuple[str, List[str]]:
     return sha, [ln.strip() for ln in out.splitlines() if ln.strip()]
 
 
-def build_pipeline(model: str) -> AgentPipeline:
-    llm = AnthropicLLM(__import__("anthropic").Anthropic(), model)
+def build_pipeline(model: str, provider: str = "anthropic") -> AgentPipeline:
+    """`provider="local"` targets an OpenAI-compatible endpoint (ollama).
+
+    A susceptible model is a REQUIREMENT for measuring an injection defence,
+    not a convenience. Sonnet 4.5 refuses 72 of 72 attacks with no defence
+    present, so nothing installed in front of it can be shown to do anything.
+    """
+    if provider == "local":
+        import openai
+        llm = LocalLLM(openai.OpenAI(base_url=LOCAL_BASE, api_key="ollama"),
+                       model)
+    else:
+        llm = AnthropicLLM(__import__("anthropic").Anthropic(), model)
     p = AgentPipeline([SystemMessage("You are a helpful assistant."),
                        InitQuery(), llm,
                        ToolsExecutionLoop([ToolsExecutor(), llm])])
@@ -106,8 +120,13 @@ def build_pipeline(model: str) -> AgentPipeline:
     # the real id is a registry gap being filled, not the attack being weakened.
     # Naming the pipeline after an older model instead would have made the
     # attack build while misreporting which model was under test.
-    if "claude" in model.lower() and model not in MODEL_NAMES:
-        MODEL_NAMES[model] = "Claude"
+    if model not in MODEL_NAMES:
+        # The attack personalises its injection with the target's name. An
+        # unknown model has no entry, so one is registered rather than the
+        # pipeline being named after a different model -- which would build a
+        # working attack that misreports what was tested.
+        MODEL_NAMES[model] = ("Claude" if "claude" in model.lower()
+                              else "AI assistant")
     p.name = f"warrantable-{model}"
     return p
 
@@ -211,6 +230,8 @@ def main() -> int:
                     choices=["off", "permit", "enforce", "shadow"])
     ap.add_argument("--suite", default="banking")
     ap.add_argument("--model", default="claude-sonnet-4-5-20250929")
+    ap.add_argument("--provider", default="anthropic",
+                    choices=["anthropic", "local"])
     ap.add_argument("--attack", default="",
                     help="injection attack name; empty runs the benign suite")
     ap.add_argument("--allow-dirty", action="store_true",
@@ -222,7 +243,7 @@ def main() -> int:
     tools = [t.name for t in suite.tools]
     policy = policy_for(args.suite, tools, permit_all=(args.mode == "permit"))
 
-    pipeline = build_pipeline(args.model)
+    pipeline = build_pipeline(args.model, args.provider)
     per_task: Dict[str, Any] = {}
     utility = 0
     refusals = 0

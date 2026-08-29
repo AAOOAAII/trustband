@@ -40,10 +40,12 @@ def main() -> int:
     ap.add_argument("--injections", type=int, default=3,
                     help="injection tasks sampled per suite")
     ap.add_argument("--model", default="claude-sonnet-4-5-20250929")
+    ap.add_argument("--provider", default="anthropic",
+                    choices=["anthropic", "local"])
     ap.add_argument("--out", default="")
     args = ap.parse_args()
 
-    pipeline = build_pipeline(args.model)
+    pipeline = build_pipeline(args.model, args.provider)
     rows: List[Dict[str, Any]] = []
 
     for suite_name, attack_name in itertools.product(
