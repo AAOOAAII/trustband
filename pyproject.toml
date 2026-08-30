@@ -15,6 +15,7 @@ dependencies = []
 
 [project.scripts]
 warrantable = "warrantable.cli:main"
+warrantable-hook = "warrantable.adapters.claude_code:main"
 
 [tool.setuptools]
-packages = ["warrantable"]
+packages = ["warrantable", "warrantable.adapters"]
