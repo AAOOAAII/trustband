@@ -148,3 +148,30 @@ inference is broken, since a floor should permit what it observed.
 
 **P-CROSS6:** workspace is reported but treated as weak whatever it says — a
 12/560 ungated baseline is too thin to carry a result in either direction.
+
+---
+
+## Run 6 — the params-only comparison — registered 2026-08-30, before running
+
+APort's paper states it evaluates "params vs. policy constraints", **not data
+provenance**, and names paraphrased/laundered values as an acknowledged
+unresolved gap. Our claimed differentiator is exactly that layer.
+
+`--params-only` strips `min_band` and `arg_bands` from our policy while keeping
+`require`, reproducing that architecture inside our own engine so the
+comparison isolates the **architecture** rather than two implementations.
+
+**This is a proxy and not their product.** It cannot speak for APort's real
+behaviour and must never be quoted as their number. It tests one claim: whether
+provenance is doing work that value predicates alone cannot.
+
+**P-APORT1:** params-only lands attacks **above** our 0/144 on banking. If it
+also reaches 0, provenance is not carrying the result and our differentiator is
+not where we think.
+
+**P-APORT2:** the shortfall concentrates in `LAUNDERED`. That is the case
+provenance exists for, and the one their paper names as open.
+
+**P-APORT3:** benign utility under params-only is **no worse** than ours. If
+stripping provenance also costs utility, the comparison is confounded and the
+run is INCONCLUSIVE.

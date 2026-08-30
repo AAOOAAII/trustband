@@ -286,6 +286,7 @@ def run_attacks(args, suite, policy, pipeline) -> int:
            "strict_payee": args.strict_payee,
            "confirm_password": args.confirm_password,
            "oracle": args.oracle,
+           "params_only": args.params_only,
            "uncommitted_paths": dirty,
            "model": args.model, "combos": n,
            "attacks_succeeded": succeeded,
@@ -319,6 +320,10 @@ def main() -> int:
     ap.add_argument("--predicates", action="store_true",
                     help="policy carries value predicates derived from the "
                          "user's own account history")
+    ap.add_argument("--params-only", action="store_true",
+                    help="strip all provenance from the policy, keeping value "
+                         "predicates: emulates a params-only engine of the "
+                         "APort shape, for an architectural comparison")
     ap.add_argument("--infer-out", default="",
                     help="shadow mode: write the inferred policy here")
     ap.add_argument("--policy-file", default="",
@@ -359,6 +364,19 @@ def main() -> int:
                             predicates=args.predicates,
                             strict=args.strict_payee,
                             confirm_password=args.confirm_password)
+
+    if args.params_only:
+        # A PROXY, NOT THEIR PRODUCT. APort's paper states it evaluates "params
+        # vs. policy constraints", not data provenance, and names laundering as
+        # an unresolved gap. Stripping min_band and arg_bands while keeping
+        # `require` reproduces that shape in our own engine, so the comparison
+        # isolates the ARCHITECTURE rather than two implementations.
+        #
+        # It cannot speak for APort's real behaviour and must never be quoted
+        # as their number.
+        for g in policy.get("grants", []):
+            g.pop("min_band", None)
+            g.pop("arg_bands", None)
 
     # REFUSE TO SCORE AN ENFORCEMENT RUN THAT CONSTRAINS NOTHING.
     #
