@@ -107,6 +107,39 @@ def sanity_check(pipeline: Any, model: str) -> None:
     print(f"  sanity: {model} answers known questions correctly")
 
 
+def merge_inferred(policies: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """One policy from the per-task inferences of a whole shadow run.
+
+    A grant is merged per session: the union of actions, the greatest tier, and
+    for each argument the LEAST TRUSTED band ever observed for it. Taking the
+    least trusted is what keeps the floor honest -- an argument that arrived
+    TOOL even once must be permitted at TOOL, or enforcing the inferred policy
+    would refuse traffic the inference itself saw.
+    """
+    from warrantable.taint import Band as _B
+    RANK = {"governance": 0, "session": 1, "tool": 2, "user": 3}
+    actions: Dict[int, set] = {}
+    tiers: Dict[int, int] = {}
+    bands: Dict[int, Dict[str, str]] = {}
+    for pol in policies:
+        for g in pol.get("grants", []):
+            s = g["sess"]
+            actions.setdefault(s, set()).update(g.get("actions", []))
+            tiers[s] = max(tiers.get(s, 0), g.get("max_tier", 0))
+            for arg, b in (g.get("arg_bands") or {}).items():
+                cur = bands.setdefault(s, {}).get(arg)
+                if cur is None or RANK[b] > RANK[cur]:
+                    bands[s][arg] = b
+    grants = []
+    for s in sorted(actions):
+        g: Dict[str, Any] = {"sess": s, "max_tier": tiers[s],
+                             "actions": sorted(actions[s])}
+        if bands.get(s):
+            g["arg_bands"] = dict(sorted(bands[s].items()))
+        grants.append(g)
+    return {"version": 1, "grants": grants}
+
+
 def provenance() -> Tuple[str, List[str]]:
     """HEAD, and which of the paths THIS RESULT DEPENDS ON are uncommitted.
 
@@ -179,6 +212,13 @@ def run_attacks(args, suite, policy, pipeline) -> int:
       LAUNDERED the argument was model-authored, banded SESSION, carrying no
                 provenance -- the gate never had the information to refuse
     """
+    if args.mode == "shadow" and args.infer_out and shadow_obs:
+        merged = merge_inferred([o["inferred"] for o in shadow_obs])
+        Path(args.infer_out).write_text(json.dumps(merged, indent=2),
+                                        encoding="utf-8")
+        print(f"  inferred policy -> {args.infer_out} "
+              f"({len(merged['grants'])} grant(s))")
+
     sha, dirty = provenance()
     if dirty and not args.allow_dirty:
         print("REFUSING TO RUN: code this result depends on is uncommitted:")
@@ -279,6 +319,14 @@ def main() -> int:
     ap.add_argument("--predicates", action="store_true",
                     help="policy carries value predicates derived from the "
                          "user's own account history")
+    ap.add_argument("--infer-out", default="",
+                    help="shadow mode: write the inferred policy here")
+    ap.add_argument("--policy-file", default="",
+                    help="enforce using this policy instead of the built-in "
+                         "one; pair with a shadow run's --infer-out")
+    ap.add_argument("--allow-vacuous", action="store_true",
+                    help="score an enforcement run whose policy constrains "
+                         "nothing (you almost certainly do not want this)")
     ap.add_argument("--confirm-password", action="store_true",
                     help="a password change requires human confirmation")
     ap.add_argument("--oracle", default="", choices=["", "perfect", "rubber"],
@@ -299,11 +347,39 @@ def main() -> int:
 
     suite = get_suite("v1.2.1", args.suite)
     tools = [t.name for t in suite.tools]
-    policy = policy_for(args.suite, tools,
-                        permit_all=(args.mode == "permit"),
-                        predicates=args.predicates,
-                        strict=args.strict_payee,
-                        confirm_password=args.confirm_password)
+    if args.policy_file:
+        policy = json.loads(Path(args.policy_file).read_text(encoding="utf-8"))
+        # An inferred policy carries a provenance note; it is not a grant and
+        # the validator does not know it.
+        policy.pop("_inferred", None)
+        validate(policy)
+    else:
+        policy = policy_for(args.suite, tools,
+                            permit_all=(args.mode == "permit"),
+                            predicates=args.predicates,
+                            strict=args.strict_payee,
+                            confirm_password=args.confirm_password)
+
+    # REFUSE TO SCORE AN ENFORCEMENT RUN THAT CONSTRAINS NOTHING.
+    #
+    # slack and workspace were measured under a single grant admitting every
+    # tool, because STATE_CHANGING is a hardcoded list of BANKING tool names
+    # and matched nothing. Zero refusals is what an empty policy does, and the
+    # run looked like a null result about the architecture rather than a
+    # measurement of nothing. A defended number from a vacuous policy is worse
+    # than no number, because it reads as evidence.
+    if args.mode == "enforce" and not args.allow_vacuous:
+        constrained = [g for g in policy.get("grants", [])
+                       if any(k in g for k in
+                              ("min_band", "arg_bands", "require",
+                               "recipients"))]
+        if not constrained:
+            print("REFUSING TO SCORE: this policy constrains nothing -- every "
+                  "grant admits its actions unconditionally, so the run would "
+                  "measure an empty policy and report it as a defence. Supply "
+                  "--policy-file, or --allow-vacuous if that is genuinely "
+                  "what you want.")
+            return 2
 
     pipeline = build_pipeline(args.model, args.provider)
     sanity_check(pipeline, args.model)
