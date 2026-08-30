@@ -72,3 +72,33 @@ More suites, more models, or the exfiltration test. The architectural claim is
 already confirmed; additional runs of the same shape would not change any
 decision. The real APort install matters for credibility and belongs with a
 written result rather than squeezed in here.
+
+---
+
+## Latency, measured 2026-08-30 (registered as a gap, not a prediction)
+
+We had no latency number while the competitor publishes 53ms p50. Measured on
+an M-series laptop, single process:
+
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| full guarded call | **0.082 ms** | 0.105 ms | 0.168 ms |
+
+That covers evaluate, mint, ingest, authorize, execute and audit. It is **not
+comparable to APort's 53ms**, which is a cloud API round trip; ours is
+in-process and theirs includes the network. Quoting them side by side would be
+dishonest.
+
+**Substring recall scales linearly**, and that is the part that will hurt:
+
+| remembered values | per call |
+|---|---|
+| 50 | 0.005 ms |
+| 500 | 0.037 ms |
+| 2 000 | 0.143 ms |
+| 10 000 | 0.966 ms |
+
+Memory is **unbounded** — every string a tool ever returned is retained for the
+session. Fine for a benchmark, wrong for a long-running agent. Bounding and
+indexing this is product work, and it is the first real scaling constraint the
+provenance layer has.
