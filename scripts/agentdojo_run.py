@@ -82,6 +82,41 @@ class _Bound:
 FunctionsRuntime.run_function = _patched
 
 
+# --------------------------------------------------------------------------
+# INJECTABILITY IS A PROPERTY OF THE SUITE, NOT OF OUR DEFENCE.
+#
+# AgentDojo decides whether a user task can carry an injection by running its
+# GROUND TRUTH pipeline and looking for canary strings in the responses. That
+# pipeline goes through the same patched runtime, so an enforcing gate blocks
+# it, no canary appears, and every pair is declared "not injectable" -- the
+# slack and workspace attack matrices came back with combos: 0 for exactly
+# this reason, while the driver recorded them as OK.
+#
+# Asking "is this task injectable while defended" is a circular question. The
+# harness is therefore disabled for the duration of the check, and the answer
+# cached, since it does not depend on the policy under test.
+# --------------------------------------------------------------------------
+from agentdojo.attacks.base_attacks import BaseAttack  # noqa: E402
+
+_ORIG_CANDIDATES = BaseAttack.get_injection_candidates
+_CANDIDATE_CACHE: Dict[Any, Any] = {}
+
+
+def _patched_candidates(self: Any, user_task: Any) -> Any:
+    key = (getattr(self.task_suite, "name", "?"), user_task.ID)
+    if key not in _CANDIDATE_CACHE:
+        saved = _HARNESS[0]
+        _HARNESS[0] = None
+        try:
+            _CANDIDATE_CACHE[key] = _ORIG_CANDIDATES(self, user_task)
+        finally:
+            _HARNESS[0] = saved
+    return _CANDIDATE_CACHE[key]
+
+
+BaseAttack.get_injection_candidates = _patched_candidates
+
+
 def sanity_check(pipeline: Any, model: str) -> None:
     """Refuse to benchmark a model that cannot add two numbers.
 
