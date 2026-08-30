@@ -146,32 +146,32 @@ def sanity_check(pipeline: Any, model: str) -> None:
 def merge_inferred(policies: List[Dict[str, Any]]) -> Dict[str, Any]:
     """One policy from the per-task inferences of a whole shadow run.
 
-    A grant is merged per session: the union of actions, the greatest tier, and
-    for each argument the LEAST TRUSTED band ever observed for it. Taking the
-    least trusted is what keeps the floor honest -- an argument that arrived
-    TOOL even once must be permitted at TOOL, or enforcing the inferred policy
-    would refuse traffic the inference itself saw.
+    Grants are merged PER ACTION. Merging per session instead gave one grant
+    carrying `arg_bands` for every argument seen anywhere in the suite, so the
+    fail-closed rule refused each call for constraining arguments it does not
+    pass -- an inferred policy that refuses the traffic it was inferred from.
+
+    For each argument the LEAST TRUSTED band ever observed is kept. Anything
+    tighter would refuse calls the inference itself saw.
     """
-    from warrantable.taint import Band as _B
     RANK = {"governance": 0, "session": 1, "tool": 2, "user": 3}
-    actions: Dict[int, set] = {}
-    tiers: Dict[int, int] = {}
-    bands: Dict[int, Dict[str, str]] = {}
+    tiers: Dict[Any, int] = {}
+    bands: Dict[Any, Dict[str, str]] = {}
     for pol in policies:
         for g in pol.get("grants", []):
-            s = g["sess"]
-            actions.setdefault(s, set()).update(g.get("actions", []))
-            tiers[s] = max(tiers.get(s, 0), g.get("max_tier", 0))
-            for arg, b in (g.get("arg_bands") or {}).items():
-                cur = bands.setdefault(s, {}).get(arg)
-                if cur is None or RANK[b] > RANK[cur]:
-                    bands[s][arg] = b
+            for action in g.get("actions", []):
+                k = (g["sess"], action)
+                tiers[k] = max(tiers.get(k, 0), g.get("max_tier", 0))
+                for arg, b in (g.get("arg_bands") or {}).items():
+                    cur = bands.setdefault(k, {}).get(arg)
+                    if cur is None or RANK[b] > RANK[cur]:
+                        bands[k][arg] = b
     grants = []
-    for s in sorted(actions):
-        g: Dict[str, Any] = {"sess": s, "max_tier": tiers[s],
-                             "actions": sorted(actions[s])}
-        if bands.get(s):
-            g["arg_bands"] = dict(sorted(bands[s].items()))
+    for (sess, action) in sorted(tiers):
+        g: Dict[str, Any] = {"sess": sess, "max_tier": tiers[(sess, action)],
+                             "actions": [action]}
+        if bands.get((sess, action)):
+            g["arg_bands"] = dict(sorted(bands[(sess, action)].items()))
         grants.append(g)
     return {"version": 1, "grants": grants}
 
