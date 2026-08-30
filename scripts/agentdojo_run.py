@@ -38,6 +38,7 @@ from agentdojo.benchmark import (run_task_without_injection_tasks,  # noqa: E402
 from agentdojo.attacks.attack_registry import load_attack  # noqa: E402
 from agentdojo.attacks.base_attacks import MODEL_NAMES  # noqa: E402
 
+from warrantable.issuance import validate              # noqa: E402
 from scripts.agentdojo_warrantable import TaintingRuntime, policy_for  # noqa: E402
 
 # AgentDojo's NullLogger sets `logdir` only inside __enter__, but the benchmark
