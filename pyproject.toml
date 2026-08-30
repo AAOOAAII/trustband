@@ -1,48 +1,20 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "a sibling project"
+name = "warrantable"
 version = "0.1.0"
-description = "a sibling project Beta SDK — GDC-E rotation tenant isolation (private)"
-readme = "README.md"
-requires-python = ">=3.9"
-dependencies = [
-    "numpy>=2.0",
-    "faiss-cpu>=1.8",
-    "cryptography>=42.0",
-    # a sibling project is a PRIVATE repo -- installing this package needs SSH access to it.
-    # Pinned to a COMMIT, not a branch: a floating branch would make every install
-    # a different install. Bump deliberately.
-    "a sibling project @ git+ssh://git@github.com/AAOOAAII/a sibling project.git@5eddfc9579b8579482d2b7d6722e9bbb9f3fd7bf",
-]
+description = "Provenance-aware authorization for LLM agent tool calls"
+readme = "warrantable/README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+# No dependencies. The enforcement core is standard library only, so there is
+# nothing to trust beyond what you can read.
+dependencies = []
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=8.0",
-    "ruff>=0.4",
-]
+[project.scripts]
+warrantable = "warrantable.cli:main"
 
-[tool.setuptools.packages.find]
-where = ["."]
-# `a sibling project*` is REQUIRED, not optional: a sibling project/rotation.py imports
-# a sibling project.core.rotation at module level. Packaging a sibling project alone produced an
-# install that reported success and then failed on `import a sibling project` from any
-# directory other than the repo root, where a sibling project/ happens to be on sys.path.
-include = ["a sibling project*", "a sibling project*"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-q"
-markers = [
-    "slow: downloads models or runs heavy integration checks",
-    "hybrid_transparency: canonical Jamba hybrid rotation-transparency regression",
-]
-
-[tool.ruff]
-line-length = 100
-target-version = "py39"
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "W"]
+[tool.setuptools]
+packages = ["warrantable"]
