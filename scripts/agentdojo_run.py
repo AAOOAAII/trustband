@@ -528,17 +528,23 @@ def main() -> int:
         # checkable, so it is checked here rather than trusted.
         broken = replay_against(merged, shadow_obs)
         if broken:
+            # Refuse the POLICY, never the run. Returning here discarded the
+            # shadow results too, so the evidence needed to diagnose the bad
+            # inference went with it. The rejected policy is kept beside the
+            # results for inspection.
+            rej = args.infer_out + ".rejected"
+            Path(rej).write_text(json.dumps(merged, indent=2), encoding="utf-8")
             print(f"REFUSING TO WRITE: the inferred policy would refuse "
                   f"{len(broken)} call(s) it was inferred from. A floor that "
                   f"rejects its own traffic is not a floor.")
             for b in broken[:3]:
                 print(f"    {b['action']}: {b['why'][:110]}")
-            return 3
-        Path(args.infer_out).write_text(json.dumps(merged, indent=2),
-                                        encoding="utf-8")
-        print(f"  inferred policy -> {args.infer_out} "
-              f"({len(merged['grants'])} grant(s), replayed clean over "
-              f"{sum(len(o['report'].get('by_action', {})) or 1 for o in shadow_obs)} task(s))")
+            print(f"  rejected policy kept at {rej}")
+        else:
+            Path(args.infer_out).write_text(json.dumps(merged, indent=2),
+                                            encoding="utf-8")
+            print(f"  inferred policy -> {args.infer_out} "
+                  f"({len(merged['grants'])} grant(s), replayed clean)")
 
     sha, dirty = provenance()
     out = {"mode": args.mode, "suite": args.suite, "model": args.model,
