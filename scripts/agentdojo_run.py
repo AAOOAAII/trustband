@@ -172,6 +172,11 @@ def merge_inferred(policies: List[Dict[str, Any]]) -> Dict[str, Any]:
                              "actions": [action]}
         if bands.get((sess, action)):
             g["arg_bands"] = dict(sorted(bands[(sess, action)].items()))
+            # The merge rebuilds grants from scratch, so it must re-assert what
+            # inference means: constrain only the arguments a call passes.
+            # shadow.py set this and the merge dropped it, so the merged floor
+            # went back to refusing calls that omit an optional argument.
+            g["bands_when_present"] = True
         grants.append(g)
     return {"version": 1, "grants": grants}
 
