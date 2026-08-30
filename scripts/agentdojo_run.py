@@ -212,13 +212,6 @@ def run_attacks(args, suite, policy, pipeline) -> int:
       LAUNDERED the argument was model-authored, banded SESSION, carrying no
                 provenance -- the gate never had the information to refuse
     """
-    if args.mode == "shadow" and args.infer_out and shadow_obs:
-        merged = merge_inferred([o["inferred"] for o in shadow_obs])
-        Path(args.infer_out).write_text(json.dumps(merged, indent=2),
-                                        encoding="utf-8")
-        print(f"  inferred policy -> {args.infer_out} "
-              f"({len(merged['grants'])} grant(s))")
-
     sha, dirty = provenance()
     if dirty and not args.allow_dirty:
         print("REFUSING TO RUN: code this result depends on is uncommitted:")
@@ -445,6 +438,13 @@ def main() -> int:
         per_task[tid] = rec
         print(f"  {tid}: utility={'PASS' if u else 'fail'} "
               f"refusals={len(refused)}", flush=True)
+
+    if args.mode == "shadow" and args.infer_out and shadow_obs:
+        merged = merge_inferred([o["inferred"] for o in shadow_obs])
+        Path(args.infer_out).write_text(json.dumps(merged, indent=2),
+                                        encoding="utf-8")
+        print(f"  inferred policy -> {args.infer_out} "
+              f"({len(merged['grants'])} grant(s))")
 
     sha, dirty = provenance()
     out = {"mode": args.mode, "suite": args.suite, "model": args.model,
