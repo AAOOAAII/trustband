@@ -382,6 +382,10 @@ def main() -> int:
                     help="strip all provenance from the policy, keeping value "
                          "predicates: emulates a params-only engine of the "
                          "APort shape, for an architectural comparison")
+    ap.add_argument("--infer-passes", type=int, default=1,
+                    help="observation passes to infer from; a floor built from "
+                         "ONE pass is brittle because the model is not "
+                         "deterministic")
     ap.add_argument("--infer-out", default="",
                     help="shadow mode: write the inferred policy here")
     ap.add_argument("--policy-file", default="",
@@ -468,7 +472,10 @@ def main() -> int:
     if args.attack:
         return run_attacks(args, suite, policy, pipeline)
 
-    for tid, task in sorted(suite.user_tasks.items()):
+    passes = args.infer_passes if args.mode == "shadow" else 1
+    task_list = [(tid, task) for _ in range(passes)
+                 for tid, task in sorted(suite.user_tasks.items())]
+    for tid, task in task_list:
         h = TaintingRuntime(None, policy,
                             gate_mode=("enforce" if args.mode == "shadow"
                                        else args.mode),
