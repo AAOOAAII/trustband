@@ -177,6 +177,9 @@ def merge_inferred(policies: List[Dict[str, Any]]) -> Dict[str, Any]:
             # shadow.py set this and the merge dropped it, so the merged floor
             # went back to refusing calls that omit an optional argument.
             g["bands_when_present"] = True
+            # The merge rebuilds grants, so it must re-assert this too --
+            # bands_when_present was lost exactly this way once already.
+            g["confirmable"] = True
         grants.append(g)
     return {"version": 1, "grants": grants}
 
