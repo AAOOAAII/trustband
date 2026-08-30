@@ -176,6 +176,35 @@ def merge_inferred(policies: List[Dict[str, Any]]) -> Dict[str, Any]:
     return {"version": 1, "grants": grants}
 
 
+def replay_against(policy: Dict[str, Any],
+                   shadow_obs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Every call the shadow run saw, re-evaluated under the inferred policy.
+
+    Returns the calls it would now refuse. Empty is the only acceptable answer
+    for a floor: inference permits what it observed, so anything it refuses
+    here is a defect in the inference rather than a tightening.
+    """
+    from warrantable.gate import Gate
+    from warrantable.issuance import Issuer
+    from warrantable.taint import Tainted as _T, Band as _B
+    probe = Issuer(Gate(budget=1))
+    # adopt(), not _policy =. Setting the field directly leaves the gate's
+    # digest disagreeing with the evaluator, so every call is refused as
+    # "out of step" -- and filtering that reason made the whole guard vacuous.
+    d = probe.adopt(policy)
+    if not d:
+        return [{"action": "(adopt)", "why": d.reason}]
+    broken: List[Dict[str, Any]] = []
+    for obs in shadow_obs:
+        for call in obs.get("calls", []):
+            args = {k: _T(None, _B(v)) for k, v in call.get("bands", {}).items()}
+            ok, why = probe.evaluate(call["session"], call["tier"],
+                                     call["action"], args)
+            if not ok and "out of step" not in why:
+                broken.append({"action": call["action"], "why": why})
+    return broken
+
+
 def provenance() -> Tuple[str, List[str]]:
     """HEAD, and which of the paths THIS RESULT DEPENDS ON are uncommitted.
 
@@ -470,17 +499,39 @@ def main() -> int:
             rep = h.rt.shadow_report()
             rec["shadow"] = rep
             shadow_obs.append({"task": tid, "report": rep,
-                               "inferred": h.rt.infer_policy()})
+                               "inferred": h.rt.infer_policy(),
+                               # the raw calls, so an inferred policy can be
+                               # replayed against the traffic it came from
+                               "calls": [{"session": o.session,
+                                          "action": o.action, "tier": o.tier,
+                                          "bands": o.arg_bands}
+                                         for o in h.rt.recorder.observations]})
         per_task[tid] = rec
         print(f"  {tid}: utility={'PASS' if u else 'fail'} "
               f"refusals={len(refused)}", flush=True)
 
     if args.mode == "shadow" and args.infer_out and shadow_obs:
         merged = merge_inferred([o["inferred"] for o in shadow_obs])
+        # A POLICY THAT WOULD REFUSE ITS OWN TRAINING TRAFFIC IS NOT A FLOOR.
+        #
+        # The first inference merged every action into one grant, so each call
+        # was refused for constraining arguments it does not pass: 48 refusals,
+        # 0 of 21 tasks, and a headline 0 attacks achieved purely by refusing
+        # everything. That took three runs to notice. It is mechanically
+        # checkable, so it is checked here rather than trusted.
+        broken = replay_against(merged, shadow_obs)
+        if broken:
+            print(f"REFUSING TO WRITE: the inferred policy would refuse "
+                  f"{len(broken)} call(s) it was inferred from. A floor that "
+                  f"rejects its own traffic is not a floor.")
+            for b in broken[:3]:
+                print(f"    {b['action']}: {b['why'][:110]}")
+            return 3
         Path(args.infer_out).write_text(json.dumps(merged, indent=2),
                                         encoding="utf-8")
         print(f"  inferred policy -> {args.infer_out} "
-              f"({len(merged['grants'])} grant(s))")
+              f"({len(merged['grants'])} grant(s), replayed clean over "
+              f"{sum(len(o['report'].get('by_action', {})) or 1 for o in shadow_obs)} task(s))")
 
     sha, dirty = provenance()
     out = {"mode": args.mode, "suite": args.suite, "model": args.model,

@@ -152,6 +152,16 @@ class TaintingRuntime:
         self.oracle = oracle
         self.user_prompt = user_prompt or ""
         self.ledger = ConfirmationLedger()
+        # Values that came out of a source the USER NAMED. "Read
+        # address-change.txt and update my details" makes that file's contents
+        # something the user asked for, even though the address itself never
+        # appears in the prompt. Without this a "careful human" declines the
+        # very task the user requested, which is a flaw in the ORACLE, not in
+        # the policy -- and it is why Run 3 recovered no utility on task 13.
+        #
+        # This informs the APPROVAL DECISION ONLY. It does not change any
+        # band, so nothing here can make a value more trusted to the gate.
+        self._user_directed: Set[str] = set()
         self.confirmations: List[Dict[str, Any]] = []
         self.session = session
         self.events: List[ToolEvent] = []
@@ -187,12 +197,14 @@ class TaintingRuntime:
         return worst
 
     # -- provenance recall ------------------------------------------------
-    def _remember(self, value: Any) -> None:
+    def _remember(self, value: Any, user_directed: bool = False) -> None:
         def walk(v: Any) -> None:
             if isinstance(v, Tainted):
                 k = _key(v.value)
                 if k is not None:
                     self._seen[k] = v.band
+                if user_directed and isinstance(v.value, str):
+                    self._user_directed.add(v.value)
                 walk(v.value)
             elif isinstance(v, dict):
                 for x in v.values(): walk(x)
@@ -260,6 +272,21 @@ class TaintingRuntime:
                     payees.add(t.recipient)
         return {"known_payees": payees}
 
+    def _named_by_user(self, kwargs: Any) -> bool:
+        """Did the user's own request name this call's source?
+
+        `read_file(file_path='address-change.txt')` where that filename is in
+        the prompt means the user pointed the agent at it. A document the agent
+        merely encountered is not named, which is the distinction between the
+        file the user asked about and the poisoned notice beside it.
+        """
+        if not self.user_prompt:
+            return False
+        for v in (kwargs or {}).values():
+            if isinstance(v, str) and len(v) >= 4 and v in self.user_prompt:
+                return True
+        return False
+
     # -- the human in the loop ---------------------------------------------
     def _ask_human(self, env: Any, function: str,
                    targs: Dict[str, Any], do: Any, refused: Any) -> Any:
@@ -287,7 +314,8 @@ class TaintingRuntime:
                 arg_bands={k: taint_of(v).value for k, v in targs.items()})
             approve = (self.oracle == "rubber"
                        or (self.oracle == "perfect"
-                           and str(value) in self.user_prompt))
+                           and (str(value) in self.user_prompt
+                                or str(value) in self._user_directed)))
             (self.ledger.approve if approve else self.ledger.deny)(
                 req, approver=f"oracle:{self.oracle}")
             self.confirmations.append(
@@ -351,7 +379,7 @@ class TaintingRuntime:
             return "", f"PolicyRefusal: {res.reason}"
 
         banded = taint_tool_result(holder.get("r"))
-        self._remember(banded)
+        self._remember(banded, user_directed=self._named_by_user(kwargs))
         self.events.append(ToolEvent(function, True, "executed", None,
                                      arg_bands, "execute"))
         return holder.get("r"), holder.get("e")
