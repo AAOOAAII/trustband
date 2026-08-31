@@ -20,3 +20,6 @@ trustband-mcp = "trustband.adapters.mcp_proxy:main"
 
 [tool.setuptools]
 packages = ["trustband", "trustband.adapters"]
+
+[tool.setuptools.package-data]
+"trustband" = ["packs/*.json"]
