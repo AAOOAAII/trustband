@@ -26,10 +26,10 @@ from typing import Any, Dict, List
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
-from warrantable.gate import Channel, Gate  # noqa: E402
+from trustband.gate import Channel, Gate  # noqa: E402
 sys.path.insert(0, str(REPO / "scripts"))
 from warrantable_battery import Envelope, UngatedBaseline  # noqa: E402
-from warrantable.policy import (PolicyDomainError, digest, encode,  # noqa: E402
+from trustband.policy import (PolicyDomainError, digest, encode,  # noqa: E402
                                 equal)
 
 SESS, EID = 7, 1
@@ -126,7 +126,7 @@ def main() -> int:
           "no partial adoption")
 
     print("== ISSUANCE: the policy decides, not the caller ==")
-    from warrantable.issuance import Issuer, PolicySchemaError
+    from trustband.issuance import Issuer, PolicySchemaError
     P = {"version": 1,
          "grants": [{"sess": SESS, "max_tier": 1, "actions": ["read", "list"]}]}
     gi = Gate(budget=20); gi.write(2, EID)
@@ -163,7 +163,7 @@ def main() -> int:
     check("...and names why", "out of step" in d_desync.reason, True)
 
     print("== TAINT: an action can refuse tool-derived arguments ==")
-    from warrantable.taint import Band, Tainted, combine, meet
+    from trustband.taint import Band, Tainted, combine, meet
     PT = {"version": 1, "grants": [
         {"sess": SESS, "max_tier": 2, "actions": ["transfer"],
          "min_band": "session"}]}
@@ -197,7 +197,7 @@ def main() -> int:
           "closed but taint every literal and get the checks disabled")
 
     print("== AUDIT: hash-chained, and sealed against the epoch key ==")
-    from warrantable.audit import Entry as AEntry, entry_digest
+    from trustband.audit import Entry as AEntry, entry_digest
     ga = Gate(budget=20); ga.write(2, EID)
     ia = Issuer(ga); ia.adopt(P)
     _, ca = ia.issue(SESS, 1, "read", 1)
@@ -257,7 +257,7 @@ def main() -> int:
           "is the exposure window and is an operator choice")
 
     print("== END-TO-END: the guarded call, and what it refuses ==")
-    from warrantable.runtime import Runtime
+    from trustband.runtime import Runtime
     RP = {"version": 1, "grants": [{"sess": SESS, "max_tier": 2,
                                     "actions": ["transfer"],
                                     "min_band": "session"}]}
@@ -293,7 +293,7 @@ def main() -> int:
     check("...and the tool NEVER RAN", len(ran), n_before)
 
     print("== two more composition defects, found and fixed ==")
-    from warrantable.taint import combine as tcombine
+    from trustband.taint import combine as tcombine
     # A. sealing under the epoch key made rotation destroy verifiability.
     rt2 = Runtime(RP, budget=32); rt2.register(EID)
     rt2.call(session=SESS, action="transfer", tier=2, eid=EID, args=good, fn=tool)
@@ -322,8 +322,8 @@ def main() -> int:
     check("and survives a second hop", r_t2.result_band, Band.TOOL)
 
     print("== sweep findings, each as a regression ==")
-    from warrantable.audit import AuditLog, AuditError
-    from warrantable.gate import Gate as _G
+    from trustband.audit import AuditLog, AuditError
+    from trustband.gate import Gate as _G
 
     # 1. re-tagging must be monotone -- the laundering hole.
     laundered = Tainted(Tainted("attacker text", Band.TOOL), Band.SESSION)
@@ -439,7 +439,7 @@ def main() -> int:
     # bill; a permissive one admits the attack. Predicates ask the other
     # question -- is this value one the policy named in advance.
     print("== value predicates, over the value rather than its provenance ==")
-    from warrantable.runtime import Runtime as _RT
+    from trustband.runtime import Runtime as _RT
     _LEGIT, _ATTACK = "UK12345678901234567890", "US133000000121212121212"
     _POL = {"version": 1, "grants": [{
         "sess": 7, "max_tier": 2, "actions": ["send_money"],
@@ -480,7 +480,7 @@ def main() -> int:
     # approve in one click. An escape hatch is only safe if it is narrow, so
     # each narrowing is a check.
     print("== confirmation, and the four things that keep it from being an override ==")
-    from warrantable.confirm import ConfirmationLedger as _CL
+    from trustband.confirm import ConfirmationLedger as _CL
     _CPOL = {"version": 1, "grants": [
         {"sess": 7, "max_tier": 2, "actions": ["send_money"],
          "require": [{"arg": "recipient", "op": "in_context",
@@ -550,7 +550,7 @@ def main() -> int:
         "platform": f"{platform.system()} {platform.machine()}",
         "source_sha256": {
             rel: hashlib.sha256((REPO / rel).read_bytes()).hexdigest()
-            for rel in ("warrantable/gate.py", "warrantable/policy.py",
+            for rel in ("trustband/gate.py", "trustband/policy.py",
                         "scripts/warrantable_policy_demo.py")
         },
         "scope": ("A12 is an ASSUMPTION, not a theorem. This demonstrates the "
@@ -561,7 +561,7 @@ def main() -> int:
                     "failed": len(checks) - passed},
         "checks": checks,
     }
-    out = REPO / "warrantable/policy_demo.json"
+    out = REPO / "trustband/policy_demo.json"
     out.write_text(json.dumps(envelope, indent=2, default=str))
     print(f"\n  checks: {passed}/{len(checks)} passed")
     print(f"  commit {envelope['commit'][:12]} "

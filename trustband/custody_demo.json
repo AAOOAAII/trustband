@@ -1,0 +1,150 @@
+{
+  "artifact": "warrantable custody demonstration",
+  "generated_utc": "2026-08-31T14:58:25Z",
+  "commit": "3f53eb06782f50404955c583edd1fdf98af5eb9a",
+  "branch": "fix/rconc-read-consumption",
+  "tree_clean_for_these_paths": false,
+  "uncommitted_paths": [
+    "M scripts/warrantable_custody_demo.py",
+    "D  warrantable/.gitignore",
+    "D  warrantable/LICENSE",
+    "D  warrantable/NOTICE",
+    "D  warrantable/OVERVIEW.md",
+    "D  warrantable/README.md",
+    "D  warrantable/__init__.py",
+    "D  warrantable/adapters/__init__.py",
+    "D  warrantable/adapters/claude_code.py",
+    "D  warrantable/adapters/mcp_proxy.py",
+    "D  warrantable/audit.py",
+    "D  warrantable/bundle.py",
+    "D  warrantable/cli.py",
+    "D  warrantable/confirm.py",
+    "D  warrantable/conformance.py",
+    "D  warrantable/custody.py",
+    "D  warrantable/detector.py",
+    "D  warrantable/detectors_byo.py",
+    "D  warrantable/extractor.py",
+    "D  warrantable/gate.py",
+    "D  warrantable/guard.py",
+    "D  warrantable/issuance.py",
+    "D  warrantable/packs/coding-agent.json",
+    "D  warrantable/packs/financial-actions.json",
+    "D  warrantable/packs/messaging-agent.json",
+    "D  warrantable/policy.py",
+    "D  warrantable/policy_demo.json",
+    "D  warrantable/policytest.py",
+    "D  warrantable/predicates.py",
+    "D  warrantable/provenance.py",
+    "D  warrantable/runtime.py",
+    "D  warrantable/shadow.py",
+    "D  warrantable/taint.py",
+    "D  warrantable/tokens.py",
+    "D  warrantable/transport.py"
+  ],
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "source_sha256": {
+    "trustband/gate.py": "07ddf7713183f8f7537e3dbf03fae06a05c5d863b9cafa7f8f1373156e3d1ea4",
+    "trustband/custody.py": "35e9e53c341dc14adef92cd85dfd28f24f62b5e00505f9feed6fa6865c93f0bf",
+    "scripts/warrantable_custody_demo.py": "dfeb780c759298607a60801f14c72abd8ee220f2d2692c76829864fdfe3c94ff"
+  },
+  "backend": "FakeKms \u2014 the SHAPE of AWS KMS, not AWS KMS. No account was contacted. Running this against a real CMK is a separate exercise and has not been performed.",
+  "summary": {
+    "checks": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "check": "store.extractable",
+      "got": false,
+      "want": false,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "store.extraction_probe",
+      "got": false,
+      "want": false,
+      "pass": true,
+      "note": "asking for the key must fail"
+    },
+    {
+      "check": "store.mac_operation_probe",
+      "got": true,
+      "want": true,
+      "pass": true,
+      "note": "using the key must succeed \u2014 this pair is the claim"
+    },
+    {
+      "check": "kms.key_bytes_in_process",
+      "got": false,
+      "want": false,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "k_gov refused",
+      "got": true,
+      "want": true,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "leak refused",
+      "got": true,
+      "want": true,
+      "pass": true,
+      "note": "cannot leak what is not held"
+    },
+    {
+      "check": "govern_issue allowed",
+      "got": true,
+      "want": true,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "tag length",
+      "got": 32,
+      "want": 32,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "verify genuine",
+      "got": true,
+      "want": true,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "verify forged",
+      "got": false,
+      "want": false,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "key bytes in process after mint+verify",
+      "got": {},
+      "want": {},
+      "pass": true,
+      "note": "empty dict \u2014 no key material ever entered this process"
+    },
+    {
+      "check": "retire scheduled deletion",
+      "got": 0,
+      "want": 0,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "minting under retired CMK refused",
+      "got": true,
+      "want": true,
+      "pass": true,
+      "note": "and (F) rejects retired capabilities regardless, by integer comparison, using no MAC property"
+    }
+  ]
+}

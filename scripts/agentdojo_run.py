@@ -38,7 +38,7 @@ from agentdojo.benchmark import (run_task_without_injection_tasks,  # noqa: E402
 from agentdojo.attacks.attack_registry import load_attack  # noqa: E402
 from agentdojo.attacks.base_attacks import MODEL_NAMES  # noqa: E402
 
-from warrantable.issuance import validate              # noqa: E402
+from trustband.issuance import validate              # noqa: E402
 from scripts.agentdojo_warrantable import TaintingRuntime, policy_for  # noqa: E402
 
 # AgentDojo's NullLogger sets `logdir` only inside __enter__, but the benchmark
@@ -54,7 +54,7 @@ NullLogger.logdir = None
 # FunctionsRuntime.run_function, so patching it here bands all output and gates
 # all calls with NO suite modification -- which is P-AD1's condition.
 # --------------------------------------------------------------------------
-LOCAL_BASE = os.environ.get("WARRANTABLE_LLM_BASE",
+LOCAL_BASE = os.environ.get("TRUSTBAND_LLM_BASE",
                             "http://localhost:11434/v1")
 
 _ORIGINAL = FunctionsRuntime.run_function
@@ -192,9 +192,9 @@ def replay_against(policy: Dict[str, Any],
     for a floor: inference permits what it observed, so anything it refuses
     here is a defect in the inference rather than a tightening.
     """
-    from warrantable.gate import Gate
-    from warrantable.issuance import Issuer
-    from warrantable.taint import Tainted as _T, Band as _B
+    from trustband.gate import Gate
+    from trustband.issuance import Issuer
+    from trustband.taint import Tainted as _T, Band as _B
     probe = Issuer(Gate(budget=1))
     # adopt(), not _policy =. Setting the field directly leaves the gate's
     # digest disagreeing with the evaluator, so every call is refused as

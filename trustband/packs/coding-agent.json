@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "_pack": {
+    "name": "coding-agent",
+    "description": "For a CLI coding agent (Claude Code). Refuses a shell command whose text was derived verbatim from tool output, and asks a human. Measured: catches copy-able injections (8/8 verbatim on a susceptible model); does NOT catch a payload the model paraphrased.",
+    "scope": "Start in shadow. This is a floor to tighten from your own traffic, not a finished policy."
+  },
+  "grants": [
+    {
+      "sess": "*",
+      "max_tier": 2,
+      "actions": ["*"],
+      "arg_bands": {"command": "session"},
+      "bands_when_present": true,
+      "confirmable": true
+    }
+  ]
+}

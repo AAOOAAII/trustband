@@ -29,10 +29,10 @@ from typing import Any, Dict, List, Optional, Tuple
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
-from warrantable.gate import Band                      # noqa: E402
-from warrantable.confirm import ConfirmationLedger     # noqa: E402
-from warrantable.runtime import Runtime                # noqa: E402
-from warrantable.taint import (Tainted, combine, taint_of,  # noqa: E402
+from trustband.gate import Band                      # noqa: E402
+from trustband.confirm import ConfirmationLedger     # noqa: E402
+from trustband.runtime import Runtime                # noqa: E402
+from trustband.taint import (Tainted, combine, taint_of,  # noqa: E402
                                TRUST_ORDER)
 
 

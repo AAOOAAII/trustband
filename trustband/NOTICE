@@ -1,0 +1,15 @@
+trustband
+Product surface over the warrantable enforcement core.
+Copyright 2026 Luis Alonso Carranza, Cittela Ltd
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
+
+This implementation follows a machine-checked Verus model deposited at
+https://doi.org/10.5281/zenodo.22115780 (CC BY 4.0). The proofs and this code
+are separate artifacts under separate licences; the deposit is the citable one.
+
+PATENT SCOPE. The patent licence granted by section 3 of the Apache License
+covers this work. It is not a licence to any patent for any other purpose, and
+nothing here grants rights to implement the claimed inventions outside it.

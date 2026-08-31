@@ -12,12 +12,12 @@ a provenance failure and was a quoting bug in the test.
 import json, subprocess, sys, tempfile
 from pathlib import Path
 
-HOOK = [sys.executable, "-m", "warrantable.adapters.claude_code"]
+HOOK = [sys.executable, "-m", "trustband.adapters.claude_code"]
 
 
 def _run(arg, event, home):
     p = subprocess.run(HOOK + [arg], input=json.dumps(event), text=True,
-                       capture_output=True, env={"WARRANTABLE_HOME": str(home),
+                       capture_output=True, env={"TRUSTBAND_HOME": str(home),
                                                  "PATH": "/usr/bin:/bin",
                                                  "HOME": str(home)})
     return p.stdout
@@ -31,7 +31,7 @@ def test_provenance_survives_across_subprocesses():
     with tempfile.TemporaryDirectory() as d:
         home = Path(d)
         sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-        from warrantable.guard import _session_int
+        from trustband.guard import _session_int
         (home / "policy.json").write_text(json.dumps({"version": 1, "grants": [
             {"sess": _session_int("s"), "max_tier": 2, "actions": ["Read", "Bash"],
              "arg_bands": {"command": "session"}, "bands_when_present": True,
@@ -58,7 +58,7 @@ def test_provenance_is_not_shared_between_sessions():
     with tempfile.TemporaryDirectory() as d:
         home = Path(d)
         sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-        from warrantable.guard import _session_int
+        from trustband.guard import _session_int
         (home / "policy.json").write_text(json.dumps({"version": 1, "grants": [
             {"sess": _session_int(s), "max_tier": 2, "actions": ["Read", "Bash"],
              "arg_bands": {"command": "session"}, "bands_when_present": True,

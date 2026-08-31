@@ -1,10 +1,10 @@
 import sys, traceback; sys.path.insert(0,'.')
-from warrantable.gate import Gate, Band, Channel, Cap, EpochKeyStore, CustodyError
-from warrantable.runtime import Runtime
-from warrantable.issuance import Issuer
-from warrantable.taint import Tainted, PUBLIC, readers_of, combine_readers
-from warrantable.policy import digest
-from warrantable.audit import AuditError
+from trustband.gate import Gate, Band, Channel, Cap, EpochKeyStore, CustodyError
+from trustband.runtime import Runtime
+from trustband.issuance import Issuer
+from trustband.taint import Tainted, PUBLIC, readers_of, combine_readers
+from trustband.policy import digest
+from trustband.audit import AuditError
 F=[]
 def probe(pair,name,hit,note=""):
     print(("  !! SUSPECT " if hit else "  ok        ")+f"[{pair}] {name}"+(("  -- "+note) if hit and note else ""))
@@ -59,7 +59,7 @@ probe("taint×policy","min_band change does not change digest", digest(p1)==dige
 # 7. custody x issuance -- does a custody FAILURE fail closed?
 class Dead:
     def generate_mac(self,**k): raise RuntimeError("KMS down")
-from warrantable.custody import AwsKmsHmacSigner, CustodyBackendError
+from trustband.custody import AwsKmsHmacSigner, CustodyBackendError
 try:
     ks=EpochKeyStore(signer=AwsKmsHmacSigner(Dead(),key_ids={0:"k"}))
     g=Gate(budget=4,keys=ks); g.write(2,1)
@@ -86,7 +86,7 @@ probe("readers×revocation","rotation silently changed the audience/policy diges
       r6.gate.gov_policy!=before)
 
 # 10. transport x gate -- can a band be forged through the public API?
-from warrantable.gate import Presented, BandForgery
+from trustband.gate import Presented, BandForgery
 g7=Gate(budget=4); g7.write(2,1); d,cap=g7.govern_issue(7,2,1)
 try:
     p=Presented(cap, Band.SESSION); probe("transport×gate","Presented forgeable", True, "constructed outside ingest")

@@ -25,10 +25,10 @@ def test_proxy_refuses_tool_derived_recipient():
              "arg_bands":{"recipient":"session"},"bands_when_present":True}]}))
         (home/"config.json").write_text(json.dumps({"policy":"policy.json","mode":"enforce"}))
         srv = home/"srv.py"; srv.write_text(_server_code())
-        env = dict(os.environ, WARRANTABLE_HOME=str(home),
+        env = dict(os.environ, TRUSTBAND_HOME=str(home),
                    PYTHONPATH=str(Path(__file__).resolve().parents[1]))
         proxy = subprocess.Popen(
-            [sys.executable,"-m","warrantable.adapters.mcp_proxy","--",sys.executable,str(srv)],
+            [sys.executable,"-m","trustband.adapters.mcp_proxy","--",sys.executable,str(srv)],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, env=env, text=True)
         def call(i,n,a):
             proxy.stdin.write(json.dumps({"jsonrpc":"2.0","id":i,"method":"tools/call",

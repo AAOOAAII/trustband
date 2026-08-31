@@ -31,8 +31,8 @@ from typing import Any, Dict
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
-from warrantable.custody import AwsKmsHmacSigner, CustodyBackendError  # noqa: E402
-from warrantable.gate import CustodyError, EpochKeyStore, Gate  # noqa: E402
+from trustband.custody import AwsKmsHmacSigner, CustodyBackendError  # noqa: E402
+from trustband.gate import CustodyError, EpochKeyStore, Gate  # noqa: E402
 
 
 class FakeKms:
@@ -145,7 +145,7 @@ def main() -> int:
         "platform": f"{platform.system()} {platform.machine()}",
         "source_sha256": {
             rel: hashlib.sha256((REPO / rel).read_bytes()).hexdigest()
-            for rel in ("warrantable/gate.py", "warrantable/custody.py",
+            for rel in ("trustband/gate.py", "trustband/custody.py",
                         "scripts/warrantable_custody_demo.py")
         },
         "backend": "FakeKms — the SHAPE of AWS KMS, not AWS KMS. No account "
@@ -155,7 +155,7 @@ def main() -> int:
                     "failed": len(checks) - passed},
         "checks": checks,
     }
-    out = REPO / "warrantable/custody_demo.json"
+    out = REPO / "trustband/custody_demo.json"
     out.write_text(json.dumps(envelope, indent=2, default=str))
     print(f"\n  checks: {passed}/{len(checks)} passed")
     print(f"  results: {out}")

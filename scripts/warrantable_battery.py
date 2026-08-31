@@ -30,7 +30,7 @@ from typing import Any, Dict, List, Optional
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
-from warrantable.gate import (  # noqa: E402
+from trustband.gate import (  # noqa: E402
     Band, Cap, Channel, Decision, Entry, EpochKeyStore, Gate,
     compute_tag, structural_selftest,
 )
@@ -310,7 +310,7 @@ def r7():
     transport existed). Gated arm: band taken from the accepting listener.
     """
     import os, tempfile
-    from warrantable.transport import Ingress, band_from_accepting_listener, connect_and_send
+    from trustband.transport import Ingress, band_from_accepting_listener, connect_and_send
 
     d = tempfile.mkdtemp(prefix="r7_")
     binds = {c: os.path.join(d, f"{c.value}.sock") for c in Channel}
@@ -367,7 +367,7 @@ def r8():
     pretending the gate stops it would be the overclaim.
     """
     import os, tempfile
-    from warrantable.transport import Ingress, band_from_accepting_listener, connect_and_send
+    from trustband.transport import Ingress, band_from_accepting_listener, connect_and_send
 
     d = tempfile.mkdtemp(prefix="r8_")
     binds = {c: os.path.join(d, f"{c.value}.sock") for c in Channel}
@@ -484,7 +484,7 @@ def main() -> int:
             return "unavailable"
 
     sources = {}
-    for rel in ("warrantable/gate.py", "warrantable/transport.py",
+    for rel in ("trustband/gate.py", "trustband/transport.py",
                 "scripts/warrantable_battery.py"):
         f = REPO / rel
         sources[rel] = (hashlib.sha256(f.read_bytes()).hexdigest()
@@ -531,7 +531,7 @@ def main() -> int:
         ),
         "routes": rows,
     }
-    out = REPO / "warrantable/battery_results.json"
+    out = REPO / "trustband/battery_results.json"
     out.write_text(json.dumps(envelope, indent=2, default=str))
     print(f"\n  results: {out}")
     print(f"  commit {envelope['commit'][:12]} "

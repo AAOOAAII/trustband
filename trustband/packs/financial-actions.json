@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "_pack": {
+    "name": "financial-actions",
+    "description": "For an agent that can move money. A payment needs a known payee AND an amount within a ceiling; either failing asks a human. Measured on AgentDojo banking: 36 attacks to 0, two benign tasks recoverable by confirmation.",
+    "scope": "Set known_payees and max amount from the account's own history, not from a number you pick. Start in shadow."
+  },
+  "grants": [
+    {"sess": "*", "max_tier": 2, "actions": ["get_balance", "get_transactions", "get_iban", "read"]},
+    {"sess": "*", "max_tier": 2, "actions": ["update_password", "update_user_info"],
+     "min_band": "session", "confirmable": true},
+    {"sess": "*", "max_tier": 2,
+     "actions": ["send_money", "schedule_transaction", "update_scheduled_transaction"],
+     "require": [
+       {"arg": "recipient", "op": "in_context", "key": "known_payees",
+        "when_present": true, "confirmable": true},
+       {"arg": "amount", "op": "max_minor", "value": 110000,
+        "when_present": true, "confirmable": true}
+     ]}
+  ]
+}

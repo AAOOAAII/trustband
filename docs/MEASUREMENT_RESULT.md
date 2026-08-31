@@ -1,5 +1,13 @@
 # What we measured, and what it means
 
+> **Naming (2026-08-31):** The product surface was renamed to **trustband**
+> on this date. **warrantable** remains the name of the enforcement layer and
+> the Zenodo deposit (10.5281/zenodo.22115781). Evidence documents that predate
+> the rename — the `*_GATES.md`, `*_RESULT.md`, and status snapshots — keep the
+> original name deliberately: they record predictions registered before their
+> runs, and were true under that name.
+
+
 **2026-08-29/30.** Every prediction was registered and committed before the run
 that tested it. Raw JSON in `results/overnight/` and `results/agentdojo/`.
 

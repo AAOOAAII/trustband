@@ -2,8 +2,8 @@
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from warrantable.extractor import resolve, Field
-from warrantable.gate import Band
+from trustband.extractor import resolve, Field
+from trustband.gate import Band
 
 def test_only_substrings_survive():
     src = "Pay account UK12345678901234567890 the sum of 1450 pounds."

@@ -1,0 +1,667 @@
+{
+  "artifact": "warrantable policy-binding demonstration",
+  "generated_utc": "2026-08-31T14:58:20Z",
+  "commit": "3f53eb06782f50404955c583edd1fdf98af5eb9a",
+  "branch": "fix/rconc-read-consumption",
+  "tree_clean_for_these_paths": false,
+  "uncommitted_paths": [
+    "M scripts/warrantable_policy_demo.py",
+    "D  warrantable/.gitignore",
+    "D  warrantable/LICENSE",
+    "D  warrantable/NOTICE",
+    "D  warrantable/OVERVIEW.md",
+    "D  warrantable/README.md",
+    "D  warrantable/__init__.py",
+    "D  warrantable/adapters/__init__.py",
+    "D  warrantable/adapters/claude_code.py",
+    "D  warrantable/adapters/mcp_proxy.py",
+    "D  warrantable/audit.py",
+    "D  warrantable/bundle.py",
+    "D  warrantable/cli.py",
+    "D  warrantable/confirm.py",
+    "D  warrantable/conformance.py",
+    "D  warrantable/custody.py",
+    "D  warrantable/detector.py",
+    "D  warrantable/detectors_byo.py",
+    "D  warrantable/extractor.py",
+    "D  warrantable/gate.py",
+    "D  warrantable/guard.py",
+    "D  warrantable/issuance.py",
+    "D  warrantable/packs/coding-agent.json",
+    "D  warrantable/packs/financial-actions.json",
+    "D  warrantable/packs/messaging-agent.json",
+    "D  warrantable/policy.py",
+    "D  warrantable/policytest.py",
+    "D  warrantable/predicates.py",
+    "D  warrantable/provenance.py",
+    "D  warrantable/runtime.py",
+    "D  warrantable/shadow.py",
+    "D  warrantable/taint.py",
+    "D  warrantable/tokens.py",
+    "D  warrantable/transport.py"
+  ],
+  "python": "3.12.13",
+  "platform": "Darwin arm64",
+  "source_sha256": {
+    "trustband/gate.py": "07ddf7713183f8f7537e3dbf03fae06a05c5d863b9cafa7f8f1373156e3d1ea4",
+    "trustband/policy.py": "6f69ea9b03469f8d5617e037db2b5b5dbc51640f911a23b8b527828a2669d6e1",
+    "scripts/warrantable_policy_demo.py": "11a37765d2ce29a5493928d44a2a354644b8a85ee2fefbd13efa3f90b69db3be"
+  },
+  "scope": "A12 is an ASSUMPTION, not a theorem. This demonstrates the encoder's stated properties on a sample; it does not prove injectivity over the domain, and it proves nothing about sha256 collision resistance.",
+  "summary": {
+    "checks": 87,
+    "passed": 87,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "check": "map order cannot reach the digest",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "absent and present-null stay distinct",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "length prefixes prevent concat collisions",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "True is not 1",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "NFC applied before compare AND encode",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "python == disagrees here, which is the failure (5) prevents"
+    },
+    {
+      "check": "schema version is the first byte",
+      "got": "1",
+      "want": "1",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "float rejected",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "no fallback digest exists; an unencodable policy stops issuance rather than collapsing onto a default"
+    },
+    {
+      "check": "non-str key rejected",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "no fallback digest exists; an unencodable policy stops issuance rather than collapsing onto a default"
+    },
+    {
+      "check": "set rejected",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "no fallback digest exists; an unencodable policy stops issuance rather than collapsing onto a default"
+    },
+    {
+      "check": "arbitrary object rejected",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "no fallback digest exists; an unencodable policy stops issuance rather than collapsing onto a default"
+    },
+    {
+      "check": "ungated: stale capability still authorises",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "there is no policy to be superseded because nothing records one \u2014 the attack succeeds when the gate is absent, which is what makes the gated refusal below evidence"
+    },
+    {
+      "check": "issued under policy A",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "accepted while A is enforced",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "refused once B is enforced",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "refused BY CONJUNCT (G)",
+      "got": "'G'",
+      "want": "'G'",
+      "pass": true,
+      "note": "not by the MAC and not by the epoch \u2014 the policy check itself"
+    },
+    {
+      "check": "still in the issued set",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "govern_repolicy writes gov_policy and nothing else; the capability dies at the gate, never by being deleted"
+    },
+    {
+      "check": "accepted again under A",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "and an equal-but-reordered A also accepts it",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "digest equality, not dict identity"
+    },
+    {
+      "check": "off-domain policy refused",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "enforced policy unchanged after the refusal",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "no partial adoption"
+    },
+    {
+      "check": "granted: tier 1 read",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "refused: tier 2 over max_tier",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "refused: ungranted action",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "refused: session in no grant",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": "absence is refusal; there is no default grant"
+    },
+    {
+      "check": "closed by default with no policy",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "refused at adoption: wrong schema version",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "refused at adoption: grants missing",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "refused at adoption: tier out of range",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "desynced evaluator refuses to mint",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": "before the guard this MINTED, and the gate ACCEPTED it, because the capability bound the gate's own current digest by construction"
+    },
+    {
+      "check": "...and names why",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "lattice: meet takes the least trusted",
+      "got": "<Band.TOOL: 'tool'>",
+      "want": "<Band.TOOL: 'tool'>",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "one tainted input taints the derivation",
+      "got": "<Band.TOOL: 'tool'>",
+      "want": "<Band.TOOL: 'tool'>",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "granted: all arguments session-band",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "REFUSED: payee derived from tool output",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": "the injected value reaches the gate and is refused by band, not by inspecting its content"
+    },
+    {
+      "check": "implicit flow LAUNDERS taint (not caught)",
+      "got": "<Band.GOVERNANCE: 'governance'>",
+      "want": "<Band.GOVERNANCE: 'governance'>",
+      "pass": true,
+      "note": "branching on tainted data and returning a constant defeats every dynamic taint system, this one included"
+    },
+    {
+      "check": "untagged input defaults to trusted (fails OPEN)",
+      "got": "<Band.GOVERNANCE: 'governance'>",
+      "want": "<Band.GOVERNANCE: 'governance'>",
+      "pass": true,
+      "note": "the burden is on ingestion to tag; defaulting to USER would fail closed but taint every literal and get the checks disabled"
+    },
+    {
+      "check": "clean log verifies",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "refusals are recorded too",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "a log of grants answers what we permitted, not what we stopped"
+    },
+    {
+      "check": "the refusing conjunct is in the record",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "a hidden refusal breaks the chain",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "and the report names where",
+      "got": "6",
+      "want": "6",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "the recomputed chain verifies AS A CHAIN",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "which is why a hash chain alone is an integrity structure, not an integrity guarantee"
+    },
+    {
+      "check": "the SEAL rejects it",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "so the log does not verify overall",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "an unsealed tail is REPORTED, not passed quietly",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "truncating an unsealed tail leaves a valid chain; the seal interval is the exposure window and is an operator choice"
+    },
+    {
+      "check": "authorised call executes",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "result inherits the argument band",
+      "got": "<Band.SESSION: 'session'>",
+      "want": "<Band.SESSION: 'session'>",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "injected payee refused",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "...and the tool NEVER RAN",
+      "got": "1",
+      "want": "1",
+      "pass": true,
+      "note": "the single property this surface exists to provide"
+    },
+    {
+      "check": "...refused before minting",
+      "got": "'issue'",
+      "want": "'issue'",
+      "pass": true,
+      "note": "a refused call produces no capability at all"
+    },
+    {
+      "check": "untagged argument refused",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": "found by attacking this surface: it was ALLOWED before the fix, because the lattice trusts untagged values by design"
+    },
+    {
+      "check": "...and the tool NEVER RAN",
+      "got": "1",
+      "want": "1",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "audit verifies before rotation",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "audit STILL verifies after two rotations",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "sealing under the epoch key made rotation discard the key the seal was made with, so a legitimate log reported FAILURE -- a false alarm, and precisely when history most needs checking. Audit keys and capability keys now have separate lifecycles"
+    },
+    {
+      "check": "the result carries its band",
+      "got": "<Band.TOOL: 'tool'>",
+      "want": "<Band.TOOL: 'tool'>",
+      "pass": true,
+      "note": "returning it bare laundered the taint; the untagged guard caught the specific case only where a grant declares min_band, so the propagation is fixed rather than the guard relied on"
+    },
+    {
+      "check": "and survives a second hop",
+      "got": "<Band.TOOL: 'tool'>",
+      "want": "<Band.TOOL: 'tool'>",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "re-tagging cannot RAISE trust",
+      "got": "<Band.TOOL: 'tool'>",
+      "want": "<Band.TOOL: 'tool'>",
+      "pass": true,
+      "note": "Tainted(Tainted(x, TOOL), SESSION) reported SESSION and walked through a min_band=session gate; wrapping now flattens to the meet"
+    },
+    {
+      "check": "...and the laundered value is refused",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "declared output_band overrides the empty meet",
+      "got": "<Band.TOOL: 'tool'>",
+      "want": "<Band.TOOL: 'tool'>",
+      "pass": true,
+      "note": "combine() of no arguments is GOVERNANCE, so a no-arg tool that reaches the world returned a trusted-looking value"
+    },
+    {
+      "check": "empty-log seal refuses cleanly",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "it raised OverflowError before: (-1).to_bytes(8, 'big')"
+    },
+    {
+      "check": "two Runtimes on one Gate both work",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "both started their nonce at 0, so the second minted an identical capability and was refused as a duplicate -- fail-closed, but a legitimate runtime silently could not work"
+    },
+    {
+      "check": "both sessions authorised before revocation",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "revoked session refused",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "...by conjunct (H)",
+      "got": "'H'",
+      "want": "'H'",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "OTHER session untouched -- revocation is local",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "thm_session_revocation_is_local, and the property Phase 3 exists for"
+    },
+    {
+      "check": "a revoked session can be issued fresh capabilities",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "revocation kills outstanding capabilities, it does not ban the session"
+    },
+    {
+      "check": "influence holds before withdrawal",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "withdrawal removes the EFFECT",
+      "got": "False",
+      "want": "False",
+      "pass": true,
+      "note": "what revoke_all could not do -- thm_withdrawn_not_influential"
+    },
+    {
+      "check": "withdrawal is idempotent",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "and a valid capability can re-authorise",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "withdrawal undoes an effect; it is not capability revocation -- thm_withdrawal_permits_reauthorization"
+    },
+    {
+      "check": "seal verifies after a signature change",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": "porting Phase 3 added a parameter to keys.verify and the positional call in audit.py silently shifted the seal message into `policy` -- every seal then failed on a CLEAN log. Calls are keyword-based now, so the next signature change is a TypeError, not a false alarm"
+    },
+    {
+      "check": "revocation kills capabilities but NOT elevations",
+      "got": "{(1, 2)}",
+      "want": "{(1, 2)}",
+      "pass": true,
+      "note": "the capability is dead; its effect is not. Faithful to the model \u2014 authorize_elevation is the sole writer of elev and nothing removes from it \u2014 so this is Phase 4 work, not a silent implementation fix"
+    },
+    {
+      "check": "the whole session's audit verifies",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "refusals are in it",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "predicate: legitimate TOOL-banded payee allowed",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "predicate: attacker payee refused and the tool never ran",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "predicate: amount over the bound refused",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "predicate: absent context refuses (a missing set is not an empty set)",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "predicate: constrained argument absent refuses",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "predicate: non-integer amount refuses rather than coercing",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "confirm: an unknown payee is refused before anyone is asked",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "confirm: that refusal is one a human is allowed to answer",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "confirm: after approval the payment executes",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "confirm: the approval is SINGLE USE, a replay is refused",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "confirm: approving one payee does NOT permit another",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "confirm: an approval from another epoch does not carry over",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "check": "confirm: a structural refusal is never confirmable",
+      "got": "True",
+      "want": "True",
+      "pass": true,
+      "note": ""
+    }
+  ]
+}

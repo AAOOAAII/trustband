@@ -64,8 +64,8 @@ def main() -> int:
         print("usage: dogfood_replay.py <transcript.jsonl>")
         return 2
 
-    from warrantable.gate import Band
-    from warrantable.guard import Guard, ToolCall
+    from trustband.gate import Band
+    from trustband.guard import Guard, ToolCall
 
     policy = {"version": 1, "grants": [{
         "sess": "*", "max_tier": 2,

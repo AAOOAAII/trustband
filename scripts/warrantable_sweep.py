@@ -1,9 +1,9 @@
 import sys; sys.path.insert(0,'.')
-from warrantable.gate import Gate, Band, Channel, Cap
-from warrantable.runtime import Runtime
-from warrantable.issuance import Issuer
-from warrantable.taint import Tainted, combine, require, TaintError
-from warrantable.policy import digest
+from trustband.gate import Gate, Band, Channel, Cap
+from trustband.runtime import Runtime
+from trustband.issuance import Issuer
+from trustband.taint import Tainted, combine, require, TaintError
+from trustband.policy import digest
 S,T,U,G = Band.SESSION,Band.TOOL,Band.USER,Band.GOVERNANCE
 FOUND=[]
 ACCEPTED = []
