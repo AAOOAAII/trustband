@@ -115,11 +115,29 @@ utility. Provenance contributed nothing there, because a payee allowlist catches
 the attacker's IBAN regardless of origin. That result stands and it is the
 reason the claim is stated narrowly.
 
-**P-HARD5/6 failed for a specific reason.** Confirmation changed nothing on
-workspace — even a rubber stamp approving everything left utility at 15/40 —
-because **inference never marks its band constraints `confirmable`**. The flag
-was added for hand-written grants and inference was never taught to emit it. So
-the oracle had nothing to answer. The question is open, not answered negatively.
+**P-HARD5/6 first failed because of a bug, and were re-run.** Inference never
+marked its band constraints `confirmable`, so the confirmation path was dead on
+any inferred policy and the oracle had nothing to answer. Fixed and re-measured:
+
+| workspace | attacks /560 | utility /40 | refusals |
+|---|---|---|---|
+| ungated | 12 | 22 | — |
+| no human | 3 | 15 | 12 |
+| careful human | 3 | 16 | 8 |
+| rubber stamp | 2 | 16 | 1 |
+
+The path works — refusals fall 12 to 1 as the oracle approves more.
+**P-HARD5 passes marginally**: a careful human raises utility by one task while
+attacks hold. **P-HARD6 fails**, and the failure is the informative half: a
+rubber stamp approving *everything* did not raise attacks at all.
+
+Taken with banking, where carelessness cost 3 points, that is consistent across
+two suites — **the confirmable surface is narrow enough that human carelessness
+buys an attacker almost nothing.**
+
+The counterweight: confirmation converts refusals into approvals on workspace
+without moving utility much, so most lost tasks were never blocked by a
+confirmable refusal. Workspace stays a poor trade on thin evidence.
 
 **Utility predictions failed twice.** I twice predicted a fix would raise benign
 utility and it did not.
