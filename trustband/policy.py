@@ -5,8 +5,9 @@ cannot prove that structurally equal policies produce equal digests, because it
 models no bytes: `mac` is uninterpreted over typed arguments, not over an octet
 string. That half lives here, and it is assumption **A12** of record.
 
-This module implements the encoding specified in `warrantable/PHASE2_SERIALISATION.md`
-before any proof source was written:
+This module implements the encoding specified in the warrantable proof
+crate's PHASE2_SERIALISATION.md (a layer/proof document, not shipped in this
+package), written before any proof source was:
 
     encode(v) ::= tag_byte || len_u32_be || payload
 
