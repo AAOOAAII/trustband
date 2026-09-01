@@ -63,20 +63,32 @@ jobs:
 
       # Refuse to publish work belonging to the other projects in this
       # repository. Cheap, and the failure it prevents is permanent.
-      - name: refuse to ship anything from another project
+      # WHAT SHIPS IS AN ALLOWLIST, NOT A DENY-LIST.
+      #
+      # This began as a list of sibling-project names to grep for. That is the
+      # wrong shape twice over: it only catches the leaks someone remembered,
+      # and the list itself discloses what it is hiding. An allowlist of paths
+      # catches everything, including whatever lands here next, and names
+      # nothing.
+      - name: refuse to ship anything outside the package
         run: |
           mkdir -p /tmp/x && tar xzf dist/*.tar.gz -C /tmp/x
           unzip -q -o dist/*.whl -d /tmp/x/wheel
           fail=0
 
-          # Sibling projects in this repository, and paths into them. Every
-          # one of these has already been found inside a built artifact.
-          if grep -ril -E 'a sibling project|a sibling project|a sibling project|cittela|a sibling project|abwa|the-proof-repository/' /tmp/x; then
-            echo "::error::artifact contains material from another project"; fail=1
-          fi
+          cd /tmp/x/$(ls /tmp/x | grep -v wheel | head -1)
+          while read -r f; do
+            case "$f" in
+              trustband/*|tests/test_claude_code_adapter.py|tests/test_mcp_proxy.py|\
+              tests/test_tool_descriptions.py|tests/test_extractor_core.py|\
+              pyproject.toml|MANIFEST.in|PKG-INFO|setup.cfg|*.egg-info/*) ;;
+              *) echo "::error::sdist contains an unexpected path: $f"; fail=1 ;;
+            esac
+          done < <(find . -type f | sed 's|^\./||')
+          cd /tmp/x
 
           # A build machine's filesystem layout is nobody else's business.
-          if grep -rl -E '/Users/|/home/[a-z]|/Volumes/' /tmp/x; then
+          if grep -rl -E '/Users/|/home/[a-z]|/Volumes/|/private/tmp/' /tmp/x; then
             echo "::error::artifact contains an absolute path"; fail=1
           fi
 
@@ -85,9 +97,8 @@ jobs:
             echo "::error::artifact contains something credential-shaped"; fail=1
           fi
 
-          # The README is the PyPI landing page. A pointer on it to a file
-          # that does not ship, in a repository nobody can open, reads as
-          # evidence and is not.
+          # The README is the PyPI landing page. A pointer on it to a file that
+          # does not ship reads as evidence and is not.
           for ref in $(grep -ohE '(docs/|scripts/)[A-Za-z0-9_./-]*\.(md|py)' \
                        /tmp/x/wheel/trustband/README.md || true); do
             echo "::error::README points at $ref, which does not ship"; fail=1

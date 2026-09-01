@@ -450,7 +450,8 @@ class Gate:
         self.gov_budget: int = budget
         self.ingested: set = set()
         self.keys = keys if keys is not None else EpochKeyStore()
-        # See WARRANTABLE_V1.md §4: the model's conjunct (B) is set membership.
+        # The v1 specification records this: the model's conjunct (B) is set
+        # membership.
         # A deployment that cannot keep the set relies on the MAC alone, which
         # means relying on A1. This flag makes that difference demonstrable
         # rather than a paragraph.
@@ -702,7 +703,8 @@ class Gate:
                 "A"), band=presented.via.value)
 
         # (B) issuance. Two checks, because the model's set and a real
-        # deployment's MAC are not the same thing — see WARRANTABLE_V1.md §4.
+        # deployment's MAC are not the same thing; the v1 specification
+        # records why.
         #
         # THE MAC IS CHECKED FIRST, DELIBERATELY. The earlier gate this
         # consolidated documented the ordering as load-bearing: MAC
