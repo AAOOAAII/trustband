@@ -704,10 +704,10 @@ class Gate:
         # (B) issuance. Two checks, because the model's set and a real
         # deployment's MAC are not the same thing — see WARRANTABLE_V1.md §4.
         #
-        # THE MAC IS CHECKED FIRST, DELIBERATELY. The gate this consolidated
-        # (a sibling project/govern/auth_gate.py) documented the ordering as load-bearing:
-        # "(B) MAC verification — kills G5 wiring; MUST precede issued-set
-        # membership". Checking the set first would let the gate answer whether
+        # THE MAC IS CHECKED FIRST, DELIBERATELY. The earlier gate this
+        # consolidated documented the ordering as load-bearing: MAC
+        # verification must precede issued-set membership, because it is what
+        # closes the G5 wiring. Checking the set first would let the gate answer whether
         # a token was ever issued to a caller who cannot produce a valid tag,
         # and reversing a documented security ordering while consolidating would
         # be exactly the silent change this work exists to avoid. Both must

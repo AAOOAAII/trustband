@@ -1,0 +1,94 @@
+# Publish trustband to PyPI without a token existing anywhere.
+#
+# GitHub mints a short-lived OIDC credential; PyPI trades it for an upload
+# token scoped to this one run. Nothing is stored in the repository, nothing
+# in Actions secrets, nothing on a laptop. There is no long-lived credential
+# to leak or rotate.
+#
+# ONE-TIME SETUP ON PYPI, before the first run:
+#   pypi.org -> Your projects -> Publishing -> "Add a new pending publisher"
+#     PyPI project name : trustband
+#     Owner             : AAOOAAII
+#     Repository name   : the source repository
+#     Workflow name     : publish-trustband.yml
+#     Environment name  : pypi
+#   A "pending publisher" is what lets this create a project that does not
+#   exist yet, which an API token scoped to a project could not do.
+#
+# This runs only when started by hand, never on a push. Publishing a version
+# is irreversible -- PyPI refuses a re-upload of the same name and version
+# forever -- so it is not something a merge should be able to trigger.
+name: publish trustband
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: "where to publish"
+        required: true
+        default: testpypi
+        type: choice
+        options: [testpypi, pypi]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: build
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build
+          python -m twine check dist/*
+
+      # THE ARTIFACT IS TESTED, NOT THE WORKING TREE. A green suite run
+      # against the repository says nothing about what the sdist actually
+      # contains -- this project has already shipped a wheel that was missing
+      # its policy packs, and an sdist carrying 30 unrelated test files.
+      - name: install the sdist and walk the new-user path
+        run: |
+          python -m venv /tmp/v
+          /tmp/v/bin/pip install --no-binary :all: dist/*.tar.gz
+          /tmp/v/bin/python -m trustband.conformance
+          /tmp/v/bin/trustband packs
+          /tmp/v/bin/trustband init --home /tmp/h
+          /tmp/v/bin/trustband status --home /tmp/h
+
+      # Refuse to publish work belonging to the other projects in this
+      # repository. Cheap, and the failure it prevents is permanent.
+      - name: refuse to ship anything from another project
+        run: |
+          mkdir -p /tmp/x && tar xzf dist/*.tar.gz -C /tmp/x
+          if grep -ril -E 'a sibling project|a sibling project|a sibling project' /tmp/x; then
+            echo "::error::sdist contains material from another project"
+            exit 1
+          fi
+          echo "clean"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.repository }}
+    permissions:
+      id-token: write            # the OIDC credential; this is the whole point
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: ${{ inputs.repository == 'testpypi'
+            && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}

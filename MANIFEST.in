@@ -1,0 +1,19 @@
+# WHAT LEAVES THIS MACHINE.
+#
+# An sdist is permanent and public, and setuptools' defaults are generous: it
+# sweeps in `tests/` and the repository root README. This package lives in a
+# multi-project research repository, so both defaults shipped material from
+# unrelated work -- 30 foreign test files, and a root README describing another
+# system and naming a private repository.
+#
+# So the default is inverted here: prune, then name what ships. The PyPI page
+# is built from trustband/README.md (see `readme` in pyproject.toml); the root
+# README is not needed to build or install and does not go out.
+prune tests
+include tests/test_claude_code_adapter.py
+include tests/test_mcp_proxy.py
+include tests/test_tool_descriptions.py
+include tests/test_extractor_core.py
+
+exclude README.md
+exclude setup.cfg
