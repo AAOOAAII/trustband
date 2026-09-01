@@ -1,21 +1,17 @@
 {
   "artifact": "warrantable policy-binding demonstration",
-  "generated_utc": "2026-09-01T07:54:22Z",
-  "commit": "bce6ccbba0ca0b4d7924c262b4a2f029ac4c7433",
+  "generated_utc": "2026-09-01T08:20:32Z",
+  "commit": "0a5e28b0774c1c15a260d60e3d2177eb33e6f8ff",
   "branch": "fix/rconc-read-consumption",
   "tree_clean_for_these_paths": false,
   "uncommitted_paths": [
-    "M scripts/warrantable_policy_demo.py",
-    " M trustband/OVERVIEW.md",
-    " M trustband/cli.py",
-    " M trustband/conformance.py",
-    " M trustband/guard.py",
-    "?? trustband/entitlement.py"
+    "M trustband/README.md",
+    " M trustband/gate.py"
   ],
   "python": "3.12.13",
   "platform": "Darwin arm64",
   "source_sha256": {
-    "trustband/gate.py": "07ddf7713183f8f7537e3dbf03fae06a05c5d863b9cafa7f8f1373156e3d1ea4",
+    "trustband/gate.py": "6df71ee64f4281572a8a5a4a068e8cc39eb75f52409993d4a1bc9608ab6be9b3",
     "trustband/policy.py": "fefc4ee6332fb0bbc7d8b39881f00e085eb4b170ef40c8e7c5ef16c9dce4a074",
     "scripts/warrantable_policy_demo.py": "85333f1358e43df0ab92c92f4f476f2036990ab989c182b1a596b697c604ee0b"
   },

@@ -66,11 +66,34 @@ jobs:
       - name: refuse to ship anything from another project
         run: |
           mkdir -p /tmp/x && tar xzf dist/*.tar.gz -C /tmp/x
-          if grep -ril -E 'a sibling project|a sibling project|a sibling project' /tmp/x; then
-            echo "::error::sdist contains material from another project"
-            exit 1
+          unzip -q -o dist/*.whl -d /tmp/x/wheel
+          fail=0
+
+          # Sibling projects in this repository, and paths into them. Every
+          # one of these has already been found inside a built artifact.
+          if grep -ril -E 'a sibling project|a sibling project|a sibling project|cittela|a sibling project|abwa|the-proof-repository/' /tmp/x; then
+            echo "::error::artifact contains material from another project"; fail=1
           fi
-          echo "clean"
+
+          # A build machine's filesystem layout is nobody else's business.
+          if grep -rl -E '/Users/|/home/[a-z]|/Volumes/' /tmp/x; then
+            echo "::error::artifact contains an absolute path"; fail=1
+          fi
+
+          # Credential shapes. Cheap, and unfixable once published.
+          if grep -rlE 'pypi-AgEI|gh[pousr]_[A-Za-z0-9]{20}|AKIA[0-9A-Z]{16}|BEGIN [A-Z ]*PRIVATE KEY' /tmp/x; then
+            echo "::error::artifact contains something credential-shaped"; fail=1
+          fi
+
+          # The README is the PyPI landing page. A pointer on it to a file
+          # that does not ship, in a repository nobody can open, reads as
+          # evidence and is not.
+          for ref in $(grep -ohE '(docs/|scripts/)[A-Za-z0-9_./-]*\.(md|py)' \
+                       /tmp/x/wheel/trustband/README.md || true); do
+            echo "::error::README points at $ref, which does not ship"; fail=1
+          done
+
+          [ $fail -eq 0 ] && echo "clean" || exit 1
 
       - uses: actions/upload-artifact@v4
         with:

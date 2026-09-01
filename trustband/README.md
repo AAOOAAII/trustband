@@ -11,8 +11,8 @@ provenance too, which is the difference between refusing an attacker's account
 number and refusing every account number. Measured on AgentDojo banking, that
 took successful attacks from 36 of 144 to 0; on the Slack suite, where a
 params-only rule caught nothing, from 46 to 22. Both numbers sit beside their
-undefended baseline in `docs/MEASUREMENT_RESULT.md`, because a defended number
-without one describes the model, not the defence.
+undefended baseline, published with their predictions at https://trust.band,
+because a defended number without one describes the model, not the defence.
 
 **Python 3.10+, standard library only.** No dependencies.
 
@@ -110,12 +110,17 @@ the process** — `describe_custody()` measures that live rather than asserting 
 
 ## Running the checks
 
+One suite ships inside the package, so you can verify the install you just made
+rather than take this page's word for it:
+
 ```bash
-python scripts/warrantable_battery.py        # 8 attack routes, 6 attacks + 2 properties
-python scripts/warrantable_policy_demo.py    # policy, taint, issuance, audit, end-to-end
-python scripts/warrantable_custody_demo.py   # external custody against a fake KMS
-python scripts/warrantable_sweep.py          # adversarial probes across component joins
+python -m trustband.conformance   # 18 assertions every adapter must satisfy
 ```
+
+The four measurement suites — 8 attack routes, the end-to-end policy demo,
+external custody against a fake KMS, and adversarial probes across component
+joins — live in the source repository rather than the package, because they
+read fixtures and harnesses that are not part of a runtime dependency.
 
 The battery's rule: **every attack must succeed against an ungated baseline
 before its gated refusal counts for anything.** A refusal is not evidence unless
@@ -128,7 +133,7 @@ value that reaches the argument as a substring of what a tool returned. When
 Qwen2.5-14B obeyed a quoted injection in a coding loop, the command arrived
 byte-identical every time (8 of 8) and was caught. When the same attack was
 phrased in prose, the model paraphrased it and it survived verbatim 0 of 5
-times — so it passed. Numbers in `docs/VERBATIM_SURVIVAL_GATES.md`. Token-level
+times — so it passed. Numbers and gates at https://trust.band. Token-level
 matching to close the prose gap is designed but not built.
 
 **Frontier models refuse most attacks unaided.** Sonnet 4.5 contained 72 of 72

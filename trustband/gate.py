@@ -2,13 +2,13 @@
 
 THIS CODE IS NOT PROVED. It follows a proved design specification.
 
-`the proof repository` proves 16 obligations about an abstract
-state machine. There is no extraction and no refinement relation between that
-model and this file — the same gap the model's own CONFIRMATION.md §4 records,
-and the same class as another project's ledger row A11. What this file does is match the
-model's transitions structurally, name by name, so that the correspondence is
-inspectable by a reader rather than assumed. Every place it cannot match is
-recorded in WARRANTABLE_V1.md §4 rather than smoothed over.
+A Verus model proves 16 obligations about an abstract state machine. There is
+no extraction and no refinement relation between that model and this file — a
+gap the model's own confirmation notes record explicitly. What this file does
+is match the model's transitions structurally, name by name, so that the
+correspondence is inspectable by a reader rather than assumed. Every place it
+cannot match is recorded alongside the model in the source repository rather
+than smoothed over.
 
 THE TWO DECISIONS THAT ARE NOT RE-DERIVED HERE
 ==============================================
