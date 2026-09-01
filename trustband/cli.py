@@ -15,6 +15,42 @@ def _packs_dir() -> Path:
     return Path(__file__).resolve().parent / "packs"
 
 
+def _status(a) -> int:
+    """Tier and hosted availability -- and what does not depend on either."""
+    from trustband.entitlement import (from_config, upgrade_prompt, HOSTED,
+                                       FREE)
+    home = _home(a)
+    cfg_path = home / "config.json"
+    cfg = (json.loads(cfg_path.read_text(encoding="utf-8"))
+           if cfg_path.exists() else {})
+    ent = from_config(cfg)
+    obs = _observations(home)
+
+    print(f"  tier        {ent.tier}")
+    print(f"              {ent.reason}")
+    print(f"  mode        {cfg.get('mode', '(not configured)')}")
+    print()
+    # The part that must be unambiguous: none of this depends on the tier.
+    print("  Unaffected by tier, always local, always on:")
+    print("    enforcement, provenance, local audit log, shadow mode,")
+    print("    policy inference, policy tests. A lapsed key never turns")
+    print("    these off.")
+    if ent.tier == FREE:
+        print()
+        print("  Hosted services (need a Pro key):")
+        for name, what in HOSTED.items():
+            print(f"    {name:18s} {what}")
+    prompt = upgrade_prompt(obs, ent)
+    if prompt:
+        print()
+        print(f"  For this install: {prompt}")
+    elif ent.tier == FREE and obs:
+        print()
+        print(f"  For this install: {len(obs)} decisions recorded, nothing "
+              f"yet that a hosted service would have changed.")
+    return 0
+
+
 def _packs() -> int:
     d = _packs_dir()
     for f in sorted(d.glob("*.json")):
@@ -101,6 +137,17 @@ def _shadow_report(a) -> int:
                 print(f"    {r}")
             if len(seen) >= 4:
                 break
+
+    # The conversion moment, computed from THIS traffic or not shown at all.
+    # An upsell that fires regardless of what happened is an advertisement.
+    from trustband.entitlement import from_config, upgrade_prompt
+    cfg_path = home / "config.json"
+    cfg = (json.loads(cfg_path.read_text(encoding="utf-8"))
+           if cfg_path.exists() else {})
+    prompt = upgrade_prompt(obs, from_config(cfg))
+    if prompt:
+        print()
+        print(f"  {prompt}")
     return 0
 
 
@@ -301,6 +348,10 @@ def main(argv=None) -> int:
 
     sub.add_parser("packs", help="list the bundled policy packs")
 
+    st = sub.add_parser("status",
+                        help="tier, what is available, and what enforcement does")
+    st.add_argument("--home", type=Path, default=None)
+
     bs = sub.add_parser("bundle", help="sign or verify a policy bundle")
     bs.add_argument("op", choices=["sign", "verify"])
     bs.add_argument("--policy", type=Path, help="policy to sign")
@@ -314,6 +365,9 @@ def main(argv=None) -> int:
 
     if a.cmd == "packs":
         return _packs()
+
+    if a.cmd == "status":
+        return _status(a)
 
     if a.cmd == "bundle":
         return _bundle(a)

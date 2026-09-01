@@ -225,13 +225,75 @@ def run(make_guard: Callable[[Dict[str, Any], str], Guard] = None
     out.append(Check("a signed bundle verifies and a tampered one is refused",
                      _ok and _tamper, f"verify={_ok} refuse_tamper={_tamper}"))
 
-    # (1) a session identity is required    # (1) a session identity is required    # (1) a session identity is required
+    # (1) a session identity is required
     try:
         g.before_tool_call(ToolCall(session="", tool="send", args={}))
         out.append(Check("a missing session identity is refused", False,
                          "accepted an empty session"))
     except GuardConfigError:
         out.append(Check("a missing session identity is refused", True, ""))
+
+    # (12) ENFORCEMENT NEVER CONSULTS ENTITLEMENT.
+    #
+    # The commercial property that has to be mechanical rather than promised:
+    # a user with no key, an expired key or a forged key gets exactly the
+    # enforcement a paying customer gets. A security tool that fails open on
+    # an unpaid invoice is worse than no security tool.
+    #
+    # Checked two ways, because either alone is weak. Differentially, over
+    # every entitlement state -- and structurally, because a differential
+    # check only covers the states someone thought to enumerate.
+    import inspect as _insp
+    import trustband.guard as _gm
+    import trustband.gate as _gt
+
+    _states = [{}, {"api_key": "tb_live_paying"}, {"api_key": "tb_ent_bigco"},
+               {"api_key": "tb_live_FORGED"}, {"api_key": ""},
+               {"api_key": None}, {"api_key": 12345}]
+    _dec = []
+    for _cfg in _states:
+        _g = Guard(_policy_for("s1"), mode="enforce")
+        _c = ToolCall(session="s1", tool="read", args={})
+        _g.after_tool_result(_c, {"t": "poisoned-body-text"}, Band.TOOL)
+        _dec.append(tuple(
+            (d.allowed, d.reason) for d in (
+                _g.before_tool_call(ToolCall(session="s1", tool="send",
+                                             args={"body": "poisoned-body-text"})),
+                _g.before_tool_call(ToolCall(session="s1", tool="send",
+                                             args={"body": "typed by hand"})))))
+    _same = all(d == _dec[0] for d in _dec)
+    # "Identical" is not "enforcing". A mutant that fails open in EVERY state
+    # is perfectly identical and completely broken -- measured: a fail-open
+    # patch scored differential_identical=True. So also assert the decisions
+    # are the RIGHT ones: tool-derived body refused, hand-typed body allowed.
+    _correct = all(d[0][0] is False and d[1][0] is True for d in _dec)
+
+    _src = _insp.getsource(_gm) + _insp.getsource(_gt)
+    _leak = [w for w in ("entitlement", "api_key", "licen", "tier ==",
+                         "subscription") if w in _src.lower()]
+    out.append(Check(
+        "enforcement is identical under every entitlement state",
+        _same and _correct and not _leak,
+        f"identical={_same} correct={_correct} leaked_terms={_leak}"))
+
+    # (13) A SHADOW RECORD CARRIES WHETHER A PERSON COULD HAVE APPROVED IT.
+    #
+    # Twice now the same defect: a field the downstream feature keys on is
+    # computed and never written down, so the feature is dead in production
+    # while its unit tests pass -- because the test supplies the field itself.
+    # First in inference (P-HARD5/6), then in the shadow log. This asserts the
+    # record, not the computation.
+    _sg = Guard(_policy_for("s1"), mode="shadow")
+    _sc = ToolCall(session="s1", tool="read", args={})
+    _sg.after_tool_result(_sc, {"t": "poisoned"}, Band.TOOL)
+    _sg.before_tool_call(ToolCall(session="s1", tool="send",
+                                  args={"body": "poisoned"}))
+    _rec = _sg.shadow_log[-1] if _sg.shadow_log else {}
+    _has = "confirmable" in _rec and _rec.get("would_allow") is False
+    out.append(Check(
+        "a shadow record says whether a person could have approved it",
+        bool(_has) and _rec.get("confirmable") is True,
+        f"keys={sorted(_rec)} confirmable={_rec.get('confirmable')}"))
 
     return out
 

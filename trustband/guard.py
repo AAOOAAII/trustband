@@ -163,6 +163,13 @@ class Guard:
             self.shadow_log.append(
                 {"session": call.session, "tool": call.tool,
                  "would_allow": ok, "reason": why,
+                 # Whether a person could have approved this refusal. Computed
+                 # above and, until 2026-09-01, thrown away here -- so every
+                 # consumer of the shadow log saw an install where no refusal
+                 # was ever confirmable. Same shape as the P-HARD5/6 defect:
+                 # the field the feature keys on was never written down, and
+                 # unit tests passed because they supplied it themselves.
+                 "confirmable": bool(confirmable),
                  "bands": {k: _band_of(v).value for k, v in banded.items()}})
             return Decision(True, f"SHADOW: would have {'allowed' if ok else 'refused'} — {why}",
                             None, confirmable, None)

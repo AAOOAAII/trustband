@@ -67,7 +67,21 @@ trustband shadow-report   what it would have refused, on your own traffic
 trustband infer           a policy that permits exactly what you did
 trustband test <file>     policy unit tests in milliseconds
 trustband explain ...     which rule decided, and why
+trustband status          your tier, and what does not depend on it
 ```
+
+**Tiers do not touch enforcement.** Free is the whole enforcement layer,
+self-hosted. Pro and Enterprise add *hosted services* — retained audit history,
+routing an approval to someone other than whoever is at the keyboard, one policy
+across a fleet. There is no local licence check to forge, because there is
+nothing local to unlock.
+
+So a lapsed key stops the hosted parts and nothing else: enforcement, provenance,
+local audit and shadow carry on unchanged. That is not a policy we promise, it is
+a conformance check — decisions are byte-identical under no key, a valid key, an
+expired key and a forged one, and `guard.py` contains no reference to a key or a
+tier through which it could learn otherwise. A security tool that fails open on
+an unpaid invoice is worse than no security tool.
 
 **The install path is the product.** It starts in shadow — refuses nothing,
 records everything — so an operator sees the cost on their own traffic before

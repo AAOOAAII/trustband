@@ -428,10 +428,22 @@ def main() -> int:
         except Exception:
             return "unavailable"
 
-    dirty = "\n".join(
-        ln for ln in _git("status", "--porcelain", "warrantable",
-                          "scripts/warrantable_policy_demo.py").splitlines()
-        if not any(x in ln for x in ("_results.json", "_demo.json")))
+    # THE PATHSPEC MUST EXIST.
+    #
+    # This read `warrantable` until 2026-09-01. The package was renamed to
+    # `trustband`, so the pathspec matched nothing, git returned empty stdout
+    # with rc=0, and every artifact produced after the rename was stamped
+    # tree_clean=True however dirty the tree was. A provenance stamp that
+    # cannot say "dirty" is worse than no stamp, so a missing watched path is
+    # now an explicit unknown rather than a silent pass.
+    _watch = [p for p in ("trustband", "scripts/warrantable_policy_demo.py")
+              if (REPO / p).exists()]
+    if len(_watch) < 2:
+        dirty = "PROVENANCE UNAVAILABLE: a watched path is missing"
+    else:
+        dirty = "\n".join(
+            ln for ln in _git("status", "--porcelain", *_watch).splitlines()
+            if not any(x in ln for x in ("_results.json", "_demo.json")))
     # -- value predicates: the case bands could not separate ---------------
     #
     # A poisoned bill yields the legitimate payee and the attacker's payee from

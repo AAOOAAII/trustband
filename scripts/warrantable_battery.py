@@ -495,10 +495,22 @@ def main() -> int:
     # therefore meaningless -- a flag that is always false says nothing about
     # whether the CODE matches the commit, which is the question it exists to
     # answer.
-    dirty = "\n".join(
-        ln for ln in _git("status", "--porcelain", "warrantable",
-                          "scripts/warrantable_battery.py").splitlines()
-        if "battery_results.json" not in ln)
+    # THE PATHSPEC MUST EXIST.
+    #
+    # This read `warrantable` until 2026-09-01. The package was renamed to
+    # `trustband`, so the pathspec matched nothing, git returned empty stdout
+    # with rc=0, and every artifact produced after the rename was stamped
+    # tree_clean=True however dirty the tree was. A provenance stamp that
+    # cannot say "dirty" is worse than no stamp, so a missing watched path is
+    # now an explicit unknown rather than a silent pass.
+    _watch = [p for p in ("trustband", "scripts/warrantable_battery.py")
+              if (REPO / p).exists()]
+    if len(_watch) < 2:
+        dirty = "PROVENANCE UNAVAILABLE: a watched path is missing"
+    else:
+        dirty = "\n".join(
+            ln for ln in _git("status", "--porcelain", *_watch).splitlines()
+            if "battery_results.json" not in ln)
     attacks_ = [r for r in rows if r["kind"] == "attack"]
     props_ = [r for r in rows if r["kind"] == "property"]
     envelope = {
