@@ -22,11 +22,13 @@ SESSIONS ARE A SECURITY BOUNDARY, NOT BOOKKEEPING
 from __future__ import annotations
 
 import hashlib
+import time
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Dict, Mapping, Optional
 
+from trustband.audit import AuditLog
 from trustband.confirm import ConfirmationLedger, ConfirmationRequest
 from trustband.gate import Band, Gate
 from trustband.issuance import Issuer
@@ -65,7 +67,8 @@ class Guard:
     def __init__(self, policy: Dict[str, Any], *, mode: str = "shadow",
                  provenance_max_entries: int = 4096,
                  gate: Optional[Gate] = None,
-                 detectors: Optional[list] = None) -> None:
+                 detectors: Optional[list] = None,
+                 audit_path: Optional[Any] = None) -> None:
         if mode not in ("shadow", "enforce"):
             raise GuardConfigError(
                 f"mode must be 'shadow' or 'enforce', not {mode!r}")
@@ -91,6 +94,11 @@ class Guard:
         #: session -> provenance. Never shared; see the module docstring.
         self._stores: Dict[str, ProvenanceStore] = {}
         self.shadow_log: list = []
+        #: The durable decision record. None means nothing is written, which is
+        #: what every install did before 2026-09-02 while three documents said
+        #: otherwise. Adapters pass a path; the chain resumes from it, because a
+        #: subprocess that exits after one decision cannot hold a chain in RAM.
+        self.audit = AuditLog(Path(audit_path)) if audit_path else None
         #: True only if this policy came from a bundle that verified.
         self.verified_bundle: bool = False
 
@@ -113,7 +121,10 @@ class Guard:
                    mode=cfg.get("mode", "shadow"),
                    provenance_max_entries=cfg.get("provenance_max_entries",
                                                   4096),
-                   detectors=detectors)
+                   detectors=detectors,
+                   # Beside the config, so every adapter loading a config gets
+                   # the log without having to know to ask for it.
+                   audit_path=cfg.get("audit_path", p.parent / "audit.jsonl"))
 
     @classmethod
     def from_bundle(cls, bundle_path: Any, key: Optional[bytes] = None,
@@ -145,8 +156,52 @@ class Guard:
             self._stores[session] = st
         return st
 
+    def _record(self, call: "ToolCall", banded: Dict[str, Any], allowed: bool,
+                why: str, confirmable: bool, ms: float) -> None:
+        """One hash-chained entry per decision, in every mode.
+
+        THE LOG IS THE PRODUCT, AND UNTIL NOW IT WAS NOT WRITTEN.
+            `AuditLog` implemented the chain and nothing ever gave it a path,
+            so the adapter -- a subprocess per tool call -- never reached a
+            second entry while three documents claimed a tamper-evident log.
+
+        WHAT GOES IN, AND WHY THIS SHAPE
+            Everything the read paths need, because a field that is computed
+            and not written is a feature that is dead in production while its
+            tests pass. `trace`, `replay`, cost reporting and OTel export all
+            read this record and nothing else.
+
+            Argument VALUES are recorded, since a trace that cannot show what
+            was refused explains nothing -- and they are the reason redaction
+            is a gate on this record rather than an afterthought.
+
+        A WRITE FAILURE NEVER CHANGES A DECISION. `AuditLog.append` records
+        the error and returns; the caller does not branch on it.
+        """
+        if self.audit is None:
+            return
+        try:
+            self.audit.append({
+                "ts": time.time(),
+                "session": call.session,
+                "tool": call.tool,
+                "event": "decision",
+                "tier": call.tier,
+                "allowed": bool(allowed),
+                "mode": self.mode,
+                "reason": why,
+                "confirmable": bool(confirmable),
+                "bands": {k: _band_of(v).value for k, v in banded.items()},
+                "args": {k: _plain(v) for k, v in call.args.items()},
+                "ms": round(ms, 4),
+            })
+        except Exception:
+            # Belt and braces. Nothing about auditing may reach the decision.
+            pass
+
     # -- hook 1: authorize -------------------------------------------------
     def before_tool_call(self, call: ToolCall) -> Decision:
+        t0 = time.perf_counter()
         store = self._store(call.session)
         banded = {k: self._band(v, store) for k, v in call.args.items()}
         sess = _session_int(call.session)
@@ -155,6 +210,8 @@ class Guard:
                                        dict(call.context))
         failures = getattr(self.issuer, "confirmable_failures", [])
         confirmable = ConfirmationLedger.is_confirmable(failures)
+        self._record(call, banded, ok, why, confirmable,
+                     (time.perf_counter() - t0) * 1000.0)
 
         if self.mode == "shadow":
             # Records what it WOULD have done and permits everything. A
@@ -229,8 +286,26 @@ class Guard:
         treated as model-authored, which is the laundering case.
         """
         store = self._store(call.session)
+        n = 0
         for text in _strings(result):
             store.remember(text, band)
+            n += 1
+        # The other half of the record. Without it the log has calls and no
+        # results, so a trace cannot say what a tool returned and a replay
+        # cannot rebuild the provenance the next decision depended on -- it
+        # would answer confidently from a store it never populated.
+        if self.audit is not None:
+            try:
+                self.audit.append({
+                    "ts": time.time(),
+                    "session": call.session,
+                    "tool": call.tool,
+                    "event": "result",
+                    "band": band.value,
+                    "strings_remembered": n,
+                })
+            except Exception:
+                pass
 
     # -- helpers -----------------------------------------------------------
     def _band(self, value: Any, store: ProvenanceStore) -> Any:

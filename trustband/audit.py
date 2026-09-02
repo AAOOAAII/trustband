@@ -47,6 +47,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -101,11 +102,62 @@ def seal_message(seq: int, head: bytes) -> bytes:
 
 
 class AuditLog:
-    """Hash-chained entries with periodic MAC seals."""
+    """Hash-chained entries with periodic MAC seals.
 
-    def __init__(self) -> None:
+    PERSISTENCE, AND WHY IT IS NOT OPTIONAL FOR THE PRODUCT
+        Until 2026-09-02 this class was memory-only: no path, no writes, and
+        `export()` called from nowhere. The adapter is a subprocess per tool
+        call, so the chain never reached a second entry, while three documents
+        and a comparison table claimed a tamper-evident log. The mechanism was
+        real and the wiring was missing.
+
+        Pass `path` and every appended entry is written as one JSON line, and
+        the chain is resumed from that file on construction -- which is what
+        makes the chain meaningful to a process that exits after one decision.
+
+    A LOGGING FAILURE MUST NOT CHANGE A DECISION
+        If the file cannot be written, `append` records the failure on
+        `write_errors` and returns the entry anyway. The gate then decides
+        exactly as it would have. The opposite choice -- refusing when the log
+        is unavailable -- turns a full disk into a denial of service against
+        the agent, and makes the audit path an attack surface. See P-F0.6.
+    """
+
+    def __init__(self, path: "Optional[Path]" = None) -> None:
         self.entries: List[Entry] = []
         self.seals: List[Seal] = []
+        self.path = Path(path) if path is not None else None
+        #: Write failures, surfaced rather than swallowed. Never affects a decision.
+        self.write_errors: List[str] = []
+        if self.path is not None and self.path.exists():
+            self._resume()
+
+    def _resume(self) -> None:
+        """Rebuild the chain from disk so a new process continues it.
+
+        A torn final line is dropped rather than fatal: a process killed
+        mid-write must not make the whole log unreadable. The dropped line is
+        recorded, because silently losing a decision is the thing this log
+        exists to prevent.
+        """
+        assert self.path is not None
+        try:
+            raw = self.path.read_text(encoding="utf-8").splitlines()
+        except OSError as exc:                       # unreadable: start empty
+            self.write_errors.append(f"resume failed: {exc}")
+            return
+        for line in raw:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                d = json.loads(line)
+                self.entries.append(Entry(seq=d["seq"],
+                                          prev=bytes.fromhex(d["prev"]),
+                                          body=d["body"],
+                                          digest=bytes.fromhex(d["digest"])))
+            except Exception:
+                self.write_errors.append("dropped a torn entry on resume")
 
     @property
     def head(self) -> bytes:
@@ -117,6 +169,14 @@ class AuditLog:
         e = Entry(seq=seq, prev=prev, body=body,
                   digest=entry_digest(seq, prev, body))
         self.entries.append(e)
+        if self.path is not None:
+            try:
+                self.path.parent.mkdir(parents=True, exist_ok=True)
+                with self.path.open("a", encoding="utf-8") as fh:
+                    fh.write(json.dumps(e.as_dict(), sort_keys=True) + "\n")
+            except OSError as exc:
+                # Recorded, never raised. A decision does not depend on a disk.
+                self.write_errors.append(f"append failed at seq {seq}: {exc}")
         return e
 
     def seal(self, keys: Any, epoch: int) -> Seal:
