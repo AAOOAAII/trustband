@@ -3,8 +3,10 @@
 Authorization for LLM agent tool calls that tracks **where each argument came
 from**. An agent reads a web page, then tries to run a command built from it;
 trustband knows the command's text came from that page, and a policy can
-refuse it. The tool runs only if the gate accepts it, and every decision lands
-in a tamper-evident log.
+refuse it. The tool runs only if the gate accepts it, and every decision an
+adapter makes lands in a hash-chained log on disk. Hash-chained means an edit
+or a reorder is detectable; truncating the tail is not, which is what sealing
+covers.
 
 Most tools decide on the call's parameters. trustband decides on their
 provenance too, which is the difference between refusing an attacker's account

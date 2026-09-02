@@ -17,8 +17,11 @@ One page over ~15 scattered design and result docs. Start here.
 An LLM agent reads something — a web page, a file, a tool's output — and then
 acts on it. trustband tracks **where each argument to a tool call came from**,
 so a policy can refuse a payment to an account number that arrived from a web
-page while allowing one the user typed. Every decision, allowed or refused,
-lands in a hash-chained, tamper-evident log.
+page while allowing one the user typed. Every decision an adapter makes, allowed or
+refused, lands in a hash-chained log on disk, resumed across processes so the
+chain survives a hook that exits after one call. An edit or a reorder is
+detectable; a truncated tail is not. A `Guard` constructed directly with no
+`audit_path` writes nothing.
 
 Most agent-authorization tools decide on the call's *parameters*. trustband
 decides on their *provenance* too. That is the whole difference, and it is the
@@ -99,8 +102,8 @@ adapter must pass keeps them from drifting into two products.
 - the attack and utility numbers above, each with a baseline and a registered
   prediction committed before the run
 - gate decision latency 0.082 ms p50, in-process, no network
-- 1,122 real tool calls replayed with no crashes and sub-ms latency
-- the enforcement core follows a Verus model: 30 obligations, 11 counterexamples
+- 1,119 real tool calls replayed with no crashes and sub-ms latency
+- the enforcement core follows a Verus model: 31 obligations, 17 counterexamples
   rejected — the *model* is proven, the Python implementation follows it and is
   checked by a conformance harness, not itself proved
 - KMS custody validated against a real CMK, zero key bytes in process
