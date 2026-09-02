@@ -39,10 +39,33 @@ Review the inferred policy, point `config.json` at it, set `mode` to
 anything blocks.
 
 ```bash
-trustband packs           # three starters, each with the number it was measured at
+trustband packs           # seven starters, each with the number it was measured at
 trustband test <file>     # unit-test a policy in milliseconds
 trustband explain --policy p.json --action Bash --args '{"command":["...","tool"]}'
 ```
+
+## Reading the record
+
+Every decision is written to a hash-chained log. These read it and nothing else
+— no live policy, no recomputed decision, because a view that derived anything
+could disagree with the audit exactly when the audit matters.
+
+```bash
+trustband trace           # a session: each argument with the band it arrived at
+trustband report          # tokens per class, from the transcript, never estimated
+trustband replay -p new.json   # what a candidate policy would have done
+trustband export --otlp <endpoint>   # OTLP/JSON, no SDK
+```
+
+`trace` is the one to keep installed on a day nobody is attacking. The honest
+shadow report on legitimate work is zero refusals, so a list of allowed calls
+tells you nothing; on 600 real events `trace` showed 0 refusals and **71
+arguments that came from tool output** rather than from the session.
+
+`replay` reproduces the recorded decisions before it reports anything, and
+**refuses** when the record cannot support a replay rather than quietly
+reporting fewer refusals than the truth. Logs written by 0.1.0 cannot be
+replayed; it will tell you so.
 
 ## Using it as a library
 
