@@ -236,6 +236,42 @@ class Guard:
         }
         return not contaminated
 
+    def handoff(self, to_session: str, message: Any,
+                from_session: Optional[str] = None) -> None:
+        """Pass work from one agent to another without laundering the taint.
+
+        THE HOLE THIS CLOSES, MEASURED
+            Agent A reads a poisoned page, hands a verbatim payload to agent B,
+            B acts. With A and B on one session the payload is caught. With
+            separate sessions it is PERMITTED -- B's store is empty, so the
+            argument is SESSION-banded and looks like something B's user typed.
+
+            Provenance is scoped per session precisely so one user's tool
+            output cannot taint another's, and that same scoping is what lets a
+            handoff cross the boundary clean. Merging the sessions would fix it
+            and destroy the property the scoping exists for.
+
+        SO THE MESSAGE IS BANDED, NOT THE SESSIONS MERGED
+            From B's point of view a handoff IS a tool result: text B did not
+            author, arriving from elsewhere. Ingesting it as TOOL-banded closes
+            the hole while A and B keep separate stores -- measured, and
+            measured not to deny B's ordinary work.
+
+        WHAT IT DOES NOT CLOSE
+            Paraphrase. If A or B rewrites the payload in its own words it
+            launders under every arrangement, shared or separate, banded or
+            not. That is the authorship gap, not a boundary problem, and
+            calling this method does not touch it.
+        """
+        if not to_session:
+            raise GuardConfigError(
+                "a handoff needs the receiving session's identity; without it "
+                "the message cannot be banded into any store")
+        self.after_tool_result(
+            ToolCall(session=to_session, tool="handoff",
+                     args={"from": from_session or ""}),
+            message, Band.TOOL)
+
     def _notify(self, call: "ToolCall", why: str, approved: bool) -> None:
         """Tell someone. Never ask them, and never let the answer matter.
 
