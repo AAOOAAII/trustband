@@ -99,6 +99,20 @@ class Guard:
         #: otherwise. Adapters pass a path; the chain resumes from it, because a
         #: subprocess that exits after one decision cannot hold a chain in RAM.
         self.audit = AuditLog(Path(audit_path)) if audit_path else None
+        #: Per-session call cap. `gov_budget` is the capability-MINTING budget
+        #: from the proof model and is a different thing entirely; this counts
+        #: tool calls, which is what a person means by "runaway".
+        sess_cfg = policy.get("session") or {}
+        self.max_calls: Optional[int] = sess_cfg.get("max_calls")
+        #: Counted from the record, not from memory. The adapter is a
+        #: subprocess per call, so an in-memory counter counts to one forever.
+        self._calls: Dict[str, int] = {}
+        if self.audit is not None and self.max_calls:
+            for e in self.audit.entries:
+                b = e.body
+                if b.get("event") == "decision" and b.get("allowed"):
+                    k = b.get("session", "")
+                    self._calls[k] = self._calls.get(k, 0) + 1
         #: True only if this policy came from a bundle that verified.
         self.verified_bundle: bool = False
 
@@ -206,10 +220,40 @@ class Guard:
         banded = {k: self._band(v, store) for k, v in call.args.items()}
         sess = _session_int(call.session)
 
+        used = self._calls.get(call.session, 0)
+        if self.max_calls is not None and used >= self.max_calls:
+            # A CAP IS NOT A PROVENANCE REFUSAL, and must not read like one.
+            # Every other refusal here is a claim about where a value came
+            # from, which a user has to be persuaded of. This is a limit they
+            # set themselves, so the reason names the cap and the count and
+            # nothing else.
+            why = (f"session call cap reached: {used}/{self.max_calls} calls. "
+                   f"Raise session.max_calls or start a new session.")
+            self._record(call, banded, False, why, False,
+                         (time.perf_counter() - t0) * 1000.0)
+            # SHADOW REFUSES NOTHING -- INCLUDING THIS.
+            # The cap is the first refusal a new user is likely to meet, which
+            # makes it the most tempting one to let through the shadow gate
+            # "because they asked for it". They did not: they asked for a
+            # limit once enforcement is on. A shadow install that blocks is
+            # not shadow, and it breaks the one promise that gets this tool
+            # kept -- it starts by refusing nothing.
+            if self.mode == "shadow":
+                self.shadow_log.append(
+                    {"session": call.session, "tool": call.tool,
+                     "would_allow": False, "reason": why,
+                     "confirmable": False,
+                     "bands": {k: _band_of(v).value for k, v in banded.items()}})
+                return Decision(True, f"SHADOW: would have refused — {why}",
+                                None, False, None)
+            return Decision(False, why, "cap", False, None)
+
         ok, why = self.issuer.evaluate(sess, call.tier, call.tool, banded,
                                        dict(call.context))
         failures = getattr(self.issuer, "confirmable_failures", [])
         confirmable = ConfirmationLedger.is_confirmable(failures)
+        if ok:
+            self._calls[call.session] = used + 1
         self._record(call, banded, ok, why, confirmable,
                      (time.perf_counter() - t0) * 1000.0)
 
