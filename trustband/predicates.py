@@ -37,6 +37,7 @@ from trustband.taint import Tainted
 #: other.
 OPERATORS: Dict[str, Optional[str]] = {
     "in_set": "values",
+    "host_in_set": "values",
     "in_context": "key",
     "max_int": "value",
     "max_minor": "value",
@@ -47,6 +48,32 @@ OPERATORS: Dict[str, Optional[str]] = {
 class PredicateError(Exception):
     """A predicate that is not well formed. Raised at validation, never at
     evaluation -- an ill-formed policy is a bug, not a refusal."""
+
+
+
+def _host_of(value: Any) -> Optional[str]:
+    """The host of a URL, or None if there is not exactly one.
+
+    `urlsplit` handles userinfo, port and case; the rest is refusing shapes
+    that parse but should not be trusted. Returning None means REFUSE at the
+    call site -- never "no host, therefore fine".
+    """
+    import urllib.parse as _up
+    if not isinstance(value, str) or not value.strip():
+        return None
+    try:
+        parts = _up.urlsplit(value.strip())
+    except ValueError:
+        return None
+    if not parts.scheme or not parts.netloc:
+        return None
+    host = parts.hostname          # strips userinfo and port, lowercases
+    if not host:
+        return None
+    host = host.rstrip(".")        # trailing dot is the same host
+    if not host or "/" in host or " " in host:
+        return None
+    return host
 
 
 def plain(value: Any) -> Any:
@@ -81,7 +108,11 @@ def validate_predicate(p: Any, where: str) -> None:
     if field not in p:
         raise PredicateError(f"{where} with op {op!r} requires {field!r}")
     v = p[field]
-    if op == "in_set":
+    if op == "host_in_set":
+        if not isinstance(p.get("values"), list) or not p["values"]:
+            raise PredicateError(f"{where}: host_in_set needs a non-empty "
+                                 f"'values' list")
+    elif op == "in_set":
         if not isinstance(v, list) or not all(isinstance(x, str) for x in v):
             raise PredicateError(f"{where}.values must be a list of strings")
     elif op == "in_context":
@@ -140,7 +171,27 @@ def check(predicates: List[Any], args: Mapping[str, Any],
                 f"absence."), p
         value = plain(args[arg])
 
-        if op == "in_set":
+        if op == "host_in_set":
+            # THE HOST, NOT THE STRING.
+            #
+            # Every one of these defeats a "contains the allowed host" check,
+            # and each is a real bypass rather than a hypothetical:
+            #   https://shop.example@evil.io/    userinfo — the host is evil.io
+            #   https://evil.io/?x=shop.example  allowed host in the query
+            #   https://shop.example.evil.io/    attacker's subdomain
+            # So the value is parsed and the parsed host compared, and a value
+            # whose host cannot be determined is REFUSED rather than allowed on
+            # the grounds that nothing was found.
+            allowed = {str(h).strip().lower().rstrip(".") for h in p["values"]}
+            host = _host_of(value)
+            if host is None:
+                return False, (f"{arg} {value!r} is not a URL with a host, so "
+                               f"no host allowlist can be applied to it"), p
+            if host not in allowed:
+                return False, (f"{arg} host {host!r} is not in the "
+                               f"{len(allowed)}-entry host allowlist"), p
+
+        elif op == "in_set":
             allowed = p["values"]
             if value not in allowed:
                 return False, (f"{arg} {value!r} is not in the "
