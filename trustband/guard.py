@@ -119,6 +119,10 @@ class Guard:
         #: an unknown budget never refuses: a cap that fires on a number we do
         #: not have is worse than no cap.
         self.tokens_used: Dict[str, int] = {}
+        #: session -> (allowed actions, allowed destination values, trusted?)
+        #: A plan is a per-TASK constraint, where an allowlist is per-deployment
+        #: -- which is why it covers the open-ended agent an allowlist cannot.
+        self._plans: Dict[str, Dict[str, Any]] = {}
         #: Counted from the record, not from memory. The adapter is a
         #: subprocess per call, so an in-memory counter counts to one forever.
         self._calls: Dict[str, int] = {}
@@ -186,6 +190,40 @@ class Guard:
             self._stores[session] = st
         return st
 
+    def set_plan(self, session: str, actions: Any = (),
+                 destinations: Any = ()) -> bool:
+        """Fix what this task may do, before it reads anything untrusted.
+
+        WHY THE TIMING IS THE WHOLE MECHANISM
+            Plan-then-execute is only a defence if the plan was authored before
+            untrusted content could influence it. Everyone can assert that;
+            almost nobody can CHECK it, because checking requires knowing
+            whether tool output had already entered the session.
+
+            Provenance knows. If this session's store already holds
+            TOOL-banded content, the plan may itself be the injection, and a
+            plan the attacker could have written is worse than none -- it looks
+            like a control. So such a plan is recorded as UNTRUSTED and every
+            later check against it refuses.
+
+        Returns True if the plan is trusted, False if the session was already
+        contaminated. The caller is told rather than silently given a plan that
+        does nothing.
+        """
+        from trustband.provenance import TRUST_RANK
+        store = self._stores.get(session)
+        # "Contaminated" means anything at TOOL trust or below has been
+        # remembered for this session. Higher rank is less trusted.
+        contaminated = bool(store) and any(
+            TRUST_RANK[b] >= TRUST_RANK[Band.TOOL]
+            for b in store._entries.values())
+        self._plans[session] = {
+            "actions": {str(a) for a in actions},
+            "destinations": {str(d) for d in destinations},
+            "trusted": not contaminated,
+        }
+        return not contaminated
+
     def _record(self, call: "ToolCall", banded: Dict[str, Any], allowed: bool,
                 why: str, confirmable: bool, ms: float) -> None:
         """One hash-chained entry per decision, in every mode.
@@ -238,6 +276,37 @@ class Guard:
         store = self._store(call.session)
         banded = {k: self._band(v, store) for k, v in call.args.items()}
         sess = _session_int(call.session)
+
+        plan = self._plans.get(call.session)
+        if plan is not None:
+            why = None
+            if not plan["trusted"]:
+                why = ("the plan for this session was fixed after tool output "
+                       "had already been read, so it may itself be injected "
+                       "and is not trusted. Fix the plan before the first read.")
+            elif plan["actions"] and call.tool not in plan["actions"]:
+                why = (f"{call.tool!r} is not in this task's plan "
+                       f"({len(plan['actions'])} action(s) planned)")
+            elif plan["destinations"]:
+                vals = {str(_plain(v)) for v in call.args.values()}
+                unplanned = [v for v in vals
+                             if v and not any(d in v for d in plan["destinations"])]
+                if unplanned and len(unplanned) == len(vals):
+                    why = (f"no argument of this call matches a planned "
+                           f"destination ({len(plan['destinations'])} planned)")
+            if why:
+                self._record(call, banded, False, why, False,
+                             (time.perf_counter() - t0) * 1000.0)
+                if self.mode == "shadow":
+                    self.shadow_log.append(
+                        {"session": call.session, "tool": call.tool,
+                         "would_allow": False, "reason": why,
+                         "confirmable": False,
+                         "bands": {k: _band_of(v).value
+                                   for k, v in banded.items()}})
+                    return Decision(True, f"SHADOW: would have refused — {why}",
+                                    None, False, None)
+                return Decision(False, why, "plan", False, None)
 
         tok = self.tokens_used.get(call.session)
         if self.max_tokens is not None and tok is not None and tok >= self.max_tokens:
