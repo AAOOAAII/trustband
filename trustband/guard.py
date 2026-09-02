@@ -110,6 +110,15 @@ class Guard:
         self.redactor = redactor if redactor is not None else Redactor()
         sess_cfg = policy.get("session") or {}
         self.max_calls: Optional[int] = sess_cfg.get("max_calls")
+        #: Tokens, not spend. Tokens are what actually run out -- the context
+        #: window is a hard wall -- and a token cap means something on a local
+        #: model where spend does not. Reconciled from the host's transcript by
+        #: `trustband report`, never derived through a rate table.
+        self.max_tokens: Optional[int] = sess_cfg.get("max_tokens")
+        #: Set by a caller that has reconciled usage. None means unknown, and
+        #: an unknown budget never refuses: a cap that fires on a number we do
+        #: not have is worse than no cap.
+        self.tokens_used: Dict[str, int] = {}
         #: Counted from the record, not from memory. The adapter is a
         #: subprocess per call, so an in-memory counter counts to one forever.
         self._calls: Dict[str, int] = {}
@@ -229,6 +238,21 @@ class Guard:
         store = self._store(call.session)
         banded = {k: self._band(v, store) for k, v in call.args.items()}
         sess = _session_int(call.session)
+
+        tok = self.tokens_used.get(call.session)
+        if self.max_tokens is not None and tok is not None and tok >= self.max_tokens:
+            why = (f"session token cap reached: {tok:,}/{self.max_tokens:,} "
+                   f"tokens. Raise session.max_tokens or start a new session.")
+            self._record(call, banded, False, why, False,
+                         (time.perf_counter() - t0) * 1000.0)
+            if self.mode == "shadow":
+                self.shadow_log.append(
+                    {"session": call.session, "tool": call.tool,
+                     "would_allow": False, "reason": why, "confirmable": False,
+                     "bands": {k: _band_of(v).value for k, v in banded.items()}})
+                return Decision(True, f"SHADOW: would have refused — {why}",
+                                None, False, None)
+            return Decision(False, why, "cap", False, None)
 
         used = self._calls.get(call.session, 0)
         if self.max_calls is not None and used >= self.max_calls:

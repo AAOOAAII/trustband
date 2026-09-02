@@ -15,6 +15,29 @@ def _packs_dir() -> Path:
     return Path(__file__).resolve().parent / "packs"
 
 
+def _report(a) -> int:
+    """Token accounting. Cost only if the operator declared rates."""
+    from trustband.tokens_report import main as _tok
+    home = _home(a)
+    t = a.transcript
+    if t is None:
+        cfgp = home / "config.json"
+        cfg = (json.loads(cfgp.read_text(encoding="utf-8"))
+               if cfgp.exists() else {})
+        t = cfg.get("transcript_path")
+        if not t:
+            print("  no transcript given. Pass --transcript, or set "
+                  "transcript_path in config.json.")
+            print("  The host records per-turn usage there; trustband reads it "
+                  "rather than estimating, because an estimate cannot see "
+                  "caching and would be several times wrong.")
+            return 1
+    cfgp = home / "config.json"
+    cfg = (json.loads(cfgp.read_text(encoding="utf-8"))
+           if cfgp.exists() else {})
+    return _tok(Path(t), cfg.get("cost"))
+
+
 def _status(a) -> int:
     """Tier and hosted availability -- and what does not depend on either."""
     from trustband.entitlement import (from_config, upgrade_prompt, HOSTED,
@@ -355,6 +378,13 @@ def main(argv=None) -> int:
     tr.add_argument("--last", type=int, default=None,
                     help="show only the last N events")
 
+    rp = sub.add_parser("report",
+                        help="token accounting from the host's transcript")
+    rp.add_argument("--transcript", type=Path, default=None,
+                    help="path to the session .jsonl the host records usage in")
+    rp.add_argument("--tokens", action="store_true", default=True)
+    rp.add_argument("--home", type=Path, default=None)
+
     st = sub.add_parser("status",
                         help="tier, what is available, and what enforcement does")
     st.add_argument("--home", type=Path, default=None)
@@ -372,6 +402,9 @@ def main(argv=None) -> int:
 
     if a.cmd == "packs":
         return _packs()
+
+    if a.cmd == "report":
+        return _report(a)
 
     if a.cmd == "trace":
         from trustband.trace import main as _trace
