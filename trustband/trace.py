@@ -89,11 +89,19 @@ def render(path: Path, session: Optional[str] = None,
     out.append("")
 
     decisions = refused = noteworthy = 0
+    nonlocal_failed = [0]
     for b in rows:
         if b.get("event") == "result":
             out.append(f"  ← {b.get('tool','?'):<14} returned  "
                        f"band={b.get('band','?')}  "
                        f"{b.get('strings_remembered',0)} string(s) remembered")
+            for c in (b.get("contracts") or []):
+                mark = "ok " if c["held"] else "NO "
+                blk = " [blocking]" if c.get("blocking") else ""
+                out.append(f"        {mark} contract {c['name']}{blk}: "
+                           f"{c['reason']}")
+                if not c["held"]:
+                    nonlocal_failed[0] += 1
             continue
 
         decisions += 1
@@ -124,6 +132,10 @@ def render(path: Path, session: Optional[str] = None,
 
     out.append(f"  {decisions} decision(s), {refused} refused, "
                f"{noteworthy} argument(s) not session-authored")
+    if nonlocal_failed[0]:
+        out.append(f"  {nonlocal_failed[0]} contract(s) failed — these are "
+                   f"claims about the WORK, not about permission; the calls "
+                   f"themselves were allowed.")
     if noteworthy:
         out.append("  ← marks an argument that did not come from the session: "
                    "text a tool returned, which a policy can refuse.")

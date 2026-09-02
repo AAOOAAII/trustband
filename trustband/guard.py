@@ -141,6 +141,17 @@ class Guard:
         #: empty provenance store, every taint refusal vanishes, and the
         #: candidate policy looks permissive and safe -- measured at 1/2
         #: reproduced before this existed.
+        #: Rules about what came back. Validated at adoption like any policy
+        #: error: a malformed contract is a bug, not a refusal.
+        from trustband.contracts import validate as _cval
+        try:
+            _cval(policy.get("contracts"))
+        except Exception as e:
+            raise GuardConfigError(f"policy rejected: {e}") from None
+        self.contracts: list = list(policy.get("contracts") or [])
+        #: Blocking contract failures, for a CI caller to act on. Never used to
+        #: refuse a tool call: the tool already ran.
+        self.blocked_contracts: list = []
         rr = (policy.get("record_results") or {})
         self.record_results: bool = bool(rr.get("enabled", False))
         self.record_results_max: int = int(rr.get("max_chars", 4000))
@@ -574,6 +585,23 @@ class Guard:
         # results, so a trace cannot say what a tool returned and a replay
         # cannot rebuild the provenance the next decision depended on -- it
         # would answer confidently from a store it never populated.
+        # CONTRACTS RUN HERE, ON THE RESULT, AFTER THE TOOL RAN.
+        # They cannot refuse the call -- it already happened -- and they must
+        # not touch provenance or a later authorization. What they produce is
+        # a verdict in the same record, which is the whole reason this lives
+        # here rather than in a second policy engine beside it.
+        contract_results = []
+        if self.contracts:
+            from trustband.contracts import evaluate as _ceval
+            try:
+                contract_results = _ceval(self.contracts, call.tool,
+                                          _plain(result))
+            except Exception:
+                contract_results = []
+            for cr in contract_results:
+                if not cr["held"] and cr["blocking"] and self.mode == "enforce":
+                    self.blocked_contracts.append(cr)
+
         if self.audit is not None:
             try:
                 self.audit.append({
@@ -581,6 +609,7 @@ class Guard:
                     "session": call.session,
                     "tool": call.tool,
                     "event": "result",
+                    "contracts": contract_results or None,
                     "band": band.value,
                     "strings_remembered": n,
                     "text": (self.redactor.value("result", _plain(result))
