@@ -123,6 +123,18 @@ class Guard:
         #: A plan is a per-TASK constraint, where an allowlist is per-deployment
         #: -- which is why it covers the open-ended agent an allowlist cannot.
         self._plans: Dict[str, Dict[str, Any]] = {}
+        #: What a confirmable refusal means when nobody can answer it.
+        #: `confirm.py` assumes a person exists; cron jobs, webhooks and CI
+        #: have none, and they are disproportionately the paying customer.
+        #: Default deny: a silent allow is the one outcome that must be
+        #: impossible when the operator has not chosen.
+        un = (policy.get("unattended") or {})
+        self.on_confirmable: str = str(un.get("on_confirmable", "deny")).lower()
+        if self.on_confirmable not in ("deny", "allow"):
+            raise GuardConfigError(
+                f"unattended.on_confirmable must be 'deny' or 'allow', not "
+                f"{self.on_confirmable!r}. 'queue' needs hosted routing.")
+        self.notify_cmd: Optional[str] = un.get("notify")
         #: Counted from the record, not from memory. The adapter is a
         #: subprocess per call, so an in-memory counter counts to one forever.
         self._calls: Dict[str, int] = {}
@@ -223,6 +235,57 @@ class Guard:
             "trusted": not contaminated,
         }
         return not contaminated
+
+    def _notify(self, call: "ToolCall", why: str, approved: bool) -> None:
+        """Tell someone. Never ask them, and never let the answer matter.
+
+        WHY AN ALERT MAY NOT TRIGGER AN APPROVAL
+            `confirm.py` already states it: an escape hatch that lets anything
+            through becomes the attacker's target. An alert that could
+            auto-approve would be `allow` with extra machinery and a false
+            sense of oversight -- worse than choosing `allow` honestly, because
+            it adds a mechanism to aim at.
+
+            So the exit code is ignored, the output is not read, and a hang or
+            crash changes nothing. Same principle as an audit write failure: a
+            decision does not depend on a side channel.
+
+        WHAT IT SEES
+            The redacted record, never raw argument values. F5 runs first.
+
+        SHADOW DOES NOT NOTIFY. Nothing was refused there, and a notifier that
+        fired on hypothetical refusals would train people to ignore it.
+        """
+        if not self.notify_cmd or self.mode != "enforce":
+            return
+        import subprocess
+        payload = json.dumps({
+            "session": call.session, "tool": call.tool, "reason": why,
+            "approved": approved,
+            "args": self.redactor.args(
+                {k: _plain(v) for k, v in call.args.items()}),
+        })
+        try:
+            # FIRE AND FORGET, NOT "WAIT WITH A TIMEOUT".
+            # A blocking call with a 5s timeout still stalled every refused
+            # call by 5s when the notifier hung -- measured. The outcome was
+            # unchanged and the agent was not: a notifier that can delay every
+            # refusal is a denial-of-service surface wearing a helpful face.
+            # Nothing is waited on, no output is read, and the exit code is
+            # never seen, which is also what makes an alert unable to approve.
+            proc = subprocess.Popen(
+                self.notify_cmd, shell=True, stdin=subprocess.PIPE,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                text=True, start_new_session=True)
+            try:
+                proc.stdin.write(payload)      # small; well under a pipe buffer
+                proc.stdin.close()
+            except Exception:
+                pass
+        except Exception:
+            # A notifier that fails is a notifier that failed. It is not a
+            # decision, and it is not this call's problem.
+            pass
 
     def _record(self, call: "ToolCall", banded: Dict[str, Any], allowed: bool,
                 why: str, confirmable: bool, ms: float) -> None:
@@ -381,6 +444,18 @@ class Guard:
         if ok:
             return Decision(True, why)
 
+        if confirmable and self.on_confirmable == "allow":
+            # RECORDED AS "NOBODY APPROVED", NEVER AS AN APPROVAL.
+            # Writing this as a confirmation would forge one, which is the
+            # worst thing this module could do. The operator chose to let
+            # unanswerable refusals through; the record says exactly that.
+            why_un = (f"unattended policy allowed this without approval — "
+                      f"nobody was asked. Original refusal: {why}")
+            self._record(call, banded, True, why_un, True,
+                         (time.perf_counter() - t0) * 1000.0)
+            self._notify(call, why_un, approved=False)
+            return Decision(True, why_un, None, True, None)
+
         request = None
         if confirmable:
             arg = next((f.get("arg") for f in failures
@@ -391,6 +466,8 @@ class Guard:
                     value=_plain(call.args[arg]), reason=why,
                     arg_bands={k: _band_of(v).value for k, v in banded.items()},
                     epoch=self.gate.gov_epoch)
+        if confirmable:
+            self._notify(call, why, approved=False)
         return Decision(False, why, "policy", confirmable, request)
 
     # -- ingestion: extract a document into banded, source-verified values --
