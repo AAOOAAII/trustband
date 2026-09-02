@@ -1,0 +1,22 @@
+# Build artifacts. The extraction carried no .gitignore, because the monorepo's
+# was never in the path list — so dist/ and the egg-info sat untracked and
+# unignored, one `git add -A` away from being committed into a public repo.
+dist/
+build/
+*.egg-info/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local state a user creates by running the tool. Never source.
+.trustband/
+audit.jsonl
+shadow.jsonl
+inferred.policy.json
+
+# Editor and OS noise
+.DS_Store
+*.swp
+.idea/
+.vscode/
