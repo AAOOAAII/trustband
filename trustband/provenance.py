@@ -55,12 +55,63 @@ def _grams(s: str, k: int = KGRAM) -> Set[str]:
     return {s[i:i + k] for i in range(len(s) - k + 1)}
 
 
+
+#: CANONICAL FORMS -- WHY THE STORE REMEMBERS MORE THAN IT WAS GIVEN.
+#:
+#: A browser measurement put markup at 0/5 caught while the attacker's domain
+#: survived 5/5. The payload was split across tags --
+#: `<b>host</b><i>/path</i>` -- and the model reassembled it. The reassembled
+#: string is not a substring of the page AS SERVED, so a store holding served
+#: bytes had nothing to match. But the model never saw served bytes: it saw a
+#: rendered form, in which the payload is contiguous.
+#:
+#: So the defect was in what was remembered, not in what provenance can do.
+#: These are the transformations a consumer applies between the wire and the
+#: model. Each is a pure text function, deterministic, and none invents text
+#: that was not there.
+#:
+#: This attacks TRANSFORMATION, not AUTHORSHIP. A model that paraphrases a
+#: payload in its own words still escapes; that is the measured prose gap and
+#: canonicalisation does not touch it.
+def _canonical_forms(value: str) -> "List[str]":
+    import html as _html
+    import re as _re
+    import urllib.parse as _up
+    out = []
+    seen = {value}
+
+    def add(v: str) -> None:
+        if v and v != value and v not in seen and len(v) >= MIN_MATCH:
+            seen.add(v)
+            out.append(v)
+
+    # tags stripped: what a page renders to
+    stripped = _re.sub(r"<[^>]{0,400}>", "", value)
+    add(stripped)
+    # entities decoded, on both the raw and the stripped form
+    for base in (value, stripped):
+        try:
+            add(_html.unescape(base))
+        except Exception:
+            pass
+    # percent decoding, which closes the encoded phrasing
+    for base in (value, stripped):
+        try:
+            add(_up.unquote(base))
+        except Exception:
+            pass
+    # whitespace collapsed, applied last to the rendered form
+    add(_re.sub(r"\s+", " ", stripped).strip())
+    return out
+
+
 class ProvenanceStore:
     """Bounded record of what tools returned, and where a value came from."""
 
     def __init__(self, max_entries: int = 4096,
                  max_chars: int = 4_000_000,
-                 match_tokens: bool = False) -> None:
+                 match_tokens: bool = False,
+                 canonicalise: bool = True) -> None:
         self._entries: "OrderedDict[str, Band]" = OrderedDict()
         self._chars = 0
         self.max_entries = max_entries
@@ -70,6 +121,11 @@ class ProvenanceStore:
         #: value matching misses. Off by default because it trades false
         #: negatives for false positives; see docs/TOKEN_MATCH_GATES.md.
         self.match_tokens = match_tokens
+        #: Remember the rendered/decoded forms of what a tool returned, not
+        #: only the bytes. On by default: it closes a measured 0/5 and the
+        #: false-positive cost is gated at 2%, unlike token matching which
+        #: costs a measured 4.9% and is therefore opt-in.
+        self.canonicalise = canonicalise
         self._tokens: Dict[str, Band] = {}
         #: k-gram -> the least trusted band of any stored string containing it.
         #: Approximate by construction: eviction does not remove grams, so the
@@ -90,7 +146,20 @@ class ProvenanceStore:
 
     # -- writing ----------------------------------------------------------
     def remember(self, value: Any, band: Band) -> None:
-        """Record that `value` arrived from a source with this band."""
+        """Record that `value` arrived from a source with this band.
+
+        Also records the canonical forms a consumer would see -- rendered,
+        decoded, collapsed -- because a payload that survives rendering and
+        not our comparison is a payload we let through for no reason.
+        """
+        if not isinstance(value, str) or len(value) < MIN_MATCH:
+            return
+        if self.canonicalise:
+            for form in _canonical_forms(value):
+                self._remember_one(form, band)
+        self._remember_one(value, band)
+
+    def _remember_one(self, value: str, band: Band) -> None:
         if not isinstance(value, str) or len(value) < MIN_MATCH:
             return
         prev = self._entries.get(value)
