@@ -348,6 +348,13 @@ def main(argv=None) -> int:
 
     sub.add_parser("packs", help="list the bundled policy packs")
 
+    tr = sub.add_parser("trace",
+                        help="what happened in a session, from the record")
+    tr.add_argument("session", nargs="?", default=None)
+    tr.add_argument("--home", type=Path, default=None)
+    tr.add_argument("--last", type=int, default=None,
+                    help="show only the last N events")
+
     st = sub.add_parser("status",
                         help="tier, what is available, and what enforcement does")
     st.add_argument("--home", type=Path, default=None)
@@ -365,6 +372,10 @@ def main(argv=None) -> int:
 
     if a.cmd == "packs":
         return _packs()
+
+    if a.cmd == "trace":
+        from trustband.trace import main as _trace
+        return _trace(_home(a) / "audit.jsonl", a.session, a.last)
 
     if a.cmd == "status":
         return _status(a)
