@@ -52,7 +52,11 @@ Everything else here reads that record.
   to 5/5**.
 - `host_in_set`, correct against 16 host-confusion bypasses.
 - Plan-then-execute, where a plan fixed after untrusted content is **not
-  trusted** — a check that needs provenance to make.
+  trusted** — a check that needs provenance to make. Measured in a live
+  tool-calling loop on Qwen2.5-7B: **10/10 injected sends refused at zero
+  benign cost**, against an injection that reaches its target on 10/10
+  unprotected runs. Whether an agent recovers from a refusal that arrives
+  *mid*-task is not measured; in every run the refusal came last.
 - `Guard.handoff()` — closes multi-agent laundering without merging session
   stores.
 - Four new policy packs, each citing a measurement that exists in the repo.

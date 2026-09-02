@@ -167,6 +167,14 @@ coding tasks. On models like these the value is the audit trail and the zero
 benign-utility cost, not attack interception — there is little left to
 intercept.
 
+**A plan is only as good as its timing, and mid-task refusal is untested.**
+A fixed plan refused 10/10 injected sends in a live loop on Qwen2.5-7B at zero
+benign cost, against an injection that reaches its target on 10/10 unprotected
+runs. In every one of those runs the refusal arrived *after* the useful work,
+so whether an agent recovers from a refusal that lands mid-task is not
+measured. Plans also match destinations, so a paraphrased body reaching a
+planned destination passes.
+
 **Implicit flows launder taint.** `"APPROVED" if untrusted else "DENIED"` comes
 out clean. That defeats every dynamic taint system, this one included.
 
