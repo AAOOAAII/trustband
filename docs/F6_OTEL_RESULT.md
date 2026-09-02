@@ -78,7 +78,41 @@ every refused call by five seconds.
 unreachable collector -> False in 0.01s, error recorded, nothing raised
 ```
 
-## P-F6.5 — PARTIAL, and the distinction is the point
+## P-F6.5 — PARTIAL, and a second instrument confirmed why
+
+**Update, same day.** No collector could be run — the docker daemon is not up
+and Colima does not boot on this machine — so the next best instrument was
+tried: parsing the payload with the **official** `opentelemetry.proto`
+protobuf definitions, which is the first thing a collector does.
+
+It parsed. It was also a false positive, and the detail is the finding:
+
+```
+traceId bytes : 24   (OTLP requires 16)
+spanId bytes  : 12   (OTLP requires 8)
+```
+
+**OTLP/JSON encodes trace and span ids as hex**, a documented deviation from
+the protobuf JSON mapping, which uses base64 for `bytes` fields. Generic
+`json_format` therefore read a correct 32-character hex id as base64 and
+produced 24 bytes — **without raising**. Verified both directions: feeding it
+base64 yields the right bytes, feeding it spec-correct hex yields the wrong
+ones.
+
+So the implementation is correct and **the validator was the wrong
+instrument**. Had the check stopped at "parsed into ExportTraceServiceRequest:
+yes", it would have claimed a validation it did not have, in the reassuring
+direction.
+
+The schema does catch what it can: an unknown field and an untyped attribute
+are both rejected. It cannot catch an id-length error, which is precisely the
+class of error a collector would.
+
+P-F6.5 stays **PARTIAL**. What changed is that the reason is now specific: not
+"we did not try", but "generic protobuf validation cannot settle OTLP/JSON id
+encoding, and only an OTLP-aware receiver can".
+
+## P-F6.5 — the original structural checks
 
 Verified: `resourceSpans`, resource attributes, `scopeSpans`, 32-hex trace ids,
 16-hex span ids, nanosecond times as strings, `end >= start`, every attribute
