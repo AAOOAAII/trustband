@@ -37,8 +37,14 @@ Everything else here reads that record.
 - `contracts` — rules about what came back, not about permission. Coverage
   thresholds, reviewer-not-author, required sections. **Contracts verify what
   is checkable, not that the work is good.**
-- OTLP/JSON export over HTTP, no SDK, carrying the provenance attributes no
-  other exporter can emit.
+- `trustband export` — OTLP/JSON over HTTP, no SDK, carrying the provenance
+  attributes no other exporter can emit. Ids are hex, which is what OTLP/JSON
+  requires and a documented deviation from the protobuf JSON mapping's base64;
+  a generic protobuf parser will read them wrongly and not complain.
+- The measurement reports the packs cite now **ship inside the package**, and
+  `trustband packs` resolves each citation to a file on your disk. The source
+  repository is private, so the old repo-relative citation resolved nowhere for
+  exactly the people it existed to convince.
 - LangChain, LangGraph and CrewAI adapters, each verified against the installed
   library. Two different silent bypasses were found that way.
 - Canonical provenance — the store remembers the rendered and decoded forms of
