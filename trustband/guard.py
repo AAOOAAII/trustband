@@ -358,6 +358,10 @@ class Guard:
                 "mode": self.mode,
                 "reason": why,
                 "confirmable": bool(confirmable),
+                # WHICH rule decided, not only what it said. Replay groups by
+                # rule; prose is a message, not an identity. None means no
+                # grant matched at all, which is different from grant 0.
+                "grant": getattr(self.issuer, "deciding_grant", None),
                 "bands": {k: _band_of(v).value for k, v in banded.items()},
                 # P-F5.3: on the way in. The gate above already decided on
                 # the real values; only the record is redacted.
@@ -563,6 +567,10 @@ class Guard:
                     "event": "result",
                     "band": band.value,
                     "strings_remembered": n,
+                    # Who this came from, when it came from another agent. The
+                    # name crosses; the store does not — B's record says the
+                    # taint originated with A without giving B access to A.
+                    "from": str(call.args.get("from") or "") or None,
                 })
             except Exception:
                 pass

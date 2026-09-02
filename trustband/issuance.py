@@ -218,10 +218,11 @@ class Issuer:
         last_reason = ""
         last_rank = -1
 
-        def _note(rank: int, text: str) -> None:
+        def _note(rank: int, text: str, gi: Optional[int] = None) -> None:
             nonlocal last_reason, last_rank
             if rank > last_rank:
                 last_reason, last_rank = text, rank
+                _last_note_grant[0] = gi
         # Grants are a DISJUNCTION, so a human may be asked if ANY grant's
         # refusal is one the policy says they may answer. Keeping only the last
         # -- which is right for `last_reason`, the most specific message --
@@ -229,7 +230,16 @@ class Issuer:
         # a reason nobody may wave through.
         self.last_failed_predicate: Optional[Dict[str, Any]] = None
         self.confirmable_failures: List[Dict[str, Any]] = []
-        for g in self._policy["grants"]:
+        #: WHICH grant decided, by index, alongside the prose reason.
+        #: `last_reason` is the most specific MESSAGE; it is not an identity,
+        #: and grouping decisions by message text is not grouping them by rule.
+        #: Replay needs the rule. Set to the index whose refusal is being
+        #: reported, or left None when no grant matched at all -- naming an
+        #: arbitrary one would have a replay attribute a decision to a rule
+        #: that did not make it.
+        self.deciding_grant: Optional[int] = None
+        _last_note_grant: List[Optional[int]] = [None]
+        for _gi, g in enumerate(self._policy["grants"]):
             # "*" matches any session. Needed because a host's sessions are
             # dynamic -- a Claude Code conversation id is not known when the
             # policy is written -- and without it a starter policy refuses
@@ -244,14 +254,14 @@ class Issuer:
             matched = True
             if tier > g["max_tier"]:
                 _note(1, f"tier {tier} exceeds max_tier {g['max_tier']} "
-                         f"granted to session {sess}")
+                         f"granted to session {sess}", _gi)
                 continue
             # "*" matches any action, for the same reason "*" matches any
             # session: a host allocates tool names the policy author cannot
             # know. MCP servers add tools at runtime.
             if "*" not in g["actions"] and action not in g["actions"]:
                 _note(0, f"action {action!r} not in the actions granted "
-                         f"to session {sess}: {g['actions']}")
+                         f"to session {sess}: {g['actions']}", _gi)
                 continue
             # TAINT. A grant may require a minimum band on the arguments, so
             # "tier 2 transfers may not be parameterised by tool output" is a
@@ -295,11 +305,11 @@ class Issuer:
                           f"taint: grant constrains argument(s) "
                           f"{', '.join(missing)}, which this call does not "
                           f"pass. A constraint on an absent argument is not "
-                          f"satisfied by its absence.")
+                          f"satisfied by its absence.", _gi)
                     continue
                 ok, why = taint_check_each(req, **(args or {}))
                 if not ok:
-                    _note(2, f"taint: {why} (grant for session {sess})")
+                    _note(2, f"taint: {why} (grant for session {sess})", _gi)
                     # A BAND refusal may also be one a human is allowed to
                     # answer, when the policy says so. "A document wants to
                     # change your address" is a decision a person should make;
@@ -317,7 +327,7 @@ class Issuer:
                 ok, why = check_readers(set(g["recipients"]), **(args or {}))
                 if not ok:
                     _note(2, f"confidentiality: {why} (grant for session "
-                             f"{sess})")
+                             f"{sess})", _gi)
                     continue
             # VALUE PREDICATES, last because they are the most expensive and
             # the most likely to need runtime context, and because a refusal
@@ -332,7 +342,7 @@ class Issuer:
                 ok, why, failed = predicate_check(g["require"], args or {},
                                                   context)
                 if not ok:
-                    _note(2, f"predicate: {why} (grant for session {sess})")
+                    _note(2, f"predicate: {why} (grant for session {sess})", _gi)
                     # The failing predicate is kept so a caller can ask whether
                     # a human may answer THIS refusal. Keeping only the last
                     # one matches `last_reason`: both describe the most
@@ -341,9 +351,14 @@ class Issuer:
                     if failed and failed.get("confirmable"):
                         self.confirmable_failures.append(failed)
                     continue
+            # An ALLOW names its grant too. A record showing None for a
+            # permitted call would say "no rule decided this", which is false
+            # and would leave a replay unable to group allows by rule at all.
+            self.deciding_grant = _gi
             return True, (f"granted by session {sess} at tier <= "
                           f"{g['max_tier']} for {action!r}")
         if matched:
+            self.deciding_grant = _last_note_grant[0]
             return False, last_reason or f"no grant matched for session {sess}"
         return False, (f"session {sess} appears in no grant. Absence is "
                        f"refusal: there is no default grant.")
