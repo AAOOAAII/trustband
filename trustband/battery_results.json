@@ -1,19 +1,20 @@
 {
   "artifact": "warrantable attack battery",
-  "generated_utc": "2026-09-01T08:20:37Z",
-  "commit": "0a5e28b0774c1c15a260d60e3d2177eb33e6f8ff",
+  "generated_utc": "2026-09-02T14:38:56Z",
+  "commit": "33634a0e0a8deaede24b0fde6489c0c818d52f9f",
   "branch": "fix/rconc-read-consumption",
   "tree_clean_for_these_paths": false,
   "uncommitted_paths": [
-    "M trustband/README.md",
     " M trustband/custody_demo.json",
-    " M trustband/gate.py",
-    " M trustband/policy_demo.json"
+    " M trustband/guard.py",
+    " M trustband/policy_demo.json",
+    " M trustband/trace.py",
+    "?? trustband/contracts.py"
   ],
   "python": "3.12.13",
   "platform": "Darwin arm64",
   "source_sha256": {
-    "trustband/gate.py": "6df71ee64f4281572a8a5a4a068e8cc39eb75f52409993d4a1bc9608ab6be9b3",
+    "trustband/gate.py": "f57a05de583f254310ef59e9b2a6a6ebb10f8ba1491c2bba42c1a787db632782",
     "trustband/transport.py": "e63ce0e13504ecab43c3c4c5990165952cd2506b7e45ae18e0c868ff2538209f",
     "scripts/warrantable_battery.py": "125d830af4e24a780e2b991ebc2c232f8399d0e84f25689c3ebdb38ccd96473f"
   },
