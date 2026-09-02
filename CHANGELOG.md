@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.1 — 2026-09-02
+
+No code changes. This release exists so the licence travels with the Work.
+
+- `LICENSE` — the Apache 2.0 text, which 0.1.0 and 0.2.0 declared but did not
+  ship. Apache 2.0 requires the text to accompany every distribution.
+- `NOTICE` — names the copyright holder, and states the patent scope
+  explicitly: under §3 a licence is granted only to claims this Work
+  necessarily practises as distributed. It names the inventions this Work
+  does **not** embody — geometric isolation, rate-limited rekeying, retrieval
+  isolation, cryptographic erasure — so that shipping under Apache 2.0 cannot
+  be read as licensing them. Also records that §6 grants no trademark rights.
+- `authors` set in package metadata; the field was empty on both prior
+  releases.
+
 ## 0.2.0 — 2026-09-02
 
 The decision record became durable, and five read paths were built on it.
