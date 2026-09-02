@@ -305,7 +305,8 @@ class Guard:
             return
         import subprocess
         payload = json.dumps({
-            "session": call.session, "tool": call.tool, "reason": why,
+            "session": call.session, "tool": call.tool,
+            "reason": self.redactor.value("reason", why),
             "approved": approved,
             "args": self.redactor.args(
                 {k: _plain(v) for k, v in call.args.items()}),
@@ -365,7 +366,13 @@ class Guard:
                 "tier": call.tier,
                 "allowed": bool(allowed),
                 "mode": self.mode,
-                "reason": why,
+                # THE REASON QUOTES VALUES, AND F5 ONLY REDACTED ARGS.
+                # `predicate: token 'sk-proj-…' is not in the allowlist` put a
+                # credential in the log with args already redacted beside it,
+                # and would have shipped it to a third-party collector. F5
+                # passed its gates because they tested argument values and
+                # never the sentence describing them.
+                "reason": self.redactor.value("reason", why),
                 "confirmable": bool(confirmable),
                 # WHICH rule decided, not only what it said. Replay groups by
                 # rule; prose is a message, not an identity. None means no
