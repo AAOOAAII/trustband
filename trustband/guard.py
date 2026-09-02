@@ -135,6 +135,15 @@ class Guard:
                 f"unattended.on_confirmable must be 'deny' or 'allow', not "
                 f"{self.on_confirmable!r}. 'queue' needs hosted routing.")
         self.notify_cmd: Optional[str] = un.get("notify")
+        #: Record what a tool RETURNED, not only that it returned something.
+        #: Off by default because tool outputs are large and this is the log a
+        #: user reads. Replay needs it: without it a replay answers from an
+        #: empty provenance store, every taint refusal vanishes, and the
+        #: candidate policy looks permissive and safe -- measured at 1/2
+        #: reproduced before this existed.
+        rr = (policy.get("record_results") or {})
+        self.record_results: bool = bool(rr.get("enabled", False))
+        self.record_results_max: int = int(rr.get("max_chars", 4000))
         #: Counted from the record, not from memory. The adapter is a
         #: subprocess per call, so an in-memory counter counts to one forever.
         self._calls: Dict[str, int] = {}
@@ -567,6 +576,11 @@ class Guard:
                     "event": "result",
                     "band": band.value,
                     "strings_remembered": n,
+                    "text": (self.redactor.value("result", _plain(result))
+                             [:self.record_results_max]
+                             if self.record_results and isinstance(_plain(result), str)
+                             else (json.dumps(_plain(result))[:self.record_results_max]
+                                   if self.record_results else None)),
                     # Who this came from, when it came from another agent. The
                     # name crosses; the store does not — B's record says the
                     # taint originated with A without giving B access to A.

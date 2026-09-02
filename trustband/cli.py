@@ -385,6 +385,11 @@ def main(argv=None) -> int:
     rp.add_argument("--tokens", action="store_true", default=True)
     rp.add_argument("--home", type=Path, default=None)
 
+    rpl = sub.add_parser("replay",
+                         help="what a candidate policy would have done")
+    rpl.add_argument("policy", type=Path, help="the candidate policy file")
+    rpl.add_argument("--home", type=Path, default=None)
+
     st = sub.add_parser("status",
                         help="tier, what is available, and what enforcement does")
     st.add_argument("--home", type=Path, default=None)
@@ -402,6 +407,24 @@ def main(argv=None) -> int:
 
     if a.cmd == "packs":
         return _packs()
+
+    if a.cmd == "replay":
+        from trustband.replay import render, InsufficientRecord
+        home = _home(a)
+        cfgp = home / "config.json"
+        cfg = (json.loads(cfgp.read_text(encoding="utf-8"))
+               if cfgp.exists() else {})
+        rec = cfg.get("policy")
+        recorded = (json.loads((home / rec).read_text(encoding="utf-8"))
+                    if isinstance(rec, str) else rec)
+        cand = json.loads(a.policy.read_text(encoding="utf-8"))
+        try:
+            for line in render(home / "audit.jsonl", cand, recorded):
+                print(line)
+        except InsufficientRecord as exc:
+            print(f"  cannot replay: {exc}")
+            return 1
+        return 0
 
     if a.cmd == "report":
         return _report(a)
