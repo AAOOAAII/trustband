@@ -77,6 +77,9 @@ contamination happened.
   closes, and it needs its own gates.
 - **Destination matching is substring containment**, deliberately crude. Fuzzy
   matching against a security control is where the next bypass lives.
-- **Untested against a live agent.** Every result here is at the gate. Whether
-  a model will operate usefully under a fixed plan is a utility question and
-  is not measured.
+- **~~Untested against a live agent.~~** Closed 2026-09-02. Measured in a real
+  tool-calling loop on qwen2.5:7b: 10/10 injected sends refused live at zero
+  benign cost, against an attack that lands 10/10 unprotected. The limit that
+  replaces it is narrower — whether an agent recovers from a plan refusal that
+  arrives mid-task is still unmeasured, because in every run the refusal came
+  after the useful work. See `PLAN_LIVE_RESULT.md`.
