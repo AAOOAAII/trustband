@@ -38,4 +38,7 @@ trustband-mcp = "trustband.adapters.mcp_proxy:main"
 packages = ["trustband", "trustband.adapters"]
 
 [tool.setuptools.package-data]
-"trustband" = ["packs/*.json"]
+# The measurement reports ship because every pack cites one. The source repo is
+# private, so a repo-relative citation resolved nowhere for the people the
+# citation exists to convince.
+"trustband" = ["packs/*.json", "measurements/*.md"]

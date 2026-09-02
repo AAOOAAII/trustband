@@ -124,11 +124,26 @@ def _status(a) -> int:
 
 
 def _packs() -> int:
+    """Every pack, with the measurement behind it resolved to a real file.
+
+    The citation used to be a repo-relative path in a private repository, so a
+    user who wanted to check the number had nowhere to go. A citation that
+    resolves nowhere is worse than none: it borrows the authority of evidence
+    without supplying any.
+    """
     d = _packs_dir()
+    md = Path(__file__).resolve().parent / "measurements"
     for f in sorted(d.glob("*.json")):
         meta = json.loads(f.read_text(encoding="utf-8")).get("_pack", {})
         print(f"  {meta.get('name', f.stem)}")
         print(f"    {meta.get('description', '')}")
+        for cite in (meta.get("measurement") or "").split(","):
+            cite = cite.strip()
+            if not cite.endswith(".md"):
+                continue
+            here = md / Path(cite).name
+            print(f"    evidence: {here}" if here.exists()
+                  else f"    evidence: {cite} (not shipped; see trust.band)")
     return 0
 
 
