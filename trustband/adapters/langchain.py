@@ -104,13 +104,30 @@ def guarded_tool(tool: Any, guard: Guard, session: str,
             pass
         return inner
 
-    original = getattr(tool, "_run", None)
-    if callable(original):
-        object.__setattr__(tool, "_run", _wrap(original, False))
-
-    aoriginal = getattr(tool, "_arun", None)
-    if callable(aoriginal):
-        object.__setattr__(tool, "_arun", _wrap(aoriginal, True))
+    # WRAP WHAT THE FRAMEWORK ACTUALLY CALLS, NOT WHAT ITS BASE CLASS DECLARES.
+    #
+    # LangChain's BaseTool.run calls self._run. CrewAI's BaseTool.run also
+    # calls self._run -- but its `Tool` subclass, which the @tool decorator
+    # returns, overrides run() and calls `self.func(...)` directly. A wrapper
+    # on _run is installed on a method that framework never invokes, and the
+    # tool executes while every check looks green. Found by running CrewAI
+    # 1.15.18, not by reading its base class.
+    #
+    # So every entry point present is wrapped. Wrapping more than the framework
+    # uses is harmless -- the guard is idempotent per call path and a tool is
+    # entered once.
+    wrapped_any = False
+    for attr, is_async in (("_run", False), ("_arun", True), ("func", False),
+                           ("coroutine", True)):
+        fn = getattr(tool, attr, None)
+        if callable(fn):
+            object.__setattr__(tool, attr, _wrap(fn, is_async))
+            wrapped_any = True
+    if not wrapped_any:
+        raise GuardConfigError(
+            f"{name!r} exposes no callable entry point among _run/_arun/func/"
+            f"coroutine, so it cannot be gated. Refusing rather than returning "
+            f"an ungated tool that looks guarded.")
 
     object.__setattr__(tool, "_trustband_wrapped", True)
     return tool

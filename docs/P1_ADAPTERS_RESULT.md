@@ -12,7 +12,7 @@ before the code.**
 | P-P1.3 existing conformance unchanged | **PASS-CLEAN** |
 | P-P1.4 shadow refuses nothing | **PASS-CLEAN** |
 | P-P1.5 sessions are distinct | **PASS-CLEAN** |
-| P-P1.6 verified against the real library, or not shipped | **PARTIAL** |
+| P-P1.6 verified against the real library, or not shipped | **PASS-CLEAN** |
 
 ## The design the plan did not anticipate
 
@@ -70,12 +70,32 @@ unwrapped tools raises the identical error**, so this is LangGraph's API in
 this version and not the adapter. Recorded rather than worked around, and the
 graph test covers the same path.
 
-## P-P1.6 — PARTIAL, and the missing piece is named
+## CrewAI — a second framework, a second bypass
 
-LangChain and LangGraph are verified against installed libraries with seven
-tests. **CrewAI is not installed and therefore not built and not claimed.**
-The honest count is **four adapters, not six**: Claude Code, MCP, LangChain,
-LangGraph.
+CrewAI 1.15.18 was installed and the adapter extended to it. The existing
+wrapper **did not transfer**, and the failure was silent: the tool executed
+while every visible check looked green.
+
+`crewai.tools.BaseTool.run` calls `self._run`, so wrapping `_run` looks
+correct. But the `Tool` subclass that the `@tool` decorator returns **overrides
+`run()` and calls `self.func(...)` directly**. The wrapper was installed on a
+method that framework never invokes.
+
+```
+before: shell: EXECUTED   tool body ran: True
+after : shell: refused    tool body ran: False
+```
+
+Fixed by wrapping every entry point present — `_run`, `_arun`, `func`,
+`coroutine` — and by **refusing to wrap a tool that exposes none**, since
+handing back an ungated tool that looks guarded is the worst outcome available.
+
+Two frameworks, two different bypasses, both found by executing rather than
+reading. That is P-P1.6 earning its place twice.
+
+LangChain, LangGraph and CrewAI are all verified against installed libraries.
+The honest count is **five adapters**: Claude Code, MCP, LangChain, LangGraph,
+CrewAI.
 
 **GitHub Actions is not an adapter.** There is no agent runtime to intercept;
 running trustband in CI is a `verify` command and belongs with P3. Counting it
@@ -84,5 +104,5 @@ as an integration would have inflated the comparison-table row.
 ## Regression
 
 ```
-conformance 18/18 · langchain adapter 7/7
+conformance 18/18 · policy 87/87 · battery 6/6 · adapter tests 10/10
 ```
