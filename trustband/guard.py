@@ -33,6 +33,7 @@ from trustband.confirm import ConfirmationLedger, ConfirmationRequest
 from trustband.gate import Band, Gate
 from trustband.issuance import Issuer
 from trustband.provenance import ProvenanceStore
+from trustband.redact import Redactor, from_config as redact_from_config
 from trustband.taint import Tainted
 
 
@@ -68,7 +69,8 @@ class Guard:
                  provenance_max_entries: int = 4096,
                  gate: Optional[Gate] = None,
                  detectors: Optional[list] = None,
-                 audit_path: Optional[Any] = None) -> None:
+                 audit_path: Optional[Any] = None,
+                 redactor: Optional["Redactor"] = None) -> None:
         if mode not in ("shadow", "enforce"):
             raise GuardConfigError(
                 f"mode must be 'shadow' or 'enforce', not {mode!r}")
@@ -102,6 +104,10 @@ class Guard:
         #: Per-session call cap. `gov_budget` is the capability-MINTING budget
         #: from the proof model and is a different thing entirely; this counts
         #: tool calls, which is what a person means by "runaway".
+        #: Applied to argument values on the way INTO the record, never at
+        #: render: redacting in the viewer would leave the secret on disk while
+        #: looking like protection.
+        self.redactor = redactor if redactor is not None else Redactor()
         sess_cfg = policy.get("session") or {}
         self.max_calls: Optional[int] = sess_cfg.get("max_calls")
         #: Counted from the record, not from memory. The adapter is a
@@ -138,7 +144,8 @@ class Guard:
                    detectors=detectors,
                    # Beside the config, so every adapter loading a config gets
                    # the log without having to know to ask for it.
-                   audit_path=cfg.get("audit_path", p.parent / "audit.jsonl"))
+                   audit_path=cfg.get("audit_path", p.parent / "audit.jsonl"),
+                   redactor=redact_from_config(cfg))
 
     @classmethod
     def from_bundle(cls, bundle_path: Any, key: Optional[bytes] = None,
@@ -206,7 +213,10 @@ class Guard:
                 "reason": why,
                 "confirmable": bool(confirmable),
                 "bands": {k: _band_of(v).value for k, v in banded.items()},
-                "args": {k: _plain(v) for k, v in call.args.items()},
+                # P-F5.3: on the way in. The gate above already decided on
+                # the real values; only the record is redacted.
+                "args": self.redactor.args(
+                    {k: _plain(v) for k, v in call.args.items()}),
                 "ms": round(ms, 4),
             })
         except Exception:
