@@ -24,11 +24,13 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-# The PyPI page is an acquisition surface and it linked nowhere. Only the
-# product site goes here: the source repository is private, and a Project-URL
-# that 404s is worse than an absent one.
+# The PyPI page is an acquisition surface. The source repository is a public
+# mirror of this one, cut on an allowlist: code, tests, and every measurement
+# gate and result, without internal planning documents.
 [project.urls]
 Homepage = "https://trust.band"
+Repository = "https://github.com/AAOOAAII/trustband"
+Changelog = "https://github.com/AAOOAAII/trustband/blob/main/CHANGELOG.md"
 
 [project.scripts]
 trustband = "trustband.cli:main"
