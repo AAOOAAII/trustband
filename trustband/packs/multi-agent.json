@@ -1,0 +1,25 @@
+{
+ "version": 1,
+ "_pack": {
+  "name": "multi-agent",
+  "description": "For agents that hand work to each other. Refuses an action whose argument arrived through a handoff rather than from the session. Measured: with separate sessions a verbatim payload passed from one agent to another was PERMITTED until handoffs were banded, then refused (docs/HANDOFF_RESULT.md). Does NOT catch a payload an agent paraphrased \u2014 that launders under every arrangement tested.",
+  "scope": "Requires the host to call Guard.handoff() when passing work between agents. A handoff trustband is never told about is a hole, exactly as an unreported tool result is. Start in shadow.",
+  "measurement": "docs/HANDOFF_RESULT.md"
+ },
+ "grants": [
+  {
+   "sess": "*",
+   "max_tier": 2,
+   "actions": [
+    "*"
+   ],
+   "arg_bands": {
+    "command": "session",
+    "url": "session",
+    "body": "session"
+   },
+   "bands_when_present": true,
+   "confirmable": true
+  }
+ ]
+}

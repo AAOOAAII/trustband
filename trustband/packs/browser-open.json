@@ -1,0 +1,24 @@
+{
+ "version": 1,
+ "_pack": {
+  "name": "browser-open",
+  "description": "For a browser agent with no fixed destination list \u2014 research, comparison, general browsing. Refuses an action whose argument came from page content rather than from the session. Measured: a payload split across HTML tags went from 0/5 refused to 5/5 once the store kept rendered and decoded forms of what tools returned (docs/CANONICAL_PROVENANCE_RESULT.md, Qwen2.5-7B). Does NOT catch a payload the model paraphrased in its own words.",
+  "scope": "This is the case a host allowlist cannot cover, and the only one here where provenance rather than an allowlist does the work. Pair it with a per-task plan for stronger cover. Start in shadow.",
+  "measurement": "docs/CANONICAL_PROVENANCE_RESULT.md"
+ },
+ "grants": [
+  {
+   "sess": "*",
+   "max_tier": 2,
+   "actions": [
+    "*"
+   ],
+   "arg_bands": {
+    "url": "session",
+    "query": "session"
+   },
+   "bands_when_present": true,
+   "confirmable": true
+  }
+ ]
+}

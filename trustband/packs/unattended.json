@@ -1,0 +1,27 @@
+{
+ "version": 1,
+ "_pack": {
+  "name": "unattended",
+  "description": "For an agent with nobody at the keyboard \u2014 cron, a webhook, CI, a queue worker. Refuses what a person would have been asked to approve, and runs a command to tell someone. NOT an attack measurement: this pack describes verified BEHAVIOUR (docs/F7_UNATTENDED_RESULT.md), not a measured attack outcome, and claims no interception rate.",
+  "scope": "The notifier cannot approve anything \u2014 its exit code is never read. Set notify to a command you already run. on_confirmable: allow is available and records that nobody approved, rather than recording an approval that did not happen. Start in shadow.",
+  "measurement": "docs/F7_UNATTENDED_RESULT.md (behaviour, not an attack rate)"
+ },
+ "grants": [
+  {
+   "sess": "*",
+   "max_tier": 2,
+   "actions": [
+    "*"
+   ],
+   "arg_bands": {
+    "command": "session"
+   },
+   "bands_when_present": true,
+   "confirmable": true
+  }
+ ],
+ "unattended": {
+  "on_confirmable": "deny",
+  "notify": "cat >> ~/.trustband/refusals.log"
+ }
+}

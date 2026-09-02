@@ -1,0 +1,29 @@
+{
+ "version": 1,
+ "_pack": {
+  "name": "browser-scoped",
+  "description": "For a browser agent with a known set of destinations \u2014 a checkout flow, an internal tool. Refuses any URL whose HOST is not on your list, parsed rather than matched as text. Measured: refuses recorded page injections 5/5, including a payload split across HTML tags (docs/HOST_ALLOWLIST_RESULT.md, docs/BROWSER_SURVIVAL_RESULT.md, Qwen2.5-7B). A host allowlist alone does this \u2014 provenance adds nothing here, and a params-only engine that parses hosts matches it.",
+  "scope": "Replace the hosts below with yours. Useless for an open-ended agent: a research task visits hosts nobody enumerated, and this refuses 4 of 5 of a general browse. Use browser-open for that. Start in shadow.",
+  "measurement": "docs/HOST_ALLOWLIST_RESULT.md"
+ },
+ "grants": [
+  {
+   "sess": "*",
+   "max_tier": 2,
+   "actions": [
+    "*"
+   ],
+   "require": [
+    {
+     "arg": "url",
+     "op": "host_in_set",
+     "values": [
+      "example.com",
+      "www.example.com"
+     ],
+     "confirmable": true
+    }
+   ]
+  }
+ ]
+}

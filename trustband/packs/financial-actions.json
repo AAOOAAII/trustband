@@ -1,21 +1,56 @@
 {
-  "version": 1,
-  "_pack": {
-    "name": "financial-actions",
-    "description": "For an agent that can move money. A payment needs a known payee AND an amount within a ceiling; either failing asks a human. Measured on AgentDojo banking: 36 attacks to 0, two benign tasks recoverable by confirmation.",
-    "scope": "Set known_payees and max amount from the account's own history, not from a number you pick. Start in shadow."
+ "version": 1,
+ "_pack": {
+  "name": "financial-actions",
+  "description": "For an agent that can move money. A payment needs a known payee AND an amount within a ceiling; either failing asks a human. Measured on AgentDojo banking: 36 attacks to 0, two benign tasks recoverable by confirmation. This pack rests on VALUE predicates, not provenance: on the same suite a params-only engine also reached 0/144, with better benign utility. Where you can enumerate the payees, provenance adds nothing and this pack is doing the work an allowlist does.",
+  "scope": "Set known_payees and max amount from the account's own history, not from a number you pick. Start in shadow.",
+  "measurement": "docs/MEASUREMENT_RESULT.md"
+ },
+ "grants": [
+  {
+   "sess": "*",
+   "max_tier": 2,
+   "actions": [
+    "get_balance",
+    "get_transactions",
+    "get_iban",
+    "read"
+   ]
   },
-  "grants": [
-    {"sess": "*", "max_tier": 2, "actions": ["get_balance", "get_transactions", "get_iban", "read"]},
-    {"sess": "*", "max_tier": 2, "actions": ["update_password", "update_user_info"],
-     "min_band": "session", "confirmable": true},
-    {"sess": "*", "max_tier": 2,
-     "actions": ["send_money", "schedule_transaction", "update_scheduled_transaction"],
-     "require": [
-       {"arg": "recipient", "op": "in_context", "key": "known_payees",
-        "when_present": true, "confirmable": true},
-       {"arg": "amount", "op": "max_minor", "value": 110000,
-        "when_present": true, "confirmable": true}
-     ]}
-  ]
+  {
+   "sess": "*",
+   "max_tier": 2,
+   "actions": [
+    "update_password",
+    "update_user_info"
+   ],
+   "min_band": "session",
+   "confirmable": true
+  },
+  {
+   "sess": "*",
+   "max_tier": 2,
+   "actions": [
+    "send_money",
+    "schedule_transaction",
+    "update_scheduled_transaction"
+   ],
+   "require": [
+    {
+     "arg": "recipient",
+     "op": "in_context",
+     "key": "known_payees",
+     "when_present": true,
+     "confirmable": true
+    },
+    {
+     "arg": "amount",
+     "op": "max_minor",
+     "value": 110000,
+     "when_present": true,
+     "confirmable": true
+    }
+   ]
+  }
+ ]
 }

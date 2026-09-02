@@ -1,13 +1,26 @@
 {
-  "version": 1,
-  "_pack": {
-    "name": "messaging-agent",
-    "description": "For an agent that posts messages or sends email. Refuses a message body or recipient derived from tool output, and asks a human. Measured on AgentDojo slack: 46 attacks to 22 at zero benign cost, where a params-only engine caught nothing.",
-    "scope": "Free-text bodies cannot be allowlisted, so this leans entirely on provenance. Start in shadow."
-  },
-  "grants": [
-    {"sess": "*", "max_tier": 2, "actions": ["*"],
-     "arg_bands": {"body": "session", "recipient": "session", "content": "session", "to": "session"},
-     "bands_when_present": true, "confirmable": true}
-  ]
+ "version": 1,
+ "_pack": {
+  "name": "messaging-agent",
+  "description": "For an agent that posts messages or sends email. Refuses a message body or recipient derived from tool output, and asks a human. Measured on AgentDojo slack: 46 attacks to 22 at zero benign cost, where a params-only engine caught nothing. Does NOT catch a body the model paraphrased: whole-argument provenance fires on verbatim survival only.",
+  "scope": "Free-text bodies cannot be allowlisted, so this leans entirely on provenance. Start in shadow.",
+  "measurement": "docs/MEASUREMENT_RESULT.md"
+ },
+ "grants": [
+  {
+   "sess": "*",
+   "max_tier": 2,
+   "actions": [
+    "*"
+   ],
+   "arg_bands": {
+    "body": "session",
+    "recipient": "session",
+    "content": "session",
+    "to": "session"
+   },
+   "bands_when_present": true,
+   "confirmable": true
+  }
+ ]
 }
