@@ -15,6 +15,55 @@ def _packs_dir() -> Path:
     return Path(__file__).resolve().parent / "packs"
 
 
+def _export(a) -> int:
+    """Ship the decision record to a collector, or write it out for one.
+
+    WHY THIS COMMAND EXISTS AT ALL
+        `otel.py` shipped in 0.2.0 as a library module that nothing called.
+        Every claim made for it was true and none of it was reachable without
+        writing your own driver, which is not a feature, it is a file.
+
+    IT REPORTS WHAT WENT AND WHAT DID NOT
+        The Exporter never raises: a collector that is down must not become a
+        security event. That is right for the hot path and wrong for a command
+        a person just ran, so the failure is printed here rather than swallowed.
+    """
+    from trustband.audit import AuditLog
+    from trustband.otel import Exporter, payload
+
+    home = _home(a)
+    log = home / "audit.jsonl"
+    if not log.exists():
+        print(f"  no record at {log}")
+        print("  run the agent with the hook installed, then export.")
+        return 1
+
+    events = [e.body for e in AuditLog(log).entries]
+    if a.session:
+        events = [b for b in events if b.get("session") == a.session]
+    if not events:
+        print("  nothing to export"
+              + (f" for session {a.session}" if a.session else ""))
+        return 1
+
+    if not a.endpoint and not a.out:
+        print("  give --endpoint to send, or --out to write the payload.")
+        print("  Nothing was sent; refusing to guess a destination.")
+        return 2
+
+    exp = Exporter(endpoint=a.endpoint, path=a.out, service=a.service)
+    ok = exp.export(events)
+    where = a.endpoint or a.out
+    if ok:
+        print(f"  {len(events)} event(s) exported to {where}")
+        return 0
+    for err in exp.errors:
+        print(f"  export failed: {err}")
+    if not exp.errors:
+        print(f"  export did not go to {where}, and reported no reason")
+    return 1
+
+
 def _report(a) -> int:
     """Token accounting. Cost only if the operator declared rates."""
     from trustband.tokens_report import main as _tok
@@ -390,6 +439,18 @@ def main(argv=None) -> int:
     rpl.add_argument("policy", type=Path, help="the candidate policy file")
     rpl.add_argument("--home", type=Path, default=None)
 
+    ex = sub.add_parser("export",
+                        help="ship the record to an OTLP/JSON collector")
+    ex.add_argument("--endpoint", default=None,
+                    help="OTLP/HTTP traces endpoint, e.g. "
+                         "http://localhost:4318/v1/traces")
+    ex.add_argument("--out", type=Path, default=None,
+                    help="write the payload to a file instead of sending it")
+    ex.add_argument("--service", default="trustband")
+    ex.add_argument("--session", default=None,
+                    help="export one session rather than the whole log")
+    ex.add_argument("--home", type=Path, default=None)
+
     st = sub.add_parser("status",
                         help="tier, what is available, and what enforcement does")
     st.add_argument("--home", type=Path, default=None)
@@ -425,6 +486,9 @@ def main(argv=None) -> int:
             print(f"  cannot replay: {exc}")
             return 1
         return 0
+
+    if a.cmd == "export":
+        return _export(a)
 
     if a.cmd == "report":
         return _report(a)

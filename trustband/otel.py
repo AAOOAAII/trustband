@@ -102,13 +102,27 @@ def span_for(event: Dict[str, Any], service: str = "trustband") -> Dict[str, Any
     }
 
 
+def _version() -> str:
+    """The installed version, read rather than typed.
+
+    It was typed once and was a release out of date by the time anyone looked,
+    which in a telemetry stream is worse than absent: it silently attributes
+    spans to the wrong build.
+    """
+    try:
+        from importlib.metadata import version
+        return version("trustband")
+    except Exception:                                   # noqa: BLE001
+        return "unknown"
+
+
 def payload(events: List[Dict[str, Any]], service: str = "trustband"
             ) -> Dict[str, Any]:
     """A complete OTLP/JSON ExportTraceServiceRequest."""
     return {"resourceSpans": [{
         "resource": {"attributes": [_attr("service.name", service)]},
         "scopeSpans": [{
-            "scope": {"name": "trustband", "version": "0.1.0"},
+            "scope": {"name": "trustband", "version": _version()},
             "spans": [span_for(e, service) for e in events],
         }],
     }]}
