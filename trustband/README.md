@@ -54,7 +54,7 @@ could disagree with the audit exactly when the audit matters.
 trustband trace           # a session: each argument with the band it arrived at
 trustband report          # tokens per class, from the transcript, never estimated
 trustband replay -p new.json   # what a candidate policy would have done
-trustband export --otlp <endpoint>   # OTLP/JSON, no SDK
+trustband export --endpoint http://localhost:4318/v1/traces   # OTLP/JSON, no SDK
 ```
 
 `trace` is the one to keep installed on a day nobody is attacking. The honest
