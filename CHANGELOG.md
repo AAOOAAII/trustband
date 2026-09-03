@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.5.0 — 2026-09-03
+
+### The Pro client, standard library only
+
+Six commands that talk to the hosted service. Every one reads the local
+record *after* decisions were made; `guard.py` has no reference to any of
+them, asserted structurally. No key configured means they say so and exit;
+the gate and the local log never depend on them.
+
+- `trustband login <key>` — writes the key into config and nothing else.
+- `trustband sync` — pushes the local chain's new entries. The service
+  verifies every digest and link on ingest and refuses a break with the
+  sequence number; resumable from the service's own head; idempotent.
+- `trustband search` — across sessions and devices, by agent, tool,
+  session, refused-only, text.
+- `trustband push-policy <bundle>` / `trustband pull-policy` — one signed
+  policy everywhere. The signature is verified **on the device** with the
+  key in config; the service holds no key and cannot sign. A version floor
+  beside the config refuses a served downgrade whatever the service says.
+- `trustband regress <candidate>` — what a policy change would have refused
+  over retained traffic, per device, with the package's own `replay`. A
+  device whose corpus cannot rebuild provenance says so rather than
+  under-reporting.
+
+`trustband status` now names the seven hosted services in the order a
+developer would say yes, with the command that reaches each.
+
 ## 0.4.0 — 2026-09-03
 
 ### Free local alerts

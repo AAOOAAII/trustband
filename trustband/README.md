@@ -115,6 +115,20 @@ exits the instant it decides loses nothing. Shadow mode sends one digest
 per `shadow-report`, never a message per would-have-refused call.
 `trustband alert-test` proves the wiring.
 
+## When the agents work for someone else
+
+```bash
+trustband login tb_live_…      # the key from checkout; nothing else changes
+trustband sync                 # the chain, verified on ingest by a party who cannot edit it
+trustband search --refused --agent researcher
+trustband regress candidate.json   # what this change would have refused last week
+trustband pull-policy          # one signed policy everywhere, verified on the device
+```
+
+The decision stays local on every tier: nothing hosted is consulted by the
+gate, and `guard.py` has no reference to any of this. A lapsed key stops
+sync and says so; enforcement and the local log carry on unchanged.
+
 ## Reading the record
 
 Every decision is written to a hash-chained log. These read it and nothing else
