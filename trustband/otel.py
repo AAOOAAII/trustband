@@ -69,6 +69,9 @@ def span_for(event: Dict[str, Any], service: str = "trustband") -> Dict[str, Any
         attrs.append(_attr("trustband.agent", event["agent"]))
         if event.get("agent_role"):
             attrs.append(_attr("trustband.agent.role", event["agent_role"]))
+    if event.get("event") == "lock_drift":
+        attrs += [_attr("trustband.lock.item", event.get("item", "")),
+                  _attr("trustband.lock.change", event.get("change", ""))]
     if is_decision:
         attrs += [
             _attr("trustband.decision", "allow" if allowed else "refuse"),

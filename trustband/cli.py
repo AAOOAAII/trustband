@@ -225,16 +225,129 @@ def _shadow_report(a) -> int:
             if len(seen) >= 4:
                 break
 
-    # The conversion moment, computed from THIS traffic or not shown at all.
-    # An upsell that fires regardless of what happened is an advertisement.
-    from trustband.entitlement import from_config, upgrade_prompt
     cfg_path = home / "config.json"
     cfg = (json.loads(cfg_path.read_text(encoding="utf-8"))
            if cfg_path.exists() else {})
+
+    # ONE digest per report, never per observation. Shadow alerts on nothing
+    # per event; this is the one message the onboarding week delivers.
+    try:
+        from trustband.alerts import Alerter, validate as _aval
+        pol = _policy_from_config(home, cfg)
+        urls = _aval(pol.get("alerts")) if pol else {}
+        if urls:
+            import collections as _c
+            top = [r for r, _ in _c.Counter(
+                o.get("reason", "")[:100] for o in refused).most_common(3)]
+            al = Alerter(urls, mode="shadow", home=home, background=False)
+            al.fire("shadow_digest", {
+                "event": "shadow_digest", "observed": len(obs),
+                "would_refuse": len(refused), "top_reasons": top})
+            al.drain_now()
+            print(f"  digest sent to the shadow_digest webhook")
+    except Exception as e:
+        print(f"  (alert not sent: {e})")
+
+    # The conversion moment, computed from THIS traffic or not shown at all.
+    # An upsell that fires regardless of what happened is an advertisement.
+    from trustband.entitlement import from_config, upgrade_prompt
     prompt = upgrade_prompt(obs, from_config(cfg))
     if prompt:
         print()
         print(f"  {prompt}")
+    return 0
+
+
+def _policy_from_config(home: Path, cfg: dict) -> dict:
+    """The policy the config points at, or {} if there is none."""
+    ref = cfg.get("policy")
+    if ref is None:
+        return {}
+    if isinstance(ref, dict):
+        return ref
+    p = home / ref
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+
+
+def _lock(a) -> int:
+    """status / diff / accept / init for the provenance lockfile."""
+    from trustband.lock import Lockfile, LockError, read_pending
+    home = _home(a)
+    pending = read_pending(home)
+    try:
+        lock = Lockfile(home / "trustband.lock")
+    except LockError as e:
+        print(f"  {e}")
+        return 1
+    drifts = lock.check(list(pending.values()), full=False) if lock.exists else []
+    if a.op == "status":
+        print(f"  lockfile: {'present, ' + str(len(lock.items)) + ' item(s) pinned' if lock.exists else 'none'}")
+        if not lock.exists:
+            print(f"  {len(pending)} pending — seen by an adapter, not yet pinned")
+            if pending:
+                print("  run `trustband lock accept` to pin them (this is `init`)")
+        else:
+            print(f"  {len(drifts)} drifted — changed or new since pinning")
+            if drifts:
+                print("  run `trustband lock diff` to see what changed")
+        return 0
+    if a.op == "diff":
+        if not drifts:
+            print("  nothing has drifted" if lock.exists else "  no lockfile yet; run `trustband lock accept`")
+            return 0
+        for d in drifts:
+            print(f"  {d['item']}  {d['change']}")
+            b = (d.get("before") or {}).get("description")
+            n = (d.get("after") or {}).get("description")
+            if b is not None:
+                print(f"    was: {b[:300]}")
+            if n is not None:
+                print(f"    now: {n[:300]}")
+            if (d.get("before") or {}).get("schema") != (d.get("after") or {}).get("schema"):
+                print("    schema changed")
+        print(f"\n  {len(drifts)} item(s). If every change is expected: `trustband lock accept`")
+        return 0
+    if a.op in ("accept", "init"):
+        if not pending:
+            print("  nothing pending to accept")
+            return 0
+        lock.accept(list(pending.values()))
+        try:
+            (home / "lock_pending.json").unlink()
+        except FileNotFoundError:
+            pass
+        print(f"  pinned {len(pending)} item(s); lock digest {lock.digest[:16]}…")
+        print("  every capability minted under the previous manifest is now dead at (G)")
+        return 0
+    print("usage: trustband lock {status|diff|accept|init}")
+    return 2
+
+
+def _alert_test(a) -> int:
+    """Send one synthetic event of a class, to prove the wiring end to end."""
+    from trustband.alerts import Alerter, CLASSES, validate as _aval
+    home = _home(a)
+    cfgp = home / "config.json"
+    cfg = json.loads(cfgp.read_text(encoding="utf-8")) if cfgp.exists() else {}
+    urls = _aval(_policy_from_config(home, cfg).get("alerts"))
+    if not urls:
+        print("  no alerts configured. Add to the policy:")
+        print('    "alerts": {"*": "https://hooks.slack.com/services/..."}')
+        print(f"  classes: {', '.join(CLASSES)}")
+        return 1
+    al = Alerter(urls, mode="enforce", home=home, background=False)
+    body = {"event": "decision", "tool": "example", "allowed": False,
+            "reason": "test alert from `trustband alert-test`; nothing was refused",
+            "session": "test"}
+    if a.cls == "shadow_digest":
+        body = {"event": "shadow_digest", "observed": 0, "would_refuse": 0}
+    sent = al.fire(a.cls, body)
+    if not sent:
+        print(f"  no URL for class {a.cls!r} and no '*' default")
+        return 1
+    n = al.drain_now()
+    print(f"  {a.cls} -> {al.url_for(a.cls)}  ({n} delivered or recorded as failed)")
+    print(f"  delivery failures, if any, land in {home / 'alerts_failed.jsonl'}")
     return 0
 
 
@@ -435,6 +548,15 @@ def main(argv=None) -> int:
 
     sub.add_parser("packs", help="list the bundled policy packs")
 
+    lk = sub.add_parser("lock", help="the provenance lockfile: status, diff, accept")
+    lk.add_argument("op", choices=["status", "diff", "accept", "init"])
+    lk.add_argument("--home", type=Path, default=None)
+
+    at = sub.add_parser("alert-test",
+                        help="send one synthetic event to a configured webhook")
+    at.add_argument("cls", nargs="?", default="refusal")
+    at.add_argument("--home", type=Path, default=None)
+
     ra = sub.add_parser("revoke-agent",
                         help="refuse every later call by a named agent")
     ra.add_argument("name")
@@ -519,6 +641,12 @@ def main(argv=None) -> int:
     if a.cmd == "trace":
         from trustband.trace import main as _trace
         return _trace(_home(a) / "audit.jsonl", a.session, a.last, a.also)
+
+    if a.cmd == "lock":
+        return _lock(a)
+
+    if a.cmd == "alert-test":
+        return _alert_test(a)
 
     if a.cmd == "revoke-agent":
         # Writes the name into the revocation file beside the audit log.

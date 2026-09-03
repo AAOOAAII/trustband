@@ -1,8 +1,8 @@
 {
   "artifact": "warrantable attack battery",
-  "generated_utc": "2026-09-03T06:42:23Z",
-  "commit": "8eca00927c59bbbfebcfffff057665cf59dec2ab",
-  "branch": "phase7-agent-identity",
+  "generated_utc": "2026-09-03T10:27:04Z",
+  "commit": "87784c61743467b71e9699851731fca0a01f38a9",
+  "branch": "phase8-surfaces",
   "tree_clean_for_these_paths": true,
   "uncommitted_paths": [],
   "python": "3.12.13",

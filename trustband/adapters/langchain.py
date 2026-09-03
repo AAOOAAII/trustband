@@ -97,6 +97,20 @@ def guarded_tool(tool: Any, guard: Guard, session: str,
             ToolCall(session=session, tool=name, args={}, agent=agent),
             result, Band.TOOL)
 
+    def _remember_error(exc: BaseException) -> None:
+        # AN ERROR IS A TOOL RESULT. Measured (P8): a tool that raised with a
+        # payload in its message left nothing in the store, so the model's
+        # next argument built from that message looked session-authored.
+        # Error text carries implicit authority -- the agent must read it to
+        # self-correct -- which makes it the better injection channel, not
+        # the safer one. Banded TOOL, then re-raised untouched.
+        try:
+            guard.after_tool_result(
+                ToolCall(session=session, tool=name, args={}, agent=agent),
+                f"{type(exc).__name__}: {exc}", Band.TOOL)
+        except Exception:
+            pass
+
     # THE WRAPPER MUST KEEP THE ORIGINAL SIGNATURE.
     #
     # LangChain inspects `_run` to decide what to inject -- `config`, the
@@ -112,14 +126,26 @@ def guarded_tool(tool: Any, guard: Guard, session: str,
             @functools.wraps(fn)
             async def inner(*args: Any, **kwargs: Any) -> Any:
                 _decide(_as_kwargs(fn, args, kwargs))
-                out = await fn(*args, **kwargs)
+                try:
+                    out = await fn(*args, **kwargs)
+                except ToolRefused:
+                    raise
+                except BaseException as exc:
+                    _remember_error(exc)
+                    raise
                 _remember(out)
                 return out
         else:
             @functools.wraps(fn)
             def inner(*args: Any, **kwargs: Any) -> Any:
                 _decide(_as_kwargs(fn, args, kwargs))
-                out = fn(*args, **kwargs)
+                try:
+                    out = fn(*args, **kwargs)
+                except ToolRefused:
+                    raise
+                except BaseException as exc:
+                    _remember_error(exc)
+                    raise
                 _remember(out)
                 return out
         try:
@@ -184,7 +210,45 @@ def _as_kwargs(fn: Callable[..., Any], args: tuple, kwargs: Dict[str, Any]
     return out
 
 
+def restore_state(guard: Guard, session: str, state: Any,
+                  from_session: str = "") -> int:
+    """Memory across time is a handoff across time.
+
+    Measured (P8): a value a tool returned in session one, carried in a
+    LangGraph checkpoint into session two, arrived in session two's store
+    unknown and was accepted as session-authored. The same laundering
+    handoff banding closes between agents, across a persistence boundary.
+
+    Call this with the loaded state before the new session's first action.
+    Every string reachable in it is remembered TOOL for `session`; the old
+    session's store is not shared. Returns how many strings were banded.
+    """
+    if not session:
+        raise GuardConfigError("restore_state needs the new session's identity")
+    before = len(guard._store(session))
+    guard.handoff(session, state, from_session=from_session or None)
+    return len(guard._store(session)) - before
+
+
 def guard_tools(tools: Any, guard: Guard, session: str, tier: int = 2,
                 agent: Any = None) -> Any:
-    """Wrap every tool in a list. The usual entry point for an agent or graph."""
+    """Wrap every tool in a list. The usual entry point for an agent or graph.
+
+    Also the observation point for the lockfile: name, description and the
+    argument schema of every tool, as the framework exposes them, pinned on
+    first acceptance and checked here on every later construction.
+    """
+    from trustband.lock import observe as _obs
+    items = []
+    for t in tools:
+        name = getattr(t, "name", None) or type(t).__name__
+        try:
+            schema = getattr(t, "args", None)
+        except Exception:
+            schema = None
+        items.append(_obs("tool", str(name), getattr(t, "description", "") or "", schema))
+    try:
+        guard.observe_catalog(session, "tool", items, full=False)
+    except Exception:
+        pass
     return [guarded_tool(t, guard, session, tier, agent) for t in tools]

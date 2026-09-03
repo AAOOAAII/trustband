@@ -59,6 +59,12 @@ from trustband.provenance import ProvenanceStore
 #: Where config and per-session provenance live. Overridable for testing.
 HOME = Path(os.environ.get("TRUSTBAND_HOME",
                            Path.home() / ".trustband"))
+#: What this hook can see of the catalog. It cannot see `tools/list`, so it
+#: pins the MCP server ENTRIES and the skill FILES, and says so.
+CLAUDE_SETTINGS = Path(os.environ.get("TRUSTBAND_CLAUDE_SETTINGS",
+                                      Path.home() / ".claude" / "settings.json"))
+CLAUDE_SKILLS = Path(os.environ.get("TRUSTBAND_CLAUDE_SKILLS",
+                                    Path.home() / ".claude" / "skills"))
 
 
 def _event() -> Dict[str, Any]:
@@ -129,6 +135,46 @@ def _agent(ev: Dict[str, Any], g: Guard, session: str):
         return None
 
 
+def _observe(g: Guard, session: str) -> None:
+    """Pin what the hook can see: server entries and skill files.
+
+    Env VALUES are never pinned -- they are secrets -- only the key names,
+    so a rotated token is not drift and an added variable is. A skill is
+    pinned by the hash of its file. Never raises: an unreadable settings
+    file is not the agent's problem.
+    """
+    import hashlib
+    from trustband.lock import observe as _obs
+    items = []
+    try:
+        if CLAUDE_SETTINGS.exists():
+            data = json.loads(CLAUDE_SETTINGS.read_text(encoding="utf-8"))
+            for name, spec in (data.get("mcpServers") or {}).items():
+                if not isinstance(spec, dict):
+                    continue
+                items.append(_obs("server", str(name), "", {
+                    "command": spec.get("command"), "args": spec.get("args"),
+                    "url": spec.get("url"),
+                    "env_keys": sorted((spec.get("env") or {}).keys())}))
+    except Exception:
+        pass
+    try:
+        if CLAUDE_SKILLS.is_dir():
+            for d in sorted(CLAUDE_SKILLS.iterdir()):
+                f = d / "SKILL.md"
+                if f.is_file():
+                    text = f.read_text(encoding="utf-8", errors="replace")
+                    items.append(_obs("skill", d.name, text[:600],
+                                      {"sha256": hashlib.sha256(text.encode()).hexdigest()}))
+    except Exception:
+        pass
+    if items:
+        try:
+            g.observe_catalog(session, "server", items, full=False)
+        except Exception:
+            pass
+
+
 def _guard(session: str) -> Optional[Guard]:
     cfg = HOME / "config.json"
     if not cfg.exists():
@@ -138,6 +184,7 @@ def _guard(session: str) -> Optional[Guard]:
     except GuardConfigError:
         raise
     g._stores[session] = _load_store(session, g._max_entries)
+    _observe(g, session)
     return g
 
 

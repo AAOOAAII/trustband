@@ -1,5 +1,73 @@
 # Changelog
 
+## 0.4.0 — 2026-09-03
+
+### Free local alerts
+
+A webhook URL per event class in the policy — Slack, Discord, ntfy, your own
+SMTP bridge — your destination, your wiring, your machine on. Nothing of
+ours runs, so it is free.
+
+```json
+"alerts": {"*": "https://hooks.slack.com/services/…",
+           "lock_drift": "https://ntfy.sh/my-agent"}
+```
+
+Classes: `refusal`, `runaway`, `chain_break`, `cost_threshold`,
+`contract_failure`, `agent_revoked`, `lock_drift`, `shadow_digest`.
+
+- **A decision never waits on a webhook.** `fire()` writes one file to a
+  spool (0.16 ms measured) and delivery happens elsewhere: a daemon thread
+  in a long-lived process, or the next process to start. Two designs were
+  measured and rejected on the way — a detached interpreter cost 67 ms per
+  refusal, and waking the drainer per event put a 3.8 ms tail on decisions.
+- **Nothing is lost when a hook exits.** A subprocess-per-call adapter's
+  alert goes out on the next call. A claim held by a dead process is taken
+  back; a normal exit flushes an in-flight delivery for at most a second.
+- **Shadow is silent per event.** `trustband shadow-report` sends one
+  `shadow_digest` with counts and top reasons.
+- **The payload is the redacted record**, exactly the logged entry.
+- `trustband alert-test [class]` proves the wiring end to end. Failures land
+  in `alerts_failed.jsonl` beside the audit log.
+
+### The provenance lockfile
+
+`trustband.lock`: for every tool, MCP server and skill an adapter can see, a
+digest of description + schema + version, pinned when a person accepts it
+and checked on every load. Drift refuses under enforce, flags under shadow,
+and is one entry in the sealed log either way — rendered by `trace`,
+exported, and delivered by the `lock_drift` alert class.
+
+- **The pin is bound to authorisation.** The lockfile's digest is a field of
+  the policy, so it is in every capability's MAC, so a capability minted
+  under manifest v1 is dead under v2 at conjunct (G) — the policy-currency
+  mechanism that was proved and deposited in Phase 2. Rug-pull revocation
+  is a MAC failure at the gate, not a check a client could skip. Everyone
+  else pins; nobody else binds the pin.
+- **Per adapter, what it can see:** MCP pins every `tools/list` entry;
+  LangChain, LangGraph and CrewAI pin name, description and argument schema;
+  Claude Code pins server entries in `settings.json` (env key *names*, never
+  values) and skill files by hash, and says it cannot see `tools/list`.
+- **Descriptions are TOOL at first sight.** An instruction in a description
+  cannot raise its own trust, and an argument lifted from one is refused on
+  provenance. Tool shadowing is refused twice — the pin, and the band.
+- **One digest, global invalidation, stated.** Drift on one server
+  invalidates every outstanding capability until re-approval. Measure the
+  benign-drift rate in shadow before enforcing.
+- `trustband lock status | diff | accept`. Re-approval is a person, never
+  automatic. A corrupt lockfile refuses everything with the reason; no
+  lockfile at all behaves exactly as 0.3.x.
+
+### Two laundering surfaces closed, measured first
+
+- **LangChain error text.** A tool that raised with a payload in its message
+  left nothing in the store; the model's next argument built from it looked
+  session-authored. The wrapper bands the message TOOL and re-raises.
+- **Memory across sessions.** A value carried by a LangGraph checkpoint into
+  a new session arrived unbanded. `restore_state(guard, session, state)` is
+  handoff banding applied across time. `Runtime` raised messages are the
+  caller's to band, and the docstring now says so.
+
 ## 0.3.1 — 2026-09-03
 
 No code changes. The NOTICE named the wrong copyright holder.

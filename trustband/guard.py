@@ -32,6 +32,8 @@ from trustband.audit import AuditLog
 from trustband.confirm import ConfirmationLedger, ConfirmationRequest
 from trustband.gate import Band, Gate
 from trustband.identity import AgentId, AgentRegistry, FileEpochKeys
+from trustband.lock import (Lockfile, LockError, key_of as _lock_key,
+                            read_pending as _lock_pending, write_pending as _lock_write_pending)
 from trustband.issuance import Issuer
 from trustband.provenance import ProvenanceStore
 from trustband.redact import Redactor, from_config as redact_from_config
@@ -80,7 +82,26 @@ class Guard:
             raise GuardConfigError(
                 f"mode must be 'shadow' or 'enforce', not {mode!r}")
         self.mode = mode
+        #: Phase 8b. The lockfile's digest is a field of the policy, so it is
+        #: in the policy digest, so it is in every capability's MAC -- and a
+        #: capability minted under manifest v1 dies under v2 at (G). The
+        #: binding is the proved part; the pinning below is conformance-held.
+        self._home: Optional[Path] = Path(audit_path).parent if audit_path else None
+        self.lock: Optional[Lockfile] = None
+        self.lock_error: Optional[str] = None
+        if self._home is not None:
+            try:
+                self.lock = Lockfile(self._home / "trustband.lock")
+            except LockError as e:
+                self.lock_error = str(e)
+        policy = dict(policy)
+        if self.lock is not None and self.lock.exists:
+            policy["lock"] = {"digest": self.lock.digest}
+        else:
+            policy.pop("lock", None)
         self.policy = policy
+        #: session -> item keys seen drifted; refused under enforce until accepted
+        self._drifted: Dict[str, set] = {}
         #: bring-your-own detectors. Each may only lower a band, so a broken or
         #: hostile one over-refuses and never opens a bypass. Empty by default.
         self.detectors = detectors or []
@@ -188,6 +209,33 @@ class Guard:
             self.gate.keys, epoch_of=lambda: self.gate.gov_epoch,
             revocations_path=(Path(audit_path).parent / "revoked_agents.json"
                               if audit_path else None))
+        #: Phase 8a. Free alerts: a webhook per event class, validated at
+        #: adoption like any policy error, fired from the recorded entry,
+        #: detached. See alerts.py for why each of those words is there.
+        from trustband.alerts import Alerter, validate as _aval
+        try:
+            _urls = _aval(policy.get("alerts"))
+        except Exception as e:
+            raise GuardConfigError(f"policy rejected: {e}") from None
+        self.alerts = Alerter(_urls, mode=mode,
+                              home=Path(audit_path).parent if audit_path else None)
+        # Whatever an earlier process spooled and did not live to deliver
+        # goes out now, from the daemon thread, off the decision path.
+        if _urls and self.alerts.home is not None:
+            self.alerts._ensure_thread()
+            self.alerts._wake.set()
+        # A chain that was already broken when this process resumed it is an
+        # event too -- the one class that can only be seen at load.
+        if self.audit is not None and self.audit.entries:
+            from trustband.audit import entry_digest as _ed
+            _prev = None
+            for _e in self.audit.entries:
+                if _e.digest != _ed(_e.seq, _e.prev, _e.body) or \
+                        (_prev is not None and _e.prev != _prev):
+                    self.alerts.fire("chain_break", {"event": "chain_break",
+                                                     "seq": _e.seq})
+                    break
+                _prev = _e.digest
         #: `identity.required`: a call carrying no identity is refused. Off by
         #: default, because every 0.2.x adapter sends none.
         self.identity_required: bool = bool(
@@ -284,6 +332,107 @@ class Guard:
             "trusted": not contaminated,
         }
         return not contaminated
+
+    # -- the lockfile ------------------------------------------------------
+    def observe_catalog(self, session: str, kind: str, observed: list,
+                        full: bool = False) -> list:
+        """An adapter saw a catalog. Pin-check it; band it; record any drift.
+
+        With no lockfile, nothing is refused and the observation is written
+        to `lock_pending.json` for `trustband lock accept` -- pair 10. With
+        one, every item that is new or changed is refused under enforce and
+        flagged under shadow until a person accepts the diff, and each drift
+        is one entry in the sealed log, redacted, alerted.
+        """
+        store = self._store(session)
+        for o in observed:
+            # A description is text the model reads as instruction. Remembered
+            # TOOL, so an argument lifted from it is TOOL -- pair 4.
+            desc = (o.get("summary") or {}).get("description") or ""
+            if desc:
+                store.remember(desc, Band.TOOL)
+        if self._home is None:
+            return []
+        if self.lock is None or not self.lock.exists:
+            _lock_write_pending(self._home, observed)
+            return []
+        drifts = self.lock.check(observed, kind=kind, full=full)
+        if drifts:
+            _lock_write_pending(self._home, observed)
+        for d in drifts:
+            if d["change"] != "removed":
+                self._drifted.setdefault(session, set()).add(d["item"])
+            if self.audit is not None:
+                try:
+                    self.audit.append({
+                        "ts": time.time(), "session": session, "event": "lock_drift",
+                        "item": d["item"], "change": d["change"], "kind": kind,
+                        "from": d["from"], "to": d["to"],
+                        "before": self.redactor.value("description",
+                                                      json.dumps(d["before"])) if d["before"] else None,
+                        "after": self.redactor.value("description",
+                                                     json.dumps(d["after"])) if d["after"] else None,
+                        "mode": self.mode,
+                    })
+                    self.alerts.consider(self.audit.entries[-1].body)
+                except Exception:
+                    pass
+        return drifts
+
+    def accept_lock(self) -> int:
+        """Re-pin from the pending file. A PERSON calls this, after the diff.
+
+        Goes through `Issuer.adopt`, so the evaluator and the gate move
+        together -- pair 2 -- and every capability minted under the old
+        manifest is dead at (G) from here.
+        """
+        if self._home is None:
+            raise GuardConfigError("accept_lock needs a home (an audit_path)")
+        pending = _lock_pending(self._home)
+        if self.lock is None:
+            self.lock = Lockfile(self._home / "trustband.lock")
+        removed = [k for k in self.lock.items
+                   if k not in pending and any(
+                       d["item"] == k and d["change"] == "removed"
+                       for d in self.lock.check(list(pending.values()), full=False))]
+        self.lock.accept(list(pending.values()))
+        self.lock_error = None
+        try:
+            (self._home / "lock_pending.json").unlink()
+        except FileNotFoundError:
+            pass
+        self.policy["lock"] = {"digest": self.lock.digest}
+        adopted = self.issuer.adopt(self.policy)
+        if not adopted:
+            raise GuardConfigError(f"policy rejected after lock accept: {adopted.reason}")
+        self._drifted.clear()
+        if self.audit is not None:
+            try:
+                self.audit.append({"ts": time.time(), "event": "lock_accept",
+                                   "items": len(self.lock.items),
+                                   "digest": self.lock.digest, "mode": self.mode})
+            except Exception:
+                pass
+        return len(pending)
+
+    def _check_lock(self, call: "ToolCall") -> Optional[str]:
+        """A reason if this call is refused by the lockfile, else None."""
+        if self.lock_error is not None:
+            return (f"the lockfile is unreadable, so nothing can be told from "
+                    f"drift: {self.lock_error}")
+        drifted = self._drifted.get(call.session)
+        if not drifted:
+            return None
+        if _lock_key("tool", call.tool) in drifted:
+            return (f"{call.tool!r} changed since it was pinned; run "
+                    f"`trustband lock diff`, then `trustband lock accept` if it is right")
+        # an MCP server entry that changed: every tool it fronts is refused
+        if call.tool.startswith("mcp__"):
+            server = call.tool.split("__")[1] if call.tool.count("__") >= 2 else ""
+            if server and _lock_key("server", server) in drifted:
+                return (f"MCP server {server!r} changed since it was pinned; run "
+                        f"`trustband lock diff`, then `trustband lock accept`")
+        return None
 
     # -- identity ----------------------------------------------------------
     def mint_agent(self, name: str, role: str, session: str) -> AgentId:
@@ -474,6 +623,9 @@ class Guard:
                     {k: _plain(v) for k, v in call.args.items()}),
                 "ms": round(ms, 4),
             })
+            # FROM THE RECORD. The alert reads the entry just written; if it
+            # is not in the log it is not alerted -- pair 5.
+            self.alerts.consider(self.audit.entries[-1].body)
         except Exception:
             # Belt and braces. Nothing about auditing may reach the decision.
             pass
@@ -504,6 +656,20 @@ class Guard:
                 return Decision(True, f"SHADOW: would have refused — {why}",
                                 None, False, None)
             return Decision(False, why, conj, False, None)
+
+        why_lock = self._check_lock(call)
+        if why_lock is not None:
+            self._record(call, banded, False, why_lock, False,
+                         (time.perf_counter() - t0) * 1000.0)
+            if self.mode == "shadow":
+                self.shadow_log.append(
+                    {"session": call.session, "tool": call.tool,
+                     "agent": call.agent.name if call.agent else None,
+                     "would_allow": False, "reason": why_lock, "confirmable": False,
+                     "bands": {k: _band_of(v).value for k, v in banded.items()}})
+                return Decision(True, f"SHADOW: would have refused — {why_lock}",
+                                None, False, None)
+            return Decision(False, why_lock, "lock", False, None)
 
         plan = self._plans.get(call.session)
         if plan is not None:
@@ -723,6 +889,7 @@ class Guard:
                     "from_agent": str(call.args.get("from_agent") or "") or None,
                     "agent": call.agent.name if call.agent else None,
                 })
+                self.alerts.consider(self.audit.entries[-1].body)
             except Exception:
                 pass
 

@@ -123,6 +123,14 @@ def render(path: Path, session: Optional[str] = None,
         return f"   [{b['_src']}]" if multi else ""
 
     for b in rows:
+        if b.get("event") == "lock_drift":
+            out.append(f"  !! {b.get('item','?')} {b.get('change','?')} since it was pinned"
+                       f"{'' if not b.get('to') else f'  ({str(b.get('from') or '')[:8]} -> {str(b.get('to'))[:8]})'}"
+                       f"{_src(b)}")
+            continue
+        if b.get("event") == "lock_accept":
+            out.append(f"  == lockfile accepted: {b.get('items', 0)} item(s) pinned{_src(b)}")
+            continue
         if b.get("event") == "result":
             frm = b.get("from_agent") or b.get("from")
             out.append(f"  ← {_who(b)}{b.get('tool','?'):<14} returned  "

@@ -1,0 +1,32 @@
+[
+  {
+    "surface": "langchain: error text -> argument",
+    "launders": false,
+    "detail": "taint: body is tool, needs session (grant for session 175715"
+  },
+  {
+    "surface": "mcp: isError content -> argument",
+    "launders": false,
+    "detail": "taint: body is tool, needs session (grant for session 270019"
+  },
+  {
+    "surface": "runtime: raised message -> record",
+    "launders": true,
+    "detail": "type recorded, message deliberately not; caller must band it"
+  },
+  {
+    "surface": "langgraph: same session, state -> argument",
+    "launders": false,
+    "detail": ""
+  },
+  {
+    "surface": "langgraph: new session, persisted state -> argument",
+    "launders": true,
+    "detail": "state crossed sessions unbanded"
+  },
+  {
+    "surface": "langgraph: new session after handoff-restore",
+    "launders": false,
+    "detail": "taint: body is tool, needs session (grant for session 758286406)"
+  }
+]

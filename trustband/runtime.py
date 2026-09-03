@@ -198,6 +198,12 @@ class Runtime:
         which rotation does not. Idempotent, and strictly de-escalating."""
         return self.gate.withdraw_elevation(eid, tier)
 
+    # NOTE ON A RAISING TOOL AND ITS MESSAGE. Only the exception TYPE is
+    # recorded, because messages routinely carry arguments. This runtime owns
+    # no provenance store, so the text is the CALLER's to band: whoever reads
+    # `str(exc)` must remember it TOOL before the model sees it. The Guard
+    # adapters do (measured, P8); a direct Runtime caller must do it too.
+    #
     # NOTE ON A RAISING TOOL AND THE ELEVATION IT OBTAINED.
     #
     # If `fn` raises, the elevation the capability won at `authorize` STANDS.
