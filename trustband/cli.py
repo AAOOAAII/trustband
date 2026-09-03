@@ -548,6 +548,19 @@ def main(argv=None) -> int:
 
     sub.add_parser("packs", help="list the bundled policy packs")
 
+    sy = sub.add_parser("sync", help="push the local record to the retained audit (Pro)")
+    sy.add_argument("--home", type=Path, default=None)
+
+    se = sub.add_parser("search", help="search the retained audit across sessions and devices (Pro)")
+    se.add_argument("q", nargs="?", default=None)
+    se.add_argument("--session", default=None)
+    se.add_argument("--agent", default=None)
+    se.add_argument("--tool", default=None)
+    se.add_argument("--device", default=None)
+    se.add_argument("--refused", action="store_true")
+    se.add_argument("--limit", type=int, default=100)
+    se.add_argument("--home", type=Path, default=None)
+
     lk = sub.add_parser("lock", help="the provenance lockfile: status, diff, accept")
     lk.add_argument("op", choices=["status", "diff", "accept", "init"])
     lk.add_argument("--home", type=Path, default=None)
@@ -641,6 +654,19 @@ def main(argv=None) -> int:
     if a.cmd == "trace":
         from trustband.trace import main as _trace
         return _trace(_home(a) / "audit.jsonl", a.session, a.last, a.also)
+
+    if a.cmd in ("sync", "search"):
+        # A PRO FEATURE, AND THE ONLY PLACE THE PACKAGE TALKS TO THE SERVICE.
+        # Reads the local log after the fact; the Guard never sees it.
+        from trustband.sync import main_search, main_sync
+        home = _home(a)
+        cfgp = home / "config.json"
+        cfg = json.loads(cfgp.read_text(encoding="utf-8")) if cfgp.exists() else {}
+        if a.cmd == "sync":
+            return main_sync(home, cfg)
+        return main_search(home, cfg, q=a.q, session=a.session, agent=a.agent,
+                           tool=a.tool, device=a.device,
+                           refused=True if a.refused else None, limit=a.limit)
 
     if a.cmd == "lock":
         return _lock(a)
