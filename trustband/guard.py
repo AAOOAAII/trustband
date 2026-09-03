@@ -188,6 +188,33 @@ class Guard:
             self.gate.keys, epoch_of=lambda: self.gate.gov_epoch,
             revocations_path=(Path(audit_path).parent / "revoked_agents.json"
                               if audit_path else None))
+        #: Phase 8a. Free alerts: a webhook per event class, validated at
+        #: adoption like any policy error, fired from the recorded entry,
+        #: detached. See alerts.py for why each of those words is there.
+        from trustband.alerts import Alerter, validate as _aval
+        try:
+            _urls = _aval(policy.get("alerts"))
+        except Exception as e:
+            raise GuardConfigError(f"policy rejected: {e}") from None
+        self.alerts = Alerter(_urls, mode=mode,
+                              home=Path(audit_path).parent if audit_path else None)
+        # Whatever an earlier process spooled and did not live to deliver
+        # goes out now, from the daemon thread, off the decision path.
+        if _urls and self.alerts.home is not None:
+            self.alerts._ensure_thread()
+            self.alerts._wake.set()
+        # A chain that was already broken when this process resumed it is an
+        # event too -- the one class that can only be seen at load.
+        if self.audit is not None and self.audit.entries:
+            from trustband.audit import entry_digest as _ed
+            _prev = None
+            for _e in self.audit.entries:
+                if _e.digest != _ed(_e.seq, _e.prev, _e.body) or \
+                        (_prev is not None and _e.prev != _prev):
+                    self.alerts.fire("chain_break", {"event": "chain_break",
+                                                     "seq": _e.seq})
+                    break
+                _prev = _e.digest
         #: `identity.required`: a call carrying no identity is refused. Off by
         #: default, because every 0.2.x adapter sends none.
         self.identity_required: bool = bool(
@@ -474,6 +501,9 @@ class Guard:
                     {k: _plain(v) for k, v in call.args.items()}),
                 "ms": round(ms, 4),
             })
+            # FROM THE RECORD. The alert reads the entry just written; if it
+            # is not in the log it is not alerted -- pair 5.
+            self.alerts.consider(self.audit.entries[-1].body)
         except Exception:
             # Belt and braces. Nothing about auditing may reach the decision.
             pass
@@ -723,6 +753,7 @@ class Guard:
                     "from_agent": str(call.args.get("from_agent") or "") or None,
                     "agent": call.agent.name if call.agent else None,
                 })
+                self.alerts.consider(self.audit.entries[-1].body)
             except Exception:
                 pass
 

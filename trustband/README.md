@@ -77,6 +77,21 @@ in transit or forged from another process, but tool code running in the same
 interpreter as the Guard holds the key and can mint any name -- the same
 limit `describe_custody()` already states for capabilities.
 
+## Alerts, free, to wherever you already look
+
+```json
+"alerts": {"*": "https://hooks.slack.com/services/…"}
+```
+
+A webhook per event class — refusal, runaway, chain break, contract failure,
+agent revoked, lockfile drift — delivered to your Slack, Discord, ntfy or
+anything that takes a POST. Your destination, your wiring, your machine on.
+A decision never waits on it: the event is spooled in 0.16 ms and delivered
+by a background thread or by the next process to start, so a hook that
+exits the instant it decides loses nothing. Shadow mode sends one digest
+per `shadow-report`, never a message per would-have-refused call.
+`trustband alert-test` proves the wiring.
+
 ## Reading the record
 
 Every decision is written to a hash-chained log. These read it and nothing else

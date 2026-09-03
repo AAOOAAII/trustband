@@ -1,5 +1,45 @@
 # Changelog
 
+## Unreleased — 0.4.0
+
+### Free local alerts
+
+A webhook URL per event class in the policy — Slack, Discord, ntfy, your own
+SMTP bridge — your destination, your wiring, your machine on. Nothing of
+ours runs, so it is free.
+
+```json
+"alerts": {"*": "https://hooks.slack.com/services/…",
+           "lock_drift": "https://ntfy.sh/my-agent"}
+```
+
+Classes: `refusal`, `runaway`, `chain_break`, `cost_threshold`,
+`contract_failure`, `agent_revoked`, `lock_drift`, `shadow_digest`.
+
+- **A decision never waits on a webhook.** `fire()` writes one file to a
+  spool (0.16 ms measured) and delivery happens elsewhere: a daemon thread
+  in a long-lived process, or the next process to start. Two designs were
+  measured and rejected on the way — a detached interpreter cost 67 ms per
+  refusal, and waking the drainer per event put a 3.8 ms tail on decisions.
+- **Nothing is lost when a hook exits.** A subprocess-per-call adapter's
+  alert goes out on the next call. A claim held by a dead process is taken
+  back; a normal exit flushes an in-flight delivery for at most a second.
+- **Shadow is silent per event.** `trustband shadow-report` sends one
+  `shadow_digest` with counts and top reasons.
+- **The payload is the redacted record**, exactly the logged entry.
+- `trustband alert-test [class]` proves the wiring end to end. Failures land
+  in `alerts_failed.jsonl` beside the audit log.
+
+### Two laundering surfaces closed, measured first
+
+- **LangChain error text.** A tool that raised with a payload in its message
+  left nothing in the store; the model's next argument built from it looked
+  session-authored. The wrapper bands the message TOOL and re-raises.
+- **Memory across sessions.** A value carried by a LangGraph checkpoint into
+  a new session arrived unbanded. `restore_state(guard, session, state)` is
+  handoff banding applied across time. `Runtime` raised messages are the
+  caller's to band, and the docstring now says so.
+
 ## 0.3.1 — 2026-09-03
 
 No code changes. The NOTICE named the wrong copyright holder.
