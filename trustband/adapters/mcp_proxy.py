@@ -86,9 +86,20 @@ class McpProxy:
         #: the result can be banded against the call that produced it.
         self._inflight: Dict[Any, ToolCall] = {}
         self._lock = threading.Lock()
+        #: Minted from the client's `initialize`, so every call this proxy
+        #: gates is attributed to the client that opened the session.
+        self.agent = None
 
     # -- client -> server: gate a tools/call before it is sent --------------
     def _from_client(self, msg: Optional[Dict[str, Any]], raw: bytes) -> None:
+        if msg is not None and msg.get("method") == "initialize":
+            info = ((msg.get("params") or {}).get("clientInfo") or {})
+            try:
+                self.agent = self.guard.mint_agent(
+                    str(info.get("name") or "mcp-client"), "mcp-client",
+                    self.session)
+            except Exception:
+                self.agent = None
         if msg is None or msg.get("method") != "tools/call":
             self._to_server(raw)
             return
@@ -96,7 +107,8 @@ class McpProxy:
         tool = params.get("name", "")
         args = params.get("arguments") or {}
         call = ToolCall(session=self.session, tool=tool,
-                        args=args if isinstance(args, dict) else {})
+                        args=args if isinstance(args, dict) else {},
+                        agent=self.agent)
         d = self.guard.before_tool_call(call)
         if d.allowed:
             with self._lock:

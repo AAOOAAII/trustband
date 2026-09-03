@@ -44,6 +44,35 @@ trustband test <file>     # unit-test a policy in milliseconds
 trustband explain --policy p.json --action Bash --args '{"command":["...","tool"]}'
 ```
 
+## Naming the agents
+
+A swarm's record should say *the researcher agent*, not *a session*. Mint a
+named identity and put it on every call; it is tagged under the same epoch
+key that mints capabilities, so nothing new has to be trusted:
+
+```python
+researcher = guard.mint_agent("researcher", "reader", session="s1")
+guard.before_tool_call(ToolCall("s1", "read_web", {"url": u}, agent=researcher))
+```
+
+A forged tag, a tag from a retired epoch, a revoked agent, or an identity
+presented in the wrong session each refuse before any rule is consulted, in
+the shape of a conjunct the gate already has. `trace` then reads
+`researcher · read_web`, and `guard.revoke_agent(researcher)` refuses every
+later call by it and kills any capability it already held -- without touching
+any other agent. `identity.required` in the policy makes a call with no
+identity a refusal.
+
+**Across processes**, which is where swarms run: the epoch key lives in one
+owner-only file beside the config, so separate Guards verify each other's
+agents, and `trace --also other/audit.jsonl` merges one log per process.
+Any process that can read that file holds the key; `describe_custody()` says
+so rather than implying otherwise.
+
+This is local identity. Nobody outside the key can verify it, which is the
+point of using a MAC. Cross-organisation identity remains an Open Agent
+Passport concern.
+
 ## Reading the record
 
 Every decision is written to a hash-chained log. These read it and nothing else

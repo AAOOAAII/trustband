@@ -114,6 +114,21 @@ def _save_store(session: str, store: ProvenanceStore) -> None:
     tmp.replace(p)                       # atomic: a torn store is a lost store
 
 
+def _agent(ev: Dict[str, Any], g: Guard, session: str):
+    """A named identity for this call. Re-minted every invocation rather than
+    persisted: this hook is a fresh process per call, and the tag is
+    deterministic under the shared key file, so the same (name, role,
+    session) is the same tag each time -- pair 7. Never raises: an identity
+    that cannot be minted is no identity, and the call carries none."""
+    try:
+        name = str(ev.get("agent_name") or ev.get("agentName") or "claude-code")
+        role = str(ev.get("subagent_type") or ev.get("agent_type")
+                   or ev.get("agentType") or "main")
+        return g.mint_agent(name, role, session)
+    except Exception:
+        return None
+
+
 def _guard(session: str) -> Optional[Guard]:
     cfg = HOME / "config.json"
     if not cfg.exists():
@@ -168,7 +183,8 @@ def pre() -> int:
         _respond("PreToolUse", "allow", "trustband: not configured")
         return 0
 
-    d = g.before_tool_call(ToolCall(session=session, tool=tool, args=args))
+    d = g.before_tool_call(ToolCall(session=session, tool=tool, args=args,
+                                    agent=_agent(ev, g, session)))
     if g.mode == "shadow":
         _record_shadow(g.shadow_log)
     if d.allowed:
@@ -193,7 +209,8 @@ def post() -> int:
         return 0
     if g is None:
         return 0
-    call = ToolCall(session=session, tool=tool, args=args)
+    call = ToolCall(session=session, tool=tool, args=args,
+                    agent=_agent(ev, g, session))
     g.after_tool_result(call, result, Band.TOOL)
     _save_store(session, g._stores[session])
     return 0

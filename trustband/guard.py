@@ -26,11 +26,12 @@ import time
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Dict, Mapping, Optional
+from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
 from trustband.audit import AuditLog
 from trustband.confirm import ConfirmationLedger, ConfirmationRequest
 from trustband.gate import Band, Gate
+from trustband.identity import AgentId, AgentRegistry, FileEpochKeys
 from trustband.issuance import Issuer
 from trustband.provenance import ProvenanceStore
 from trustband.redact import Redactor, from_config as redact_from_config
@@ -48,6 +49,9 @@ class ToolCall:
     args: Mapping[str, Any]
     tier: int = 2
     context: Mapping[str, Any] = field(default_factory=dict)
+    #: Who is calling, when the adapter can say. Checked before policy: a
+    #: forged, stale, revoked or wrong-session identity refuses on its own.
+    agent: Optional[AgentId] = None
 
 
 @dataclass(frozen=True)
@@ -70,7 +74,8 @@ class Guard:
                  gate: Optional[Gate] = None,
                  detectors: Optional[list] = None,
                  audit_path: Optional[Any] = None,
-                 redactor: Optional["Redactor"] = None) -> None:
+                 redactor: Optional["Redactor"] = None,
+                 key_path: Optional[Any] = None) -> None:
         if mode not in ("shadow", "enforce"):
             raise GuardConfigError(
                 f"mode must be 'shadow' or 'enforce', not {mode!r}")
@@ -80,7 +85,16 @@ class Guard:
         #: hostile one over-refuses and never opens a bypass. Empty by default.
         self.detectors = detectors or []
         self._max_entries = provenance_max_entries
-        self.gate = gate or Gate(budget=1 << 30)
+        #: A key file makes the epoch key shared between processes, which is
+        #: what lets a swarm split across processes share one identity space.
+        #: Without one the key is in-process and random per process, so an
+        #: identity minted here verifies nowhere else -- true of every
+        #: subprocess-per-call adapter, and the reason `from_file` defaults to
+        #: a file beside the config.
+        if gate is None:
+            gate = Gate(budget=1 << 30,
+                        keys=FileEpochKeys(key_path) if key_path else None)
+        self.gate = gate
         self.issuer = Issuer(self.gate)
         try:
             adopted = self.issuer.adopt(policy)
@@ -166,6 +180,18 @@ class Guard:
                     self._calls[k] = self._calls.get(k, 0) + 1
         #: True only if this policy came from a bundle that verified.
         self.verified_bundle: bool = False
+        #: Phase 7. Identities are minted and checked against the SAME key
+        #: store the gate uses, so custody is one property, not two. The
+        #: revocation set lives beside the audit log when there is one, so a
+        #: second process sees a revocation on its next call.
+        self.agents = AgentRegistry(
+            self.gate.keys, epoch_of=lambda: self.gate.gov_epoch,
+            revocations_path=(Path(audit_path).parent / "revoked_agents.json"
+                              if audit_path else None))
+        #: `identity.required`: a call carrying no identity is refused. Off by
+        #: default, because every 0.2.x adapter sends none.
+        self.identity_required: bool = bool(
+            (policy.get("identity") or {}).get("required", False))
 
     # -- construction ------------------------------------------------------
     @classmethod
@@ -190,7 +216,10 @@ class Guard:
                    # Beside the config, so every adapter loading a config gets
                    # the log without having to know to ask for it.
                    audit_path=cfg.get("audit_path", p.parent / "audit.jsonl"),
-                   redactor=redact_from_config(cfg))
+                   redactor=redact_from_config(cfg),
+                   # Beside the config too. Opt out with "keys": "in_process".
+                   key_path=(None if cfg.get("keys") == "in_process"
+                             else cfg.get("key_path", p.parent / "keys.json")))
 
     @classmethod
     def from_bundle(cls, bundle_path: Any, key: Optional[bytes] = None,
@@ -256,8 +285,49 @@ class Guard:
         }
         return not contaminated
 
+    # -- identity ----------------------------------------------------------
+    def mint_agent(self, name: str, role: str, session: str) -> AgentId:
+        """A named agent for `session`, tagged under the current epoch key.
+        Deterministic: the same (name, role, session) under the same key is
+        the same tag, which is what lets a subprocess-per-call adapter re-mint
+        rather than persist -- pair 7."""
+        return self.agents.mint(name, role, session)
+
+    def revoke_agent(self, agent: Any) -> None:
+        """Refuse every later call by this agent. Structural, shared through
+        the revocation file when there is one, and local to the name: no
+        other agent is affected. Shape of conjunct (H).
+
+        Given the `AgentId` rather than a name, the gate's own session epoch
+        for its principal is bumped too, so a capability minted for it before
+        the revocation dies at the gate's (H) as well -- not only at the
+        identity check in front of it.
+        """
+        if isinstance(agent, AgentId):
+            self.gate.revoke_session(agent.principal)
+            self.agents.revoke(agent.name)
+        else:
+            self.agents.revoke(str(agent))
+
+    def _check_identity(self, call: "ToolCall") -> Optional[Tuple[str, str]]:
+        """(reason, conjunct) if the identity refuses, else None."""
+        if call.agent is None:
+            if self.identity_required:
+                return ("this policy requires an agent identity and the call "
+                        "carries none", "identity")
+            return None
+        ok, why, conj = self.agents.verify(call.agent)
+        if not ok:
+            return (why, conj or "identity")
+        if call.agent.session != call.session:
+            return (f"identity minted for session {call.agent.session!r} "
+                    f"presented in session {call.session!r}", "C")
+        return None
+
     def handoff(self, to_session: str, message: Any,
-                from_session: Optional[str] = None) -> None:
+                from_session: Optional[str] = None,
+                from_agent: Optional[AgentId] = None,
+                to_agent: Optional[AgentId] = None) -> None:
         """Pass work from one agent to another without laundering the taint.
 
         THE HOLE THIS CLOSES, MEASURED
@@ -287,9 +357,13 @@ class Guard:
             raise GuardConfigError(
                 "a handoff needs the receiving session's identity; without it "
                 "the message cannot be banded into any store")
+        # Names cross with the message; the store still does not. The record
+        # on B's side says which agent the taint came from -- pair 8.
         self.after_tool_result(
             ToolCall(session=to_session, tool="handoff",
-                     args={"from": from_session or ""}),
+                     args={"from": from_session or "",
+                           "from_agent": from_agent.name if from_agent else ""},
+                     agent=to_agent),
             message, Band.TOOL)
 
     def _notify(self, call: "ToolCall", why: str, approved: bool) -> None:
@@ -389,6 +463,10 @@ class Guard:
                 # rule; prose is a message, not an identity. None means no
                 # grant matched at all, which is different from grant 0.
                 "grant": getattr(self.issuer, "deciding_grant", None),
+                # WHO. Read by trace, so a swarm's record names the agent
+                # rather than a session -- P-P7.1 asserts this from the file.
+                "agent": call.agent.name if call.agent else None,
+                "agent_role": call.agent.role if call.agent else None,
                 "bands": {k: _band_of(v).value for k, v in banded.items()},
                 # P-F5.3: on the way in. The gate above already decided on
                 # the real values; only the record is redacted.
@@ -406,6 +484,26 @@ class Guard:
         store = self._store(call.session)
         banded = {k: self._band(v, store) for k, v in call.args.items()}
         sess = _session_int(call.session)
+
+        # IDENTITY FIRST. A forged, stale, revoked or wrong-session identity
+        # refuses before any rule is consulted, so no policy can be argued
+        # with by an agent that is not who it says. Obeys shadow like every
+        # other check here -- pair 9.
+        ident = self._check_identity(call)
+        if ident is not None:
+            why, conj = ident
+            self._record(call, banded, False, why, False,
+                         (time.perf_counter() - t0) * 1000.0)
+            if self.mode == "shadow":
+                self.shadow_log.append(
+                    {"session": call.session, "tool": call.tool,
+                     "agent": call.agent.name if call.agent else None,
+                     "would_allow": False, "reason": why,
+                     "confirmable": False,
+                     "bands": {k: _band_of(v).value for k, v in banded.items()}})
+                return Decision(True, f"SHADOW: would have refused — {why}",
+                                None, False, None)
+            return Decision(False, why, conj, False, None)
 
         plan = self._plans.get(call.session)
         if plan is not None:
@@ -496,6 +594,7 @@ class Guard:
             # logged with that word in it.
             self.shadow_log.append(
                 {"session": call.session, "tool": call.tool,
+                 "agent": call.agent.name if call.agent else None,
                  "would_allow": ok, "reason": why,
                  # Whether a person could have approved this refusal. Computed
                  # above and, until 2026-09-01, thrown away here -- so every
@@ -621,6 +720,8 @@ class Guard:
                     # name crosses; the store does not — B's record says the
                     # taint originated with A without giving B access to A.
                     "from": str(call.args.get("from") or "") or None,
+                    "from_agent": str(call.args.get("from_agent") or "") or None,
+                    "agent": call.agent.name if call.agent else None,
                 })
             except Exception:
                 pass

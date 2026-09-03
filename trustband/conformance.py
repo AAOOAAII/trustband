@@ -295,6 +295,76 @@ def run(make_guard: Callable[[Dict[str, Any], str], Guard] = None
         bool(_has) and _rec.get("confirmable") is True,
         f"keys={sorted(_rec)} confirmable={_rec.get('confirmable')}"))
 
+    # PHASE 7 -- AGENT IDENTITY. Held here, not by the proof; see identity.py.
+    from trustband.identity import AgentId as _AI
+    _pol = _policy_for("s1")
+    _gi = Guard(_pol, mode="enforce")
+    _a = _gi.mint_agent("researcher", "reader", "s1")
+    _rd_ = ToolCall(session="s1", tool="read", args={}, agent=_a)
+    _okd = _gi.before_tool_call(_rd_)
+    _forged = _AI(_a.name, _a.role, _a.session, _a.epoch,
+                  bytes(b ^ 1 for b in _a.tag))
+    _fd = _gi.before_tool_call(ToolCall(session="s1", tool="read", args={},
+                                        agent=_forged))
+    _bare = _AI("researcher", "reader", "s1", _a.epoch, b"")
+    _bd = _gi.before_tool_call(ToolCall(session="s1", tool="read", args={},
+                                        agent=_bare))
+    _wd = _gi.before_tool_call(ToolCall(session="s2", tool="read", args={},
+                                        agent=_a))
+    out.append(Check(
+        "a forged, absent or wrong-session identity is refused",
+        _okd.allowed and not _fd.allowed and _fd.conjunct == "B"
+        and not _bd.allowed and _bd.conjunct == "B"
+        and not _wd.allowed and _wd.conjunct == "C",
+        f"genuine={_okd.allowed} forged={_fd.conjunct} bare={_bd.conjunct} "
+        f"wrong_session={_wd.conjunct}"))
+
+    _b = _gi.mint_agent("writer", "writer", "s1")
+    _gi.revoke_agent(_a)
+    _ra = _gi.before_tool_call(ToolCall(session="s1", tool="read", args={}, agent=_a))
+    _rb = _gi.before_tool_call(ToolCall(session="s1", tool="read", args={}, agent=_b))
+    out.append(Check(
+        "a revoked agent is refused and no other agent is affected",
+        not _ra.allowed and _ra.conjunct == "H" and _rb.allowed,
+        f"revoked={_ra.conjunct} other={_rb.allowed}"))
+
+    # the three new checks are identical under every entitlement state --
+    # the differential of check (12), extended to identity (pair 10)
+    _idec = []
+    for _cfg in _states:
+        _g2 = Guard(_pol, mode="enforce")
+        _a2 = _g2.mint_agent("researcher", "reader", "s1")
+        _f2 = _AI(_a2.name, _a2.role, _a2.session, _a2.epoch,
+                  bytes(b ^ 1 for b in _a2.tag))
+        _g2.revoke_agent("writer")
+        _w2 = _g2.mint_agent("writer", "w", "s1")
+        _idec.append(tuple((d.allowed, d.conjunct) for d in (
+            _g2.before_tool_call(ToolCall(session="s1", tool="read", args={}, agent=_a2)),
+            _g2.before_tool_call(ToolCall(session="s1", tool="read", args={}, agent=_f2)),
+            _g2.before_tool_call(ToolCall(session="s1", tool="read", args={}, agent=_w2)))))
+    _isame = all(d == _idec[0] for d in _idec)
+    _icorrect = all(d[0][0] is True and d[1] == (False, "B") and d[2] == (False, "H")
+                    for d in _idec)
+    out.append(Check(
+        "identity checks are identical under every entitlement state",
+        _isame and _icorrect, f"identical={_isame} correct={_icorrect}"))
+
+    # the name lands in the RECORD and renders from it (P-P7.1). Asserted
+    # from the file, because a computed-and-never-written field has passed
+    # unit tests here three times.
+    import tempfile as _tf
+    from trustband.trace import render as _render
+    with _tf.TemporaryDirectory() as _td:
+        _gr = Guard(_pol, mode="enforce", audit_path=_P(_td) / "audit.jsonl")
+        _ag = _gr.mint_agent("researcher", "reader", "s1")
+        _gr.before_tool_call(ToolCall(session="s1", tool="read", args={}, agent=_ag))
+        _lines = "\n".join(_render(_P(_td) / "audit.jsonl"))
+        _raw = (_P(_td) / "audit.jsonl").read_text()
+    out.append(Check(
+        "the agent name is written to the record and rendered by trace",
+        '"agent": "researcher"' in _raw and "researcher · read" in _lines,
+        f"in_file={'researcher' in _raw} in_trace={'researcher ·' in _lines}"))
+
     return out
 
 

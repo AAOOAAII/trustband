@@ -1,5 +1,53 @@
 # Changelog
 
+## Unreleased — 0.3.0
+
+### Named agents, bound into the key hierarchy
+
+A swarm's record used to say *a session* where it should say *the researcher
+agent*. Now every call can carry an `AgentId` -- name, role, session -- tagged
+with an HMAC under the same epoch key that mints capabilities, so identity
+and capability sit under one custody claim and nothing new has to be
+trusted. Standard library only, still.
+
+- **`Guard.mint_agent(name, role, session)`**, `ToolCall(agent=...)`, and the
+  name in every log entry, every `trace` line, and every OTLP span.
+- **Four refusals, each the shape of a conjunct the gate already has.** A
+  forged or absent tag refuses like (B). A tag from a retired epoch refuses
+  like (F), by integer comparison before any key is consulted. A revoked agent
+  refuses like (H), by set membership. An identity minted for one session and
+  presented in another refuses like (C). Every one obeys shadow mode.
+- **`revoke_agent`** -- structural, local to the name, and when given the
+  `AgentId` it also bumps the gate's session epoch for the agent's principal,
+  so a capability minted for it before the revocation is dead at the gate's
+  own (H). `trustband revoke-agent <name>` does it from another process.
+- **Cross-process.** `FileEpochKeys` puts the epoch key in one owner-only
+  file, written atomically and re-read on every operation, so a swarm split
+  across processes shares one identity space. `Guard.from_file` now keeps
+  the key beside the config by default (`"keys": "in_process"` opts out) --
+  without it a subprocess-per-call adapter mints under a random key each
+  time and no identity ever verifies. `trace --also` merges one log per
+  process, chains verified separately.
+- **Adapters mint it**: Claude Code from the session (re-derived per call,
+  deterministically), MCP from the client's `initialize` name, LangGraph from
+  the node name, CrewAI from `agent.role`.
+- `identity.required` in the policy refuses a call carrying no identity. Off
+  by default; every 0.2.x adapter sends none.
+
+**Measured** in docs/P7_AGENT_IDENTITY_RESULT.md, including eleven named
+cross-process joins each tested in a real second process. One defect was
+found by attacking them and fixed: after another process rotated the shared
+key, a Gate here raised from inside the store instead of refusing at (F).
+
+**Not in the deposited proof.** The Verus model does not know about agents.
+Until a Phase 7b extends it, the conformance suite holds these checks --
+four new checks, 22 in all -- and every document that says "machine-checked"
+says so.
+
+**Not third-party verifiable**, by design. Cross-organisation identity is an
+Open Agent Passport concern, not consumed yet; when it is, an unverified
+passport is a label, never an authorisation input.
+
 ## 0.2.1 — 2026-09-02
 
 No code changes. This release exists so the licence travels with the Work.
