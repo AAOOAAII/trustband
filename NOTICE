@@ -1,18 +1,19 @@
 trustband
-Copyright 2026 Luis Alonso Carranza
+Copyright 2026 Cittela Ltd
 
 This product is licensed under the Apache License, Version 2.0 (the
 "License"). The full text is in the LICENSE file distributed with it.
 
 PATENT SCOPE
 
-Patents relating to this and adjacent work are held personally by Luis
-Alonso Carranza. Under Section 3 of the License, a patent licence is
-granted only to those claims necessarily practised by this Work as
-distributed. No licence is granted, expressly or by implication, to any
-other claim, including the geometric isolation, rate-limited rekeying,
-retrieval isolation, and cryptographic erasure inventions, which this
-Work does not embody.
+The software is owned by Cittela Ltd. Patents relating to this and adjacent
+work are held personally by Luis Alonso Carranza, not by Cittela Ltd, and
+are licensed to this Work only to the extent Section 3 of the License
+provides: a patent licence is granted only to those claims necessarily
+practised by this Work as distributed. No licence is granted, expressly or
+by implication, to any other claim, including the geometric isolation,
+rate-limited rekeying, retrieval isolation, and cryptographic erasure
+inventions, which this Work does not embody.
 
 TRADEMARKS
 

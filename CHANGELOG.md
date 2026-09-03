@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.1 — 2026-09-03
+
+No code changes. The NOTICE named the wrong copyright holder.
+
+- Copyright is **Cittela Ltd**, which owns the software. The patents remain
+  held personally by Luis Alonso Carranza and are now stated as such
+  explicitly -- held by a person, not by the company -- with the §3 scope
+  unchanged: only claims this Work necessarily practises, none of the
+  geometric isolation, rate-limited rekeying, retrieval isolation or
+  cryptographic erasure inventions, which this Work does not embody.
+
 ## 0.3.0 — 2026-09-03
 
 ### Named agents, bound into the key hierarchy
