@@ -1,10 +1,19 @@
 {
   "artifact": "warrantable attack battery",
-  "generated_utc": "2026-09-03T06:42:23Z",
-  "commit": "8eca00927c59bbbfebcfffff057665cf59dec2ab",
-  "branch": "phase7-agent-identity",
-  "tree_clean_for_these_paths": true,
-  "uncommitted_paths": [],
+  "generated_utc": "2026-09-03T10:21:09Z",
+  "commit": "095f23e4c1b5fe19416c43d1243bdbef3a1982ee",
+  "branch": "phase8-surfaces",
+  "tree_clean_for_these_paths": false,
+  "uncommitted_paths": [
+    "M trustband/adapters/claude_code.py",
+    " M trustband/adapters/langchain.py",
+    " M trustband/adapters/mcp_proxy.py",
+    " M trustband/cli.py",
+    " M trustband/guard.py",
+    " M trustband/otel.py",
+    " M trustband/trace.py",
+    "?? trustband/lock.py"
+  ],
   "python": "3.12.13",
   "platform": "Darwin arm64",
   "source_sha256": {

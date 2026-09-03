@@ -175,6 +175,17 @@ class McpProxy:
         result = msg.get("result") or {}
         if isinstance(result, dict) and "tools" in result:
             replacement = self._scan_descriptions(result)
+            # THE PIN IS TAKEN FROM WHAT THE CLIENT WILL READ -- pair 3. If
+            # strict mode replaced the response, there is nothing to pin.
+            if replacement is None:
+                from trustband.lock import observe as _obs
+                try:
+                    items = [_obs("tool", str(t.get("name", "")), t.get("description", ""),
+                                  t.get("inputSchema"), (t.get("annotations") or {}).get("version"))
+                             for t in result.get("tools") or [] if t.get("name")]
+                    self.guard.observe_catalog(self.session, "tool", items, full=True)
+                except Exception:
+                    pass
             self._to_client(replacement if replacement is not None else raw)
             return
         with self._lock:

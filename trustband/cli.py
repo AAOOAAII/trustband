@@ -269,6 +269,60 @@ def _policy_from_config(home: Path, cfg: dict) -> dict:
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
 
 
+def _lock(a) -> int:
+    """status / diff / accept / init for the provenance lockfile."""
+    from trustband.lock import Lockfile, LockError, read_pending
+    home = _home(a)
+    pending = read_pending(home)
+    try:
+        lock = Lockfile(home / "trustband.lock")
+    except LockError as e:
+        print(f"  {e}")
+        return 1
+    drifts = lock.check(list(pending.values()), full=False) if lock.exists else []
+    if a.op == "status":
+        print(f"  lockfile: {'present, ' + str(len(lock.items)) + ' item(s) pinned' if lock.exists else 'none'}")
+        if not lock.exists:
+            print(f"  {len(pending)} pending — seen by an adapter, not yet pinned")
+            if pending:
+                print("  run `trustband lock accept` to pin them (this is `init`)")
+        else:
+            print(f"  {len(drifts)} drifted — changed or new since pinning")
+            if drifts:
+                print("  run `trustband lock diff` to see what changed")
+        return 0
+    if a.op == "diff":
+        if not drifts:
+            print("  nothing has drifted" if lock.exists else "  no lockfile yet; run `trustband lock accept`")
+            return 0
+        for d in drifts:
+            print(f"  {d['item']}  {d['change']}")
+            b = (d.get("before") or {}).get("description")
+            n = (d.get("after") or {}).get("description")
+            if b is not None:
+                print(f"    was: {b[:300]}")
+            if n is not None:
+                print(f"    now: {n[:300]}")
+            if (d.get("before") or {}).get("schema") != (d.get("after") or {}).get("schema"):
+                print("    schema changed")
+        print(f"\n  {len(drifts)} item(s). If every change is expected: `trustband lock accept`")
+        return 0
+    if a.op in ("accept", "init"):
+        if not pending:
+            print("  nothing pending to accept")
+            return 0
+        lock.accept(list(pending.values()))
+        try:
+            (home / "lock_pending.json").unlink()
+        except FileNotFoundError:
+            pass
+        print(f"  pinned {len(pending)} item(s); lock digest {lock.digest[:16]}…")
+        print("  every capability minted under the previous manifest is now dead at (G)")
+        return 0
+    print("usage: trustband lock {status|diff|accept|init}")
+    return 2
+
+
 def _alert_test(a) -> int:
     """Send one synthetic event of a class, to prove the wiring end to end."""
     from trustband.alerts import Alerter, CLASSES, validate as _aval
@@ -494,6 +548,10 @@ def main(argv=None) -> int:
 
     sub.add_parser("packs", help="list the bundled policy packs")
 
+    lk = sub.add_parser("lock", help="the provenance lockfile: status, diff, accept")
+    lk.add_argument("op", choices=["status", "diff", "accept", "init"])
+    lk.add_argument("--home", type=Path, default=None)
+
     at = sub.add_parser("alert-test",
                         help="send one synthetic event to a configured webhook")
     at.add_argument("cls", nargs="?", default="refusal")
@@ -583,6 +641,9 @@ def main(argv=None) -> int:
     if a.cmd == "trace":
         from trustband.trace import main as _trace
         return _trace(_home(a) / "audit.jsonl", a.session, a.last, a.also)
+
+    if a.cmd == "lock":
+        return _lock(a)
 
     if a.cmd == "alert-test":
         return _alert_test(a)

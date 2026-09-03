@@ -232,5 +232,23 @@ def restore_state(guard: Guard, session: str, state: Any,
 
 def guard_tools(tools: Any, guard: Guard, session: str, tier: int = 2,
                 agent: Any = None) -> Any:
-    """Wrap every tool in a list. The usual entry point for an agent or graph."""
+    """Wrap every tool in a list. The usual entry point for an agent or graph.
+
+    Also the observation point for the lockfile: name, description and the
+    argument schema of every tool, as the framework exposes them, pinned on
+    first acceptance and checked here on every later construction.
+    """
+    from trustband.lock import observe as _obs
+    items = []
+    for t in tools:
+        name = getattr(t, "name", None) or type(t).__name__
+        try:
+            schema = getattr(t, "args", None)
+        except Exception:
+            schema = None
+        items.append(_obs("tool", str(name), getattr(t, "description", "") or "", schema))
+    try:
+        guard.observe_catalog(session, "tool", items, full=False)
+    except Exception:
+        pass
     return [guarded_tool(t, guard, session, tier, agent) for t in tools]

@@ -30,6 +30,34 @@ Classes: `refusal`, `runaway`, `chain_break`, `cost_threshold`,
 - `trustband alert-test [class]` proves the wiring end to end. Failures land
   in `alerts_failed.jsonl` beside the audit log.
 
+### The provenance lockfile
+
+`trustband.lock`: for every tool, MCP server and skill an adapter can see, a
+digest of description + schema + version, pinned when a person accepts it
+and checked on every load. Drift refuses under enforce, flags under shadow,
+and is one entry in the sealed log either way — rendered by `trace`,
+exported, and delivered by the `lock_drift` alert class.
+
+- **The pin is bound to authorisation.** The lockfile's digest is a field of
+  the policy, so it is in every capability's MAC, so a capability minted
+  under manifest v1 is dead under v2 at conjunct (G) — the policy-currency
+  mechanism that was proved and deposited in Phase 2. Rug-pull revocation
+  is a MAC failure at the gate, not a check a client could skip. Everyone
+  else pins; nobody else binds the pin.
+- **Per adapter, what it can see:** MCP pins every `tools/list` entry;
+  LangChain, LangGraph and CrewAI pin name, description and argument schema;
+  Claude Code pins server entries in `settings.json` (env key *names*, never
+  values) and skill files by hash, and says it cannot see `tools/list`.
+- **Descriptions are TOOL at first sight.** An instruction in a description
+  cannot raise its own trust, and an argument lifted from one is refused on
+  provenance. Tool shadowing is refused twice — the pin, and the band.
+- **One digest, global invalidation, stated.** Drift on one server
+  invalidates every outstanding capability until re-approval. Measure the
+  benign-drift rate in shadow before enforcing.
+- `trustband lock status | diff | accept`. Re-approval is a person, never
+  automatic. A corrupt lockfile refuses everything with the reason; no
+  lockfile at all behaves exactly as 0.3.x.
+
 ### Two laundering surfaces closed, measured first
 
 - **LangChain error text.** A tool that raised with a payload in its message

@@ -77,6 +77,29 @@ in transit or forged from another process, but tool code running in the same
 interpreter as the Guard holds the key and can mint any name -- the same
 limit `describe_custody()` already states for capabilities.
 
+## Pin what the agent was approved to see
+
+```bash
+trustband lock status     # what adapters have seen, what is pinned, what drifted
+trustband lock diff       # the change, before and after
+trustband lock accept     # a person re-pins; nothing does this on its own
+```
+
+Tool descriptions, MCP server entries and skill files are digested and
+pinned the first time you accept them, and checked on every load after.
+A description that changes — the rug pull, the poisoned update — is refused
+under enforce and flagged under shadow, and the diff is in the sealed log.
+
+The part nobody else has: the lockfile's digest is a field of the policy,
+so it is in every capability's MAC. A capability minted under the old
+manifest is dead under the new one at the gate's own policy-currency
+conjunct, which is in the deposited proof. Pinning is what everyone does;
+binding the pin to authorisation is the difference between a check and a
+MAC failure.
+
+A pin does not say the first version was clean; scanning does that. Run
+mcp-scan in CI and trust.band at the gate.
+
 ## Alerts, free, to wherever you already look
 
 ```json
