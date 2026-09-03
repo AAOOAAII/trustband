@@ -435,10 +435,18 @@ def main(argv=None) -> int:
 
     sub.add_parser("packs", help="list the bundled policy packs")
 
+    ra = sub.add_parser("revoke-agent",
+                        help="refuse every later call by a named agent")
+    ra.add_argument("name")
+    ra.add_argument("--home", type=Path, default=None)
+
     tr = sub.add_parser("trace",
                         help="what happened in a session, from the record")
     tr.add_argument("session", nargs="?", default=None)
     tr.add_argument("--home", type=Path, default=None)
+    tr.add_argument("--also", type=Path, action="append", default=[],
+                    help="another audit.jsonl to merge, e.g. a second "
+                         "process of the same swarm; repeatable")
     tr.add_argument("--last", type=int, default=None,
                     help="show only the last N events")
 
@@ -510,7 +518,19 @@ def main(argv=None) -> int:
 
     if a.cmd == "trace":
         from trustband.trace import main as _trace
-        return _trace(_home(a) / "audit.jsonl", a.session, a.last)
+        return _trace(_home(a) / "audit.jsonl", a.session, a.last, a.also)
+
+    if a.cmd == "revoke-agent":
+        # Writes the name into the revocation file beside the audit log.
+        # Every process sharing that directory refuses the agent on its next
+        # call -- pair 6. No key is touched.
+        from trustband.identity import AgentRegistry
+        home = _home(a)
+        AgentRegistry(None, revocations_path=home / "revoked_agents.json"
+                      ).revoke(a.name)
+        print(f"  agent {a.name!r} revoked; recorded in "
+              f"{home / 'revoked_agents.json'}")
+        return 0
 
     if a.cmd == "status":
         return _status(a)

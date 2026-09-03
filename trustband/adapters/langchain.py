@@ -46,8 +46,30 @@ class ToolRefused(Exception):
         self.confirmable = confirmable
 
 
+def agent_for(guard: Guard, session: str, name: str, role: str = "") -> Any:
+    """A named identity for a graph node or a crew member."""
+    return guard.mint_agent(name, role, session)
+
+
+def agent_for_crewai(guard: Guard, session: str, crew_agent: Any) -> Any:
+    """CrewAI names an agent by its `role`. Read from the object, not
+    documentation; a missing role is a config error, not a default."""
+    role = getattr(crew_agent, "role", None)
+    if not role:
+        raise GuardConfigError("a CrewAI agent needs a non-empty role to be "
+                               "identified")
+    return guard.mint_agent(str(role), "crewai", session)
+
+
+def agent_for_langgraph(guard: Guard, session: str, node: str) -> Any:
+    """LangGraph has no agent object; the node name is the identity."""
+    if not node:
+        raise GuardConfigError("a LangGraph node needs a name to be identified")
+    return guard.mint_agent(str(node), "langgraph-node", session)
+
+
 def guarded_tool(tool: Any, guard: Guard, session: str,
-                 tier: int = 2) -> Any:
+                 tier: int = 2, agent: Any = None) -> Any:
     """Wrap one LangChain tool so the gate decides before its body runs.
 
     Returns the same tool object with `_run`/`_arun` wrapped, so anything
@@ -65,13 +87,15 @@ def guarded_tool(tool: Any, guard: Guard, session: str,
 
     def _decide(kwargs: Dict[str, Any]) -> None:
         d = guard.before_tool_call(
-            ToolCall(session=session, tool=name, args=dict(kwargs), tier=tier))
+            ToolCall(session=session, tool=name, args=dict(kwargs), tier=tier,
+                     agent=agent))
         if not d.allowed:
             raise ToolRefused(d.reason, d.confirmable)
 
     def _remember(result: Any) -> None:
         guard.after_tool_result(
-            ToolCall(session=session, tool=name, args={}), result, Band.TOOL)
+            ToolCall(session=session, tool=name, args={}, agent=agent),
+            result, Band.TOOL)
 
     # THE WRAPPER MUST KEEP THE ORIGINAL SIGNATURE.
     #
@@ -160,6 +184,7 @@ def _as_kwargs(fn: Callable[..., Any], args: tuple, kwargs: Dict[str, Any]
     return out
 
 
-def guard_tools(tools: Any, guard: Guard, session: str, tier: int = 2) -> Any:
+def guard_tools(tools: Any, guard: Guard, session: str, tier: int = 2,
+                agent: Any = None) -> Any:
     """Wrap every tool in a list. The usual entry point for an agent or graph."""
-    return [guarded_tool(t, guard, session, tier) for t in tools]
+    return [guarded_tool(t, guard, session, tier, agent) for t in tools]

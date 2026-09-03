@@ -28,7 +28,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from trustband.audit import AuditLog, entry_digest
 
@@ -63,9 +63,26 @@ def _short(value: Any, width: int = 58) -> str:
 
 
 def render(path: Path, session: Optional[str] = None,
-           last: Optional[int] = None) -> List[str]:
-    """The trace, as lines. Returned rather than printed so it can be tested."""
-    bodies, first_bad = _load(path)
+           last: Optional[int] = None, also: Sequence[Path] = ()) -> List[str]:
+    """The trace, as lines. Returned rather than printed so it can be tested.
+
+    `also` merges further logs -- one per process in a swarm -- by timestamp,
+    each line marked with the file it came from. Two processes never write
+    one chain (pair 5); this is how their records are read together. Every
+    file's chain is verified separately.
+    """
+    sources = [(path, *_load(path))] + [(p, *_load(p)) for p in also]
+    bodies: List[Dict[str, Any]] = []
+    chains: List[Tuple[str, int, Optional[int]]] = []
+    for p, bs, bad in sources:
+        label = p.name if len(sources) == 1 else p.stem
+        for b in bs:
+            bb = dict(b); bb["_src"] = label
+            bodies.append(bb)
+        chains.append((str(p), len(bs), bad))
+    if len(sources) > 1:
+        bodies.sort(key=lambda b: float(b.get("ts") or 0))
+    first_bad = next((bad for _, _, bad in chains if bad is not None), None)
     if not bodies:
         return [f"  no decisions recorded yet in {path}",
                 "  run the agent with the hook installed, then look again."]
@@ -90,11 +107,28 @@ def render(path: Path, session: Optional[str] = None,
 
     decisions = refused = noteworthy = 0
     nonlocal_failed = [0]
+    agents_seen = set()
+    multi = len(sources) > 1
+
+    def _who(b: Dict[str, Any]) -> str:
+        # The agent, when the record has one. A 0.2.x log has none and says
+        # nothing rather than inventing a name -- pair 11.
+        a = b.get("agent")
+        if a:
+            agents_seen.add(a)
+            return f"{a} · "
+        return ""
+
+    def _src(b: Dict[str, Any]) -> str:
+        return f"   [{b['_src']}]" if multi else ""
+
     for b in rows:
         if b.get("event") == "result":
-            out.append(f"  ← {b.get('tool','?'):<14} returned  "
+            frm = b.get("from_agent") or b.get("from")
+            out.append(f"  ← {_who(b)}{b.get('tool','?'):<14} returned  "
                        f"band={b.get('band','?')}  "
-                       f"{b.get('strings_remembered',0)} string(s) remembered")
+                       f"{b.get('strings_remembered',0)} string(s) remembered"
+                       f"{f'  from {frm}' if frm else ''}{_src(b)}")
             for c in (b.get("contracts") or []):
                 mark = "ok " if c["held"] else "NO "
                 blk = " [blocking]" if c.get("blocking") else ""
@@ -110,9 +144,9 @@ def render(path: Path, session: Optional[str] = None,
             refused += 1
         mark = "  ok " if allowed else "  NO "
         ms = b.get("ms")
-        out.append(f"{mark}→ {b.get('tool','?'):<14} "
+        out.append(f"{mark}→ {_who(b)}{b.get('tool','?'):<14} "
                    f"{'allowed' if allowed else 'REFUSED'}"
-                   f"{'' if ms is None else f'   {ms} ms'}")
+                   f"{'' if ms is None else f'   {ms} ms'}{_src(b)}")
 
         bands = b.get("bands") or {}
         args = b.get("args") or {}
@@ -131,7 +165,9 @@ def render(path: Path, session: Optional[str] = None,
         out.append("")
 
     out.append(f"  {decisions} decision(s), {refused} refused, "
-               f"{noteworthy} argument(s) not session-authored")
+               f"{noteworthy} argument(s) not session-authored"
+               + (f", {len(agents_seen)} named agent(s): "
+                  f"{', '.join(sorted(agents_seen))}" if agents_seen else ""))
     if nonlocal_failed[0]:
         out.append(f"  {nonlocal_failed[0]} contract(s) failed — these are "
                    f"claims about the WORK, not about permission; the calls "
@@ -139,17 +175,19 @@ def render(path: Path, session: Optional[str] = None,
     if noteworthy:
         out.append("  ← marks an argument that did not come from the session: "
                    "text a tool returned, which a policy can refuse.")
-    if first_bad is None:
-        out.append(f"  chain intact across {len(bodies)} entries "
-                   f"(a truncated tail would not show here; sealing covers that)")
-    else:
-        out.append(f"  CHAIN BROKEN at seq {first_bad} — this record has been "
-                   f"edited or reordered. Do not trust anything above it.")
+    for p, n, bad in chains:
+        where = f" in {p}" if multi else ""
+        if bad is None:
+            out.append(f"  chain intact across {n} entries{where} "
+                       f"(a truncated tail would not show here; sealing covers that)")
+        else:
+            out.append(f"  CHAIN BROKEN at seq {bad}{where} — this record has "
+                       f"been edited or reordered. Do not trust anything above it.")
     return out
 
 
 def main(path: Path, session: Optional[str] = None,
-         last: Optional[int] = None) -> int:
-    for line in render(path, session, last):
+         last: Optional[int] = None, also: Sequence[Path] = ()) -> int:
+    for line in render(path, session, last, also):
         print(line)
     return 0

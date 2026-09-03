@@ -64,6 +64,11 @@ def span_for(event: Dict[str, Any], service: str = "trustband") -> Dict[str, Any
         _attr("trustband.session", event.get("session", "")),
         _attr("gen_ai.tool.name", event.get("tool", "")),
     ]
+    # Phase 7. Absent on a 0.2.x record, and absent means absent.
+    if event.get("agent"):
+        attrs.append(_attr("trustband.agent", event["agent"]))
+        if event.get("agent_role"):
+            attrs.append(_attr("trustband.agent.role", event["agent_role"]))
     if is_decision:
         attrs += [
             _attr("trustband.decision", "allow" if allowed else "refuse"),
@@ -87,6 +92,8 @@ def span_for(event: Dict[str, Any], service: str = "trustband") -> Dict[str, Any
         ]
         if event.get("from"):
             attrs.append(_attr("trustband.handoff.from", event["from"]))
+        if event.get("from_agent"):
+            attrs.append(_attr("trustband.handoff.from_agent", event["from_agent"]))
 
     return {
         "traceId": _tid(),

@@ -319,6 +319,38 @@ class EpochKeyStore:
         return hmac.compare_digest(
             self.tag(epoch, sess, tier, nonce, policy, sess_epoch), presented)
 
+    # ---- domain-separated MACs, for identities that are not capabilities ----
+    def mac(self, epoch: int, domain: bytes, *parts: bytes) -> bytes:
+        """MAC length-prefixed parts under the epoch key, in a named domain.
+
+        Same custody as `tag()`: delegates to the signer when there is one,
+        and the key never leaves. The domain prefix is what keeps an agent
+        identity from ever colliding with a capability tag -- a message that
+        happened to equal `_tag_message(...)` still MACs differently here.
+        Phase 7 uses it for agent identity; nothing about capabilities moved.
+        """
+        msg = domain + b"".join(
+            len(p).to_bytes(4, "big") + p for p in parts)
+        if self._signer is not None:
+            return self._signer(epoch, msg)
+        self._ensure_available(epoch)
+        return hmac.new(self._keys[epoch], msg, sha256).digest()
+
+    def verify_mac(self, epoch: int, domain: bytes, presented: bytes,
+                   *parts: bytes) -> bool:
+        """Constant-time, inside the store, like `verify()`."""
+        return hmac.compare_digest(self.mac(epoch, domain, *parts), presented)
+
+    @property
+    def current_epoch(self) -> int:
+        """The newest epoch this store holds a key for.
+
+        In-process that tracks the gate's epoch. A file-backed store answers
+        from the file, which is how a second process learns that another one
+        rotated -- the integer comparison at (F) then needs no key at all.
+        """
+        return max(self._keys) if self._keys else 0
+
     def _ensure_available(self, epoch: int) -> None:
         if epoch in self._discarded:
             raise KeyError(
@@ -477,6 +509,27 @@ class Gate:
         #: external custody applies to it too.
         self.audit_keys = audit_keys if audit_keys is not None else EpochKeyStore()
 
+    # -- the key store may know about a rotation this process did not do --
+    def _follow_keys(self) -> None:
+        """Adopt a rotation performed by ANOTHER process.
+
+        A file-backed key store shares the epoch key between processes, so
+        another process's `govern_rotate` retires the key this one is still
+        minting under. Found by attacking pair 2 of the Phase 7 joins: after a
+        foreign rotation `govern_issue` here raised KeyError from inside the
+        store, which is a crash where the model says a refusal at (F).
+
+        This is not a new transition. It is `govern_rotate`, observed late:
+        the same write to `gov_epoch`, the same fresh budget, the same
+        discarded key. In-process the store's epoch can never be ahead of
+        this one, so for the deposited model's own configuration this is a
+        no-op, and the proof is not disturbed.
+        """
+        cur = self.keys.current_epoch
+        if cur > self.gov_epoch:
+            self.gov_epoch = cur
+            self.minted_in_epoch = 0
+
     # -- logging ----------------------------------------------------------
     def _record(self, op: str, decision: Decision, **ctx: Any) -> Decision:
         rec = {
@@ -535,6 +588,7 @@ class Gate:
         if not valid_tier(tier):
             return self._record("govern_issue",
                                 Decision(False, f"invalid tier {tier!r}", "E")), None
+        self._follow_keys()
         # model: `require pre.minted_in_epoch < pre.gov_budget`
         if self.minted_in_epoch >= self.gov_budget:
             return self._record("govern_issue", Decision(
@@ -637,6 +691,9 @@ class Gate:
         Every capability minted in the previous epoch now fails conjunct (F),
         structurally, with no MAC property involved.
         """
+        # From the store's epoch, not a stale local one: two processes that
+        # each rotate once must end at 2, not both at 1.
+        self._follow_keys()
         self.gov_epoch += 1
         self.minted_in_epoch = 0
         self.keys.advance_to(self.gov_epoch)
@@ -686,6 +743,7 @@ class Gate:
             return self._record("authorize", Decision(
                 False, "not a Presented — never passed through ingestion", "A0"))
 
+        self._follow_keys()
         cap = presented.cap
 
         # (A0) provenance — it came through ingest

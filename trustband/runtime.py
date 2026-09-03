@@ -128,6 +128,11 @@ class Runtime:
         # independent runtimes negligible without needing them to coordinate.
         self._nonce = secrets.randbits(48) << 16
         self.calls: int = 0
+        #: Phase 7. Same key store as the gate, so an identity and a capability
+        #: are under one custody claim.
+        from trustband.identity import AgentRegistry
+        self.agents = AgentRegistry(self.gate.keys,
+                                    epoch_of=lambda: self.gate.gov_epoch)
 
     # -- entries the action targets ---------------------------------------
     def register(self, eid: int, tier: int = 2) -> Decision:
@@ -177,6 +182,17 @@ class Runtime:
         other session is affected (`thm_session_revocation_is_local`)."""
         return self.gate.revoke_session(session)
 
+    def revoke_agent(self, agent: Any) -> None:
+        """Phase 7. By `AgentId`: its principal's session epoch is bumped, so
+        capabilities it already holds die at (H), and its name is refused at
+        the identity check before any later call reaches the gate."""
+        from trustband.identity import AgentId
+        if isinstance(agent, AgentId):
+            self.gate.revoke_session(agent.principal)
+            self.agents.revoke(agent.name)
+        else:
+            self.agents.revoke(str(agent))
+
     def withdraw(self, eid: int, tier: int) -> Decision:
         """Withdraw one elevation. Phase 4: undoes the EFFECT a capability had,
         which rotation does not. Idempotent, and strictly de-escalating."""
@@ -214,7 +230,8 @@ class Runtime:
     def call(self, *, session: int, action: str, tier: int, eid: int,
              args: Dict[str, Any], fn: Callable[..., Any],
              output_band: Optional[Band] = None,
-             context: Optional[Dict[str, Any]] = None) -> CallResult:
+             context: Optional[Dict[str, Any]] = None,
+             agent: Optional[Any] = None) -> CallResult:
         """Evaluate, mint, ingest, authorize, and only then execute.
 
         `output_band` declares the provenance of the RESULT for a tool whose
@@ -234,6 +251,22 @@ class Runtime:
         self.calls += 1
         self._nonce += 1
         nonce = self._nonce
+
+        # PHASE 7 -- an agent's PRINCIPAL stands where the session goes.
+        # The capability is then minted for the agent's verified tag, so one
+        # minted for the researcher and presented by the writer dies at (C),
+        # and revoking the agent kills its capabilities at (H). The identity
+        # itself is checked first; nothing below runs for a forged one.
+        if agent is not None:
+            ok, why, conj = self.agents.verify(agent)
+            if not ok:
+                self.gate._record("runtime.call", Decision(False, why, conj),
+                                  action=action, session=session,
+                                  agent=getattr(agent, "name", None),
+                                  stage="identity")
+                return CallResult(False, False, reason=why, conjunct=conj,
+                                  stage="identity")
+            session = agent.principal
 
         # 1-2. policy + taint, then mint only if granted
         # In shadow the DECISION is still computed in full -- taint, policy,
