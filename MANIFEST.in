@@ -17,3 +17,7 @@ include tests/test_extractor_core.py
 
 exclude README.md
 exclude setup.cfg
+
+# The licence and the notice that scopes it travel in every sdist.
+include LICENSE
+include NOTICE
