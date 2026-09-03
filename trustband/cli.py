@@ -561,6 +561,18 @@ def main(argv=None) -> int:
     se.add_argument("--limit", type=int, default=100)
     se.add_argument("--home", type=Path, default=None)
 
+    pp = sub.add_parser("push-policy", help="upload a signed bundle for the fleet (Pro)")
+    pp.add_argument("bundle", type=Path)
+    pp.add_argument("--home", type=Path, default=None)
+
+    pl = sub.add_parser("pull-policy", help="fetch, verify locally, and adopt the latest bundle (Pro)")
+    pl.add_argument("--home", type=Path, default=None)
+
+    rg = sub.add_parser("regress", help="what a candidate policy would have changed, over retained traffic (Pro)")
+    rg.add_argument("candidate", type=Path)
+    rg.add_argument("--device", default=None)
+    rg.add_argument("--home", type=Path, default=None)
+
     lk = sub.add_parser("lock", help="the provenance lockfile: status, diff, accept")
     lk.add_argument("op", choices=["status", "diff", "accept", "init"])
     lk.add_argument("--home", type=Path, default=None)
@@ -654,6 +666,17 @@ def main(argv=None) -> int:
     if a.cmd == "trace":
         from trustband.trace import main as _trace
         return _trace(_home(a) / "audit.jsonl", a.session, a.last, a.also)
+
+    if a.cmd in ("push-policy", "pull-policy", "regress"):
+        from trustband.sync import main_pull_policy, main_push_policy, main_regress
+        home = _home(a)
+        cfgp = home / "config.json"
+        cfg = json.loads(cfgp.read_text(encoding="utf-8")) if cfgp.exists() else {}
+        if a.cmd == "push-policy":
+            return main_push_policy(home, cfg, a.bundle)
+        if a.cmd == "pull-policy":
+            return main_pull_policy(home, cfg)
+        return main_regress(home, cfg, a.candidate, a.device)
 
     if a.cmd in ("sync", "search"):
         # A PRO FEATURE, AND THE ONLY PLACE THE PACKAGE TALKS TO THE SERVICE.

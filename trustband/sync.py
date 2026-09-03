@@ -106,6 +106,117 @@ class Client:
     def verify(self, device: str) -> Dict[str, Any]:
         return self._call("GET", f"/v1/verify/{device}")
 
+    # -- Pro-2 -------------------------------------------------------------
+    def push_policy(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
+        return self._call("POST", "/v1/policy", {"bundle": bundle})
+
+    def latest_policy(self) -> Dict[str, Any]:
+        return self._call("GET", "/v1/policy/latest")
+
+    def regress(self, policy: Dict[str, Any], device: Optional[str] = None,
+                limit: int = 5000) -> Dict[str, Any]:
+        return self._call("POST", "/v1/regress",
+                          {"policy": policy, "device": device, "limit": limit})
+
+
+# --------------------------------------------------------------------------
+# Pro-2 commands. The signature is verified HERE, with the key on the device.
+# --------------------------------------------------------------------------
+
+def main_push_policy(home: Path, cfg: Dict[str, Any], bundle_path: Path) -> int:
+    try:
+        bundle = json.loads(Path(bundle_path).read_text(encoding="utf-8"))
+        c = Client(cfg.get("api_url") or DEFAULT_URL, cfg.get("api_key") or "")
+        r = c.push_policy(bundle)
+    except (SyncError, OSError, ValueError) as e:
+        print(f"  push failed: {e}")
+        return 1
+    print(f"  version {r['version']} {'stored' if r.get('stored') else 'already held'}; "
+          f"digest {r['digest'][:16]}…")
+    return 0
+
+
+def main_pull_policy(home: Path, cfg: Dict[str, Any]) -> int:
+    """Fetch the latest bundle, verify it locally, adopt it, raise the floor.
+
+    THE FLOOR IS ON THE DEVICE. `policy_version.json` beside the config
+    records the last adopted version; a served bundle below it is refused
+    here, whatever the service says -- pair 2. No key on the device means no
+    adoption and no change to the policy file -- pair 3.
+    """
+    from trustband.bundle import BundleError, verify_bundle
+    home = Path(home)
+    key_ref = cfg.get("policy_key_file")
+    if not key_ref:
+        print("  pull refused: no policy_key_file in config, so a served bundle cannot "
+              "be verified. The policy file is unchanged.")
+        return 1
+    key_path = home / key_ref
+    if not key_path.exists():
+        print(f"  pull refused: {key_path} does not exist. The policy file is unchanged.")
+        return 1
+    floor_file = home / "policy_version.json"
+    floor = 0
+    if floor_file.exists():
+        try:
+            floor = int(json.loads(floor_file.read_text(encoding="utf-8")).get("version", 0))
+        except Exception:
+            floor = 0
+    try:
+        c = Client(cfg.get("api_url") or DEFAULT_URL, cfg.get("api_key") or "")
+        served = c.latest_policy()
+        bundle = served["bundle"]
+        policy = verify_bundle(bundle, key_path.read_bytes(), min_version=max(floor, 1))
+    except SyncError as e:
+        print(f"  pull failed: {e}")
+        return 1
+    except BundleError as e:
+        print(f"  pull refused: {e}. The policy file is unchanged.")
+        return 1
+    ref = cfg.get("policy")
+    if not isinstance(ref, str):
+        print("  pull refused: config's policy is inline, not a file; nothing to write")
+        return 1
+    (home / ref).write_text(json.dumps(policy, indent=2), encoding="utf-8")
+    floor_file.write_text(json.dumps({"version": bundle["version"],
+                                      "digest": bundle["digest"]}), encoding="utf-8")
+    print(f"  adopted version {bundle['version']} into {home / ref}; floor is now "
+          f"{bundle['version']}")
+    return 0
+
+
+def main_regress(home: Path, cfg: Dict[str, Any], candidate_path: Path,
+                 device: Optional[str] = None) -> int:
+    try:
+        policy = json.loads(Path(candidate_path).read_text(encoding="utf-8"))
+        policy.pop("_pack", None); policy.pop("_inferred", None)
+        c = Client(cfg.get("api_url") or DEFAULT_URL, cfg.get("api_key") or "")
+        r = c.regress(policy, device=device)
+    except (SyncError, OSError, ValueError) as e:
+        print(f"  regress failed: {e}")
+        return 1
+    total_dec = total_ref = total_allow = 0
+    for d in r["devices"]:
+        tag = d["device"][:12]
+        if "insufficient" in d:
+            print(f"  {tag}  cannot replay: {d['insufficient']}")
+            continue
+        if "error" in d:
+            print(f"  {tag}  error: {d['error']}")
+            continue
+        total_dec += d["decisions"]; total_ref += d["newly_refused"]; total_allow += d["newly_allowed"]
+        print(f"  {tag}  {d['decisions']} decision(s): this change would refuse "
+              f"{d['newly_refused']} it allowed, and allow {d['newly_allowed']} it refused")
+        for ch in d["changes"][:12]:
+            who = f"{ch['agent']} · " if ch.get("agent") else ""
+            arrow = "allow -> REFUSE" if not ch["now_allowed"] else "refuse -> allow"
+            print(f"      #{ch['seq']:<5} {who}{ch['tool']:<16} {arrow}   {ch['reason'][:60]}")
+        if len(d["changes"]) > 12:
+            print(f"      … {len(d['changes']) - 12} more")
+    print(f"  over the newest {r['limit']} entries per device: {total_dec} decision(s), "
+          f"{total_ref} newly refused, {total_allow} newly allowed")
+    return 0
+
 
 def sync(home: Path, api_url: str, api_key: str, label: Optional[str] = None
          ) -> Dict[str, Any]:

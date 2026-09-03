@@ -35,10 +35,15 @@ from typing import Any, Dict, List, Optional
 
 #: Hosted capabilities. Each is a SERVICE, not a local feature to unlock.
 HOSTED: Dict[str, str] = {
-    "audit_retention": "retained, exportable audit history beyond the local log",
-    "approval_routing": "route a confirmation to someone other than the operator",
-    "fleet_policy": "distribute one policy across environments",
-    "fleet_inference": "policy inference informed by an organisation's traffic",
+    "audit_retention": "the record retained and verified by a party who cannot edit it; "
+                       "search across sessions and devices  (trustband sync, search)",
+    "fleet_policy": "one signed policy pushed everywhere, verified on each device  "
+                    "(push-policy, pull-policy)",
+    "policy_regression": "what a policy change would have refused last week  (regress)",
+    "per_client_reports": "spend caps per client that hard-stop, and a report to invoice from",
+    "approval_routing": "a confirmation routed to a colleague or a client contact",
+    "incident_pack": "a sealed, signed excerpt with the provenance of every argument",
+    "hosted_custody": "zero key bytes in your process",
 }
 
 #: Enterprise adds services that touch a customer's own infrastructure.
