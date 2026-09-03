@@ -548,6 +548,10 @@ def main(argv=None) -> int:
 
     sub.add_parser("packs", help="list the bundled policy packs")
 
+    lg = sub.add_parser("login", help="write a Pro API key into config; nothing else changes")
+    lg.add_argument("key")
+    lg.add_argument("--home", type=Path, default=None)
+
     sy = sub.add_parser("sync", help="push the local record to the retained audit (Pro)")
     sy.add_argument("--home", type=Path, default=None)
 
@@ -666,6 +670,25 @@ def main(argv=None) -> int:
     if a.cmd == "trace":
         from trustband.trace import main as _trace
         return _trace(_home(a) / "audit.jsonl", a.session, a.last, a.also)
+
+    if a.cmd == "login":
+        # ONLY THE KEY. The rest of config survives byte for byte, and a
+        # malformed key is refused before the file is touched.
+        import re as _re
+        if not _re.fullmatch(r"tb_(live|ent)_[0-9a-f]{32}", a.key):
+            print("  not a trustband key (tb_live_… or tb_ent_…, 32 hex). Config unchanged.")
+            return 1
+        home = _home(a)
+        cfgp = home / "config.json"
+        if not cfgp.exists():
+            print(f"  no config at {cfgp}; run `trustband init` first")
+            return 1
+        cfg = json.loads(cfgp.read_text(encoding="utf-8"))
+        cfg["api_key"] = a.key
+        cfgp.write_text(json.dumps(cfg, indent=2) + "\n", encoding="utf-8")
+        print(f"  api_key written to {cfgp}. `trustband status` shows the tier; "
+              f"`trustband sync` starts retention.")
+        return 0
 
     if a.cmd in ("push-policy", "pull-policy", "regress"):
         from trustband.sync import main_pull_policy, main_push_policy, main_regress
