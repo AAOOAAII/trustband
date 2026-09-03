@@ -69,9 +69,13 @@ agents, and `trace --also other/audit.jsonl` merges one log per process.
 Any process that can read that file holds the key; `describe_custody()` says
 so rather than implying otherwise.
 
-This is local identity. Nobody outside the key can verify it, which is the
-point of using a MAC. Cross-organisation identity remains an Open Agent
-Passport concern.
+This is local identity, and two limits are stated rather than discovered.
+Nobody outside the key can verify it, which is the point of using a MAC;
+cross-organisation identity remains an Open Agent Passport concern. And it
+attributes, it does not isolate: the tag proves an identity was not altered
+in transit or forged from another process, but tool code running in the same
+interpreter as the Guard holds the key and can mint any name -- the same
+limit `describe_custody()` already states for capabilities.
 
 ## Reading the record
 

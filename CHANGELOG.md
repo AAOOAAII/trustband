@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — 0.3.0
+## 0.3.0 — 2026-09-03
 
 ### Named agents, bound into the key hierarchy
 
