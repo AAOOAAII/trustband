@@ -496,6 +496,16 @@ class Guard:
                     bands |= store.bands_within(t)   # the message EMBEDS one
         return bands
 
+    def model_hint(self, session: str, context_bands: Optional[set] = None) -> Dict[str, Any]:
+        """The hint alone -- what this context may reach, and how much -- with
+        no decision recorded. For an adapter that narrows a router's group
+        BEFORE the router chooses, then asks `before_model_call` about the
+        deployment it picked, so the record names the model actually called."""
+        bands = set(context_bands) if context_bands is not None else self.context_bands(session)
+        if not self.models.enabled:
+            return {"models": ["*"], "max_tokens": None}
+        return self.models.hint(bands, self._model_spend.get(session, 0.0))
+
     def before_model_call(self, session: str, model: str, *,
                           tokens_in: Optional[int] = None,
                           context_bands: Optional[set] = None,

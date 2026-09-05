@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.7.1 — 2026-09-06
+
+### The LiteLLM adapter: the hint reaches a real router
+
+`trustband.adapters.litellm.gated(guard, session)`:
+
+- `completion` / `acompletion` ask the gate with the model, the bands
+  computed from the messages, and the library's own token count, refuse
+  before any request by raising `ModelRefused(reason, hint)`, and record
+  usage and the response's model as the version.
+- `route(router, group, messages)` / `aroute` narrow a Router group to the
+  deployments the context permits, in the hint's order, before the Router
+  chooses; the record names the deployment that ran.
+- `logger` goes into `litellm.callbacks` as the safety net: a deployment
+  the gate refuses fails a Router call that reached it by any other path.
+
+Measured against `litellm` 1.99.0 before writing: a logger cannot refuse in
+the SDK path (the library swallows the exception), and a pre-call check
+that raises fails the call rather than choosing again. The adapter is
+built on what the library does, and a test holds each fact so a change is
+noticed. `Guard.model_hint` is new: the hint with nothing recorded.
+
+Gates and measurements: `docs/LITELLM_ADAPTER_GATES.md`,
+`docs/LITELLM_ADAPTER_RESULT.md`.
+
 ## 0.7.0 — 2026-09-05
 
 ### Model constraints: which models a step may reach, with how much
