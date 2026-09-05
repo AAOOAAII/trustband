@@ -135,14 +135,14 @@ as it was for Pro.
   path exists; the alert path does not use it.
 - Push notifications, SMS, WhatsApp, a native app. Each is either a cost
   per message or an approval process, and neither fits £14.99.
-- The timing gate in `test_alerts.py` (spool write p50 < 1 ms) failed
-  throughout this session at 1.4–2.0 ms with a load average above 10 and a
-  raw file write measured at 4.5 ms; the code is unchanged since 0.4.0 and
-  the result is recorded as environmental, to be re-run on a quiet machine.
+- The timing gate in `test_alerts.py` (spool write p50 < 1 ms) failed for
+  most of this session at 1.4–2.0 ms with a load average above 10 and a raw
+  file write measured at 4.5 ms; the code is unchanged since 0.4.0. It passed
+  three runs in a row once the load fell below 10, before release.
 
 ## Regression
 
 ```
-package 86 tests (73 + 12 queue + 1 timing gate, environmental) · conformance 22/22
+package 86/86 (74 + 12 queue) · conformance 22/22
 cloud 48/48
 ```
