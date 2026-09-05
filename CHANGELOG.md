@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.6.0 — 2026-09-05
+
+### `queue`: a person answers from their phone
+
+The third unattended disposition, and the Unattended add-on that hosts it.
+`unattended.on_confirmable: queue` makes a confirmable refusal wait for a
+person instead of failing. The gate renders the question from redacted
+values, with the band of every argument, and hands it to a courier; the
+service sends a link by email and, if linked, Telegram; the page shows the
+rendering and takes the decision; the gate polls until a deadline it chose
+before asking (`unattended.deadline_s`, 900 by default, 86400 at most).
+
+- **The answer is bound to the question.** The gate computes the value
+  digest before asking and ignores any answer that does not carry it.
+- **Silence refuses.** Deadline passed, service unreachable, key refused,
+  answer malformed: the call refuses and the record says which. Never an
+  allow, never a wait past the deadline plus one poll.
+- **The courier cannot decide.** A Telegram button and an email link both
+  open the page; only the page's POST, with a single-use token, decides.
+- **Shadow does not ask.** It records "would have queued" and sends nothing.
+- **`deny` and `allow` are byte-for-byte as F7 measured**, and the guard
+  still holds no reference to a key: the courier is built by
+  `trustband/approvals.py` from config and handed in (conformance 12).
+- **A recorded approval now lifts the band check for the approved value**
+  under a grant marked `confirmable`. Nothing had ever spent an approval
+  before; `as_context` had no caller. An approval for one value lifts
+  nothing for another, and nothing under a grant that never offered the
+  question.
+
+Gates and measurements: `docs/UNATTENDED_QUEUE_GATES.md` and
+`docs/UNATTENDED_QUEUE_RESULT.md`. Add-on: trust.band/add-ons.
+
 ## 0.5.0 — 2026-09-03
 
 ### The Pro client, standard library only
