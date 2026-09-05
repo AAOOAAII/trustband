@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "trustband"
-version = "0.6.1"
+version = "0.7.0"
 description = "Provenance-aware authorization for LLM agent tool calls"
 readme = "trustband/README.md"
 requires-python = ">=3.10"

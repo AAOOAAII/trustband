@@ -1,5 +1,52 @@
 # Changelog
 
+## 0.7.0 — 2026-09-05
+
+### Model constraints: which models a step may reach, with how much
+
+A `models` section in policy, and a second question the gate answers at
+the framework's model call: *may this step reach this model, given the
+bands in its context?* `Guard.before_model_call` returns a decision and a
+hint (the models every band present permits, and the tokens left); the
+framework routes, the gate never makes or forwards a call.
+
+- `allow` and `by_band`: one table, read as residency (untrusted TOOL
+  content reaches only the sandboxed model; GOVERNANCE material never
+  leaves) or as cost (the cheap model for the steps that carry nothing
+  sensitive). The bands in context are SESSION plus whatever the session's
+  store has remembered, or what an adapter computed from the messages,
+  including a tool result embedded inside a prompt.
+- `max_cost_per_session` and `max_tokens_per_call`, refused at the gate and
+  alerted as `runaway`. Money is an integer in minor units: the policy
+  domain has no floats.
+- `pin`: the model and the snapshot the provider names are a lockfile item
+  of kind `model`; a change is drift, refused under enforce until
+  `trustband lock accept`. The benign-drift rule applies: nothing
+  auto-accepts.
+- Every model decision is one chained record; `trace` renders it; shadow
+  allows and records would-refuse; the module carries no billing
+  vocabulary.
+- LangChain: `model_gate(guard, session)` is a callback handler that asks
+  before `on_chat_model_start`, raises `ModelRefused` on refusal, and
+  records usage and version after the call.
+
+### Measured
+
+- **Benign drift** (`docs/BENIGN_DRIFT_RESULT.md`): 164 consecutive
+  releases across eight MCP servers, every catalogue from a running server.
+  Two releases in five move a pin; description-only changes 8 of 164;
+  purely additive schema changes with the description untouched 1 of 37.
+  Stable across three starts everywhere. The rule stands: nothing is
+  accepted without a person.
+- **Phase 7b** (`docs/P7B_PROOF_RESULT.md`): the agent principal in the
+  Verus model, on a branch of the proof crate. 31 verified, 0 errors,
+  nothing assumed; four refusals proved in the shapes of B, C, H and F;
+  counterexamples 10/10. Not yet redeposited.
+
+### Also
+
+- `hosted` alerts (0.6.1) and the account page's Recent alerts.
+
 ## 0.6.1 — 2026-09-05
 
 ### `hosted`: alerts ride the approvals path
