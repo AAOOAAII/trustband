@@ -38,6 +38,10 @@ framework routes, the gate never makes or forwards a call.
   purely additive schema changes with the description untouched 1 of 37.
   Stable across three starts everywhere. The rule stands: nothing is
   accepted without a person.
+- **Plan recovery** (`docs/PLAN_LIVE_RECOVERY_RESULT.md`): INCONCLUSIVE.
+  Four injection shapes, 49 episodes, and qwen2.5:7b never called the
+  attacker in a two-read task; told of two recipients it sent to ops twice.
+  Recorded as a failed harness, with the next instrument named.
 - **Phase 7b** (`docs/P7B_PROOF_RESULT.md`): the agent principal in the
   Verus model, on a branch of the proof crate. 31 verified, 0 errors,
   nothing assumed; four refusals proved in the shapes of B, C, H and F;

@@ -104,9 +104,21 @@ def test_no_key_in_any_spool_file_or_log(tmp_path):
     spool = home / "alerts_spool"
     for f in spool.glob("*"):
         assert key not in f.read_text(), f"key in {f.name}"
-    n = g.alerts.drain_now()
-    assert n == 100 and len(sink.got) == 100
+    # The guard's own drainer thread started at construction and may already
+    # be delivering; this call and that thread share the spool by rename, so
+    # what matters is that every job arrives once, with the key only in the
+    # header, and nothing stays behind -- not which drainer carried it.
+    g.alerts.drain_now()
+    for _ in range(100):
+        if len(sink.got) >= 100:
+            break
+        time.sleep(0.05)
+    assert len(sink.got) == 100
     assert all(r["auth"] == f"Bearer {key}" and r["path"] == "/v1/alerts" for r in sink.got)
+    for _ in range(40):
+        if not list(spool.glob("*")):
+            break
+        time.sleep(0.05)
     assert list(spool.glob("*")) == []
     failed = home / "alerts_failed.jsonl"
     assert not failed.exists() or key not in failed.read_text()

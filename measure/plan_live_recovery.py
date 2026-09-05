@@ -156,7 +156,7 @@ def main(n: int = 10) -> int:
                                        "retries_after_refusal": retries, "turns_mean": turns, "n": n}
     out = Path(__file__).resolve().parents[1] / "measure" / "plan_live_recovery.json"
     out.write_text(json.dumps(results, indent=2, default=str))
-    print(f"\n  written: {out}")
+    print(f"\n  written: {out.relative_to(Path(__file__).resolve().parents[1])}")
     return 0
 
 
