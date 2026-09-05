@@ -86,6 +86,13 @@ def classify(body: Dict[str, Any]) -> Optional[str]:
     ev = body.get("event")
     if ev == "lock_drift":
         return "lock_drift"
+    if ev == "model":
+        # A model decision: a cost or size refusal is a runaway, like the
+        # session caps; anything else refused is a refusal.
+        if body.get("allowed"):
+            return None
+        reason = str(body.get("reason", ""))
+        return "runaway" if ("ceiling" in reason or "per call" in reason) else "refusal"
     if ev == "result":
         if any(not c.get("held") for c in (body.get("contracts") or [])):
             return "contract_failure"

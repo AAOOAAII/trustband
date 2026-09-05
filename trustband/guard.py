@@ -64,6 +64,10 @@ class Decision:
     conjunct: Optional[str] = None
     confirmable: bool = False
     request: Optional[ConfirmationRequest] = None
+    #: Model decisions only: what a router may act on -- the models every
+    #: band in context permits, and how many tokens are left. Never an
+    #: instruction; the framework routes, the gate answers.
+    hint: Optional[Dict[str, Any]] = None
 
     def __bool__(self) -> bool:
         return self.allowed
@@ -156,6 +160,20 @@ class Guard:
         #: an unknown budget never refuses: a cap that fires on a number we do
         #: not have is worse than no cap.
         self.tokens_used: Dict[str, int] = {}
+        #: Model constraints: which models a step may reach given the bands
+        #: in its context, with how much. Validated at adoption like any
+        #: policy error; absent means `before_model_call` allows everything
+        #: and the tool path is untouched. See models.py.
+        from trustband.models import ModelConfigError, ModelPolicy
+        try:
+            self.models = ModelPolicy.from_policy(policy.get("models"))
+        except ModelConfigError as e:
+            raise GuardConfigError(f"policy rejected: {e}") from None
+        #: session -> spend so far, priced from the policy's table.
+        self._model_spend: Dict[str, float] = {}
+        #: session -> (model, version) last pinned, so a response that names
+        #: a different version is observed as drift.
+        self._model_seen: Dict[str, Tuple[str, Optional[str]]] = {}
         #: session -> (allowed actions, allowed destination values, trusted?)
         #: A plan is a per-TASK constraint, where an allowlist is per-deployment
         #: -- which is why it covers the open-ended agent an allowlist cannot.
@@ -459,6 +477,120 @@ class Guard:
                 return (f"MCP server {server!r} changed since it was pinned; run "
                         f"`trustband lock diff`, then `trustband lock accept`")
         return None
+
+    # -- model constraints ------------------------------------------------
+    def context_bands(self, session: str, texts: Optional[list] = None) -> set:
+        """The bands in a session's context. SESSION always; then every band
+        the store has remembered, or, when an adapter passes the texts it can
+        see, the band each of those recalls to."""
+        store = self._store(session)
+        bands = {Band.SESSION}
+        if texts is None:
+            bands |= store.bands_present()
+        else:
+            for t in texts:
+                if isinstance(t, str):
+                    b = store.recall(t)          # the message IS a tool result
+                    if b is not None:
+                        bands.add(b)
+                    bands |= store.bands_within(t)   # the message EMBEDS one
+        return bands
+
+    def before_model_call(self, session: str, model: str, *,
+                          tokens_in: Optional[int] = None,
+                          context_bands: Optional[set] = None,
+                          version: Optional[str] = None,
+                          agent: Optional[AgentId] = None) -> Decision:
+        """May this step reach `model`, with this much, given its context?
+
+        A decision and a hint. The gate never makes the call: the framework
+        asked, the framework routes. Refusals: not in `allow`; outside what a
+        band in context permits; over the per-call limit; the session's spend
+        has reached its ceiling; the pinned model changed. Every one obeys
+        shadow, records one chained entry, and alerts from it.
+        """
+        t0 = time.perf_counter()
+        mp = self.models
+        bands = set(context_bands) if context_bands is not None else self.context_bands(session)
+        band_names = sorted(b.value for b in bands)
+        if not mp.enabled:
+            hint = {"models": ["*"], "max_tokens": None}
+            return Decision(True, "no model constraints configured", None, False, None, hint)
+        spent = self._model_spend.get(session, 0.0)
+        hint = mp.hint(bands, spent)
+        why: Optional[str] = None
+        if mp.pin and version is not None and self._home is not None:
+            from trustband.lock import observe as _lock_observe
+            self.observe_catalog(session, "model", [_lock_observe("model", model, "", None, version)])
+        if _lock_key("model", model) in self._drifted.get(session, set()):
+            why = (f"model {model!r} changed since it was pinned; run `trustband lock diff`, "
+                   f"then `trustband lock accept` if it is right")
+        if why is None:
+            why = mp.check(model, bands)
+        if why is None and mp.max_tokens_per_call is not None and tokens_in is not None \
+                and tokens_in > mp.max_tokens_per_call:
+            why = (f"{tokens_in:,} tokens in one call exceeds models.max_tokens_per_call "
+                   f"{mp.max_tokens_per_call:,}; this is a per call limit")
+        if why is None and mp.max_cost_per_session is not None and spent >= mp.max_cost_per_session:
+            why = (f"session spend {spent:.4f} reached the cost ceiling "
+                   f"{mp.max_cost_per_session:.2f} (models.max_cost_per_session)")
+        ok = why is None
+        reason = why or f"model {model!r} permitted for context bands {band_names}"
+        ms = (time.perf_counter() - t0) * 1000.0
+        if self.mode == "shadow":
+            self._record_model(session, model, band_names, ok, reason, hint, ms, agent, shadow=True)
+            self.shadow_log.append({"session": session, "tool": f"model:{model}",
+                                    "agent": agent.name if agent else None,
+                                    "would_allow": ok, "reason": reason, "confirmable": False,
+                                    "bands": {"context": band_names}})
+            return Decision(True, reason if ok else f"SHADOW: would have refused — {reason}",
+                            None, False, None, hint)
+        self._record_model(session, model, band_names, ok, reason, hint, ms, agent)
+        return Decision(ok, reason, None if ok else "model", False, None, hint)
+
+    def record_model_usage(self, session: str, model: str, tokens_in: int,
+                           tokens_out: int, version: Optional[str] = None) -> float:
+        """After a call: price it into the session's spend and, with `pin`,
+        observe the version the response named. Returns the spend so far.
+        A model absent from the price table is charged at zero, and the
+        record says so."""
+        cost = self.models.cost(model, int(tokens_in or 0), int(tokens_out or 0))
+        self._model_spend[session] = self._model_spend.get(session, 0.0) + cost
+        self.tokens_used[session] = self.tokens_used.get(session, 0) + int(tokens_in or 0) + int(tokens_out or 0)
+        if self.models.pin and version is not None and self._home is not None:
+            from trustband.lock import observe as _lock_observe
+            self.observe_catalog(session, "model", [_lock_observe("model", model, "", None, version)])
+        if self.audit is not None:
+            try:
+                self.audit.append({
+                    "ts": time.time(), "session": session, "event": "model_usage",
+                    "model": model, "version": version, "tokens_in": int(tokens_in or 0),
+                    "tokens_out": int(tokens_out or 0), "cost": round(cost, 6),
+                    "priced": self.models.price_of(model) is not None,
+                    "spent": round(self._model_spend[session], 6), "mode": self.mode,
+                })
+            except Exception:
+                pass
+        return self._model_spend[session]
+
+    def _record_model(self, session: str, model: str, bands: list, allowed: bool,
+                      reason: str, hint: Dict[str, Any], ms: float,
+                      agent: Optional[AgentId], shadow: bool = False) -> None:
+        if self.audit is None:
+            return
+        try:
+            self.audit.append({
+                "ts": time.time(), "session": session, "event": "model",
+                "tool": f"model:{model}", "model": model, "bands": bands,
+                "allowed": bool(allowed), "mode": self.mode,
+                "reason": self.redactor.value("reason", reason),
+                "hint": hint, "agent": agent.name if agent else None,
+                "ms": round(ms, 4),
+            })
+            if not shadow:
+                self.alerts.consider(self.audit.entries[-1].body)
+        except Exception:
+            pass
 
     # -- identity ----------------------------------------------------------
     def mint_agent(self, name: str, role: str, session: str) -> AgentId:

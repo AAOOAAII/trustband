@@ -131,6 +131,23 @@ def render(path: Path, session: Optional[str] = None,
         if b.get("event") == "lock_accept":
             out.append(f"  == lockfile accepted: {b.get('items', 0)} item(s) pinned{_src(b)}")
             continue
+        if b.get("event") == "model":
+            decisions += 1
+            allowed = bool(b.get("allowed"))
+            if not allowed:
+                refused += 1
+            out.append(f"{'  ok ' if allowed else '  NO '}⇒ {_who(b)}model {b.get('model','?'):<12} "
+                       f"{'allowed' if allowed else 'REFUSED'}  "
+                       f"bands={','.join(b.get('bands') or []) or '—'}"
+                       f"{'' if b.get('ms') is None else f'   {b.get('ms')} ms'}{_src(b)}")
+            if not allowed:
+                out.append(f"        why: {b.get('reason','(not recorded)')}")
+            h = b.get("hint") or {}
+            if h.get("models") is not None:
+                out.append(f"        may reach: {', '.join(h['models']) or 'nothing'}"
+                           f"{'' if h.get('max_tokens') is None else f'  up to {h['max_tokens']:,} tokens'}")
+            out.append("")
+            continue
         if b.get("event") == "result":
             frm = b.get("from_agent") or b.get("from")
             out.append(f"  ← {_who(b)}{b.get('tool','?'):<14} returned  "

@@ -50,7 +50,7 @@ from typing import Any, Dict, List, Optional
 
 from trustband.policy import encode as _encode
 
-KINDS = ("tool", "server", "skill")
+KINDS = ("tool", "server", "skill", "model")
 LOCK_NAME = "trustband.lock"
 PENDING_NAME = "lock_pending.json"
 

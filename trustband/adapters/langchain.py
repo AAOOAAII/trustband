@@ -26,7 +26,7 @@ SESSIONS ARE NOT OPTIONAL
 """
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional  # noqa: F401
 
 from trustband.gate import Band
 from trustband.guard import Guard, GuardConfigError, ToolCall
@@ -44,6 +44,89 @@ class ToolRefused(Exception):
         super().__init__(reason)
         self.reason = reason
         self.confirmable = confirmable
+
+
+class ModelRefused(Exception):
+    """Raised from the callback before the model is called. LangChain
+    propagates callback exceptions, so the call does not happen."""
+
+    def __init__(self, reason: str, hint: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(reason)
+        self.reason = reason
+        self.hint = hint or {}
+
+
+def model_gate(guard: Guard, session: str, agent: Any = None) -> Any:
+    """A LangChain callback handler that asks the gate before every chat model
+    call and records usage and version after it.
+
+    WHY A CALLBACK HERE AND NOT FOR TOOLS
+        For tools a callback cannot refuse, so the adapter wraps the tool.
+        For model calls the framework raises callback exceptions before the
+        request is made (`on_chat_model_start` runs first, and an exception
+        there aborts the run), so a callback CAN refuse -- and it is the only
+        place the adapter sees the model name and the messages together.
+
+    WHAT IT SEES
+        The messages, so the bands in context are computed from what is
+        actually being sent, not only from what the store remembers. The
+        model name from the invocation parameters. After the call, token
+        usage and the model version the provider named, if any.
+    """
+    from langchain_core.callbacks import BaseCallbackHandler
+
+    class _ModelGate(BaseCallbackHandler):
+        raise_error = True
+
+        def _model_of(self, serialized: Any, kwargs: Dict[str, Any]) -> str:
+            inv = kwargs.get("invocation_params") or {}
+            for k in ("model", "model_name", "model_id"):
+                if inv.get(k):
+                    return str(inv[k])
+            sk = (serialized or {}).get("kwargs") or {}
+            for k in ("model", "model_name", "model_id"):
+                if sk.get(k):
+                    return str(sk[k])
+            return str(((serialized or {}).get("id") or ["unknown"])[-1])
+
+        def _ask(self, model: str, texts: list) -> None:
+            bands = guard.context_bands(session, texts)
+            d = guard.before_model_call(session, model, context_bands=bands, agent=agent)
+            if not d.allowed:
+                raise ModelRefused(d.reason, d.hint)
+
+        def on_chat_model_start(self, serialized: Any, messages: Any, **kwargs: Any) -> Any:
+            texts = []
+            for batch in messages or []:
+                for m in batch or []:
+                    c = getattr(m, "content", None)
+                    if isinstance(c, str):
+                        texts.append(c)
+            self._ask(self._model_of(serialized, kwargs), texts)
+
+        def on_llm_start(self, serialized: Any, prompts: Any, **kwargs: Any) -> Any:
+            self._ask(self._model_of(serialized, kwargs), [p for p in (prompts or []) if isinstance(p, str)])
+
+        def on_llm_end(self, response: Any, **kwargs: Any) -> Any:
+            out = getattr(response, "llm_output", None) or {}
+            usage = out.get("token_usage") or out.get("usage") or {}
+            tin = usage.get("prompt_tokens") or usage.get("input_tokens") or 0
+            tout = usage.get("completion_tokens") or usage.get("output_tokens") or 0
+            model = out.get("model_name") or out.get("model") or "unknown"
+            version = out.get("model_name") or out.get("model")
+            if not tin and not tout:
+                # Chat generations carry usage on the message in newer versions.
+                for gens in getattr(response, "generations", None) or []:
+                    for g in gens:
+                        um = getattr(getattr(g, "message", None), "usage_metadata", None) or {}
+                        tin += um.get("input_tokens", 0) or 0
+                        tout += um.get("output_tokens", 0) or 0
+                        rm = getattr(getattr(g, "message", None), "response_metadata", None) or {}
+                        if rm.get("model_name") or rm.get("model"):
+                            model = version = rm.get("model_name") or rm.get("model")
+            guard.record_model_usage(session, str(model), int(tin), int(tout), version=version)
+
+    return _ModelGate()
 
 
 def agent_for(guard: Guard, session: str, name: str, role: str = "") -> Any:

@@ -15,8 +15,8 @@ A `models` section in policy:
   "allow": ["gpt-4o*", "claude-*"],
   "by_band": {"tool": ["gpt-4o-mini"], "user": ["gpt-4o-mini"]},
   "max_tokens_per_call": 20000,
-  "max_cost_per_session": 5.0,
-  "prices": {"gpt-4o": {"in": 2.5, "out": 10.0}, "gpt-4o-mini": {"in": 0.15, "out": 0.6}},
+  "max_cost_per_session": 500,
+  "prices": {"gpt-4o": {"in": 250, "out": 1000}, "gpt-4o-mini": {"in": 15, "out": 60}},
   "pin": true
 }
 ```
@@ -28,6 +28,10 @@ can see the messages may pass them explicitly. A model is permitted when it
 matches `allow` and, for every band present, matches that band's list if one
 is given. The decision carries `hint = {"models": [...], "max_tokens": n}`,
 the set every band present permits, so a router that wants to choose can.
+
+Money is written in minor units, pence or cents, as integers: the policy
+domain has no floats, for the reason the lockfile stringifies them. A
+ceiling of 500 is £5.00; a price of 250 is £2.50 per million tokens.
 
 Cost: `record_model_usage(session, model, tokens_in, tokens_out)` after each
 call; the next call refuses at the gate once the session's spend, priced

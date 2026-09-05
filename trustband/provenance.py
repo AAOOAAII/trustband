@@ -193,6 +193,32 @@ class ProvenanceStore:
             self._memo.clear()
 
     # -- reading ----------------------------------------------------------
+    def bands_present(self) -> Set[Band]:
+        """Every band this store has remembered anything at. What "is in
+        context" means to the model-constraints check when an adapter cannot
+        see the messages: if a tool's output was remembered, TOOL is present."""
+        return set(self._entries.values())
+
+    def bands_within(self, text: str) -> Set[Band]:
+        """The bands of every remembered value that appears INSIDE `text`.
+
+        `recall` answers the other question -- is this value one a tool
+        returned -- and its prefilter rejects a query with grams it has not
+        seen, so a prompt that embeds a tool result inside its own words
+        recalls to nothing. A model call sends whole messages, so this is the
+        question that matters there. Bounded by the store's own size; the
+        first-gram test skips almost every entry before the substring check.
+        """
+        out: Set[Band] = set()
+        if not isinstance(text, str) or len(text) < MIN_MATCH:
+            return out
+        for value, band in self._entries.items():
+            if band in out:
+                continue
+            if value[:KGRAM] in text and value in text:
+                out.add(band)
+        return out
+
     def recall(self, value: Any) -> Optional[Band]:
         """The least trusted band of anything this value came from, or None.
 
