@@ -29,6 +29,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
 from trustband.audit import AuditLog
+from trustband.approvals import courier_from_config as _courier
 from trustband.confirm import ConfirmationLedger, ConfirmationRequest
 from trustband.gate import Band, Gate
 from trustband.identity import AgentId, AgentRegistry, FileEpochKeys
@@ -77,7 +78,8 @@ class Guard:
                  detectors: Optional[list] = None,
                  audit_path: Optional[Any] = None,
                  redactor: Optional["Redactor"] = None,
-                 key_path: Optional[Any] = None) -> None:
+                 key_path: Optional[Any] = None,
+                 approvals: Any = None) -> None:
         if mode not in ("shadow", "enforce"):
             raise GuardConfigError(
                 f"mode must be 'shadow' or 'enforce', not {mode!r}")
@@ -165,11 +167,32 @@ class Guard:
         #: impossible when the operator has not chosen.
         un = (policy.get("unattended") or {})
         self.on_confirmable: str = str(un.get("on_confirmable", "deny")).lower()
-        if self.on_confirmable not in ("deny", "allow"):
+        if self.on_confirmable not in ("deny", "allow", "queue"):
             raise GuardConfigError(
-                f"unattended.on_confirmable must be 'deny' or 'allow', not "
-                f"{self.on_confirmable!r}. 'queue' needs hosted routing.")
+                f"unattended.on_confirmable must be 'deny', 'allow' or 'queue', "
+                f"not {self.on_confirmable!r}.")
         self.notify_cmd: Optional[str] = un.get("notify")
+        #: `queue`: the call waits for a person, who answers from a page the
+        #: hosted service sent them a link to. The deadline is chosen HERE,
+        #: before anything is asked, so the wait is bounded by policy and not
+        #: by the service. Default fifteen minutes; a day is the ceiling.
+        try:
+            self.queue_deadline_s: int = int(un.get("deadline_s", 900))
+        except (TypeError, ValueError):
+            raise GuardConfigError("unattended.deadline_s must be a number of seconds")
+        if self.on_confirmable == "queue" and not (1 <= self.queue_deadline_s <= 86400):
+            raise GuardConfigError(
+                f"unattended.deadline_s must be between 1 and 86400, not "
+                f"{self.queue_deadline_s}")
+        #: The courier, used only when the policy chose `queue`. It is handed
+        #: in, never built here: this module does not read a key, so the
+        #: structural check in conformance (12) holds. An install without one
+        #: still constructs; the refusal happens at the first confirmable
+        #: call, with a reason that names the add-on (P-UQ.11).
+        self._approvals: Any = approvals
+        if self.on_confirmable == "queue" and self._approvals is None:
+            from trustband.approvals import NoCourier
+            self._approvals = NoCourier()
         #: Record what a tool RETURNED, not only that it returned something.
         #: Off by default because tool outputs are large and this is the log a
         #: user reads. Replay needs it: without it a replay answers from an
@@ -267,7 +290,10 @@ class Guard:
                    redactor=redact_from_config(cfg),
                    # Beside the config too. Opt out with "keys": "in_process".
                    key_path=(None if cfg.get("keys") == "in_process"
-                             else cfg.get("key_path", p.parent / "keys.json")))
+                             else cfg.get("key_path", p.parent / "keys.json")),
+                   # The courier for `queue`, built from the config by the
+                   # approvals module. Consulted by nothing but `queue`.
+                   approvals=_courier(cfg))
 
     @classmethod
     def from_bundle(cls, bundle_path: Any, key: Optional[bytes] = None,
@@ -770,11 +796,19 @@ class Guard:
                  # unit tests passed because they supplied it themselves.
                  "confirmable": bool(confirmable),
                  "bands": {k: _band_of(v).value for k, v in banded.items()}})
+            if not ok and confirmable and self.on_confirmable == "queue":
+                # SHADOW DOES NOT ASK (P-UQ.7). Nothing was refused, so nobody
+                # is woken; the record says what enforce would have done.
+                return Decision(True, f"SHADOW: would have queued for approval — {why}",
+                                None, confirmable, None)
             return Decision(True, f"SHADOW: would have {'allowed' if ok else 'refused'} — {why}",
                             None, confirmable, None)
 
         if ok:
             return Decision(True, why)
+
+        if confirmable and self.on_confirmable == "queue":
+            return self._queue(call, banded, sess, why, failures, t0)
 
         if confirmable and self.on_confirmable == "allow":
             # RECORDED AS "NOBODY APPROVED", NEVER AS AN APPROVAL.
@@ -801,6 +835,115 @@ class Guard:
         if confirmable:
             self._notify(call, why, approved=False)
         return Decision(False, why, "policy", confirmable, request)
+
+    # -- the queue disposition: a person answers, from a page ----------------
+    def _queue(self, call: ToolCall, banded: Dict[str, Any], sess: int,
+               why: str, failures: list, t0: float) -> Decision:
+        """Ask a person, wait for them, spend their answer on THIS call.
+
+        THE DEADLINE IS THE GATE'S. Chosen at construction, before anything is
+        asked; the service is never consulted about how long to wait.
+
+        THE ANSWER IS BOUND TO THE QUESTION. The digest of the value is
+        computed here before the question leaves; an answer with a different
+        digest, a different id, or an unknown state is no answer (P-UQ.3).
+
+        EVERY FAILURE IS A REFUSAL, and the record says which failure: could
+        not ask, nobody answered, the service went away. Never an allow, and
+        never a wait longer than the deadline plus one poll (P-UQ.2, P-UQ.6).
+
+        WHAT LEAVES THE MACHINE is the rendering a person is shown, built from
+        the redacted values -- so a named secret arrives at the service as
+        `[redacted:…]` -- and the digest of the real value (P-UQ.4).
+        """
+        arg = next((f.get("arg") for f in failures if f.get("arg") in call.args), None)
+        if arg is None:
+            # A confirmable failure with no argument to bind to. Nothing to
+            # ask about, so refuse as F7 would.
+            self._notify(call, why, approved=False)
+            return Decision(False, why, "policy", True, None)
+        bands = {k: _band_of(v).value for k, v in banded.items()}
+        req = self.ledger.ask(session=sess, action=call.tool, arg=arg,
+                              value=_plain(call.args[arg]), reason=why,
+                              arg_bands=bands, epoch=self.gate.gov_epoch)
+
+        def refuse(text: str) -> Decision:
+            self.ledger.deny(req, "nobody")
+            self._record(call, banded, False, text, True,
+                         (time.perf_counter() - t0) * 1000.0)
+            self._notify(call, text, approved=False)
+            return Decision(False, text, "policy", True, req)
+
+        # The person's copy: redacted values, redacted reason, real bands.
+        shown = ConfirmationRequest(
+            session=sess, action=call.tool, arg=arg,
+            value=self.redactor.args({arg: _plain(call.args[arg])})[arg],
+            reason=self.redactor.value("reason", why), arg_bands=bands,
+            epoch=self.gate.gov_epoch)
+        payload = {"session": call.session, "action": call.tool, "arg": arg,
+                   "digest": req.digest, "rendered": shown.render(),
+                   "reason": shown.reason, "bands": bands,
+                   "deadline_s": self.queue_deadline_s}
+        try:
+            ticket = self._approvals.submit(payload)
+        except Exception as e:
+            return refuse(f"could not queue for approval: {e}. Original refusal: {why}")
+        aid = ticket.get("id")
+
+        deadline = t0 + self.queue_deadline_s
+        wait, misses = 2.0, 0
+        while True:
+            now = time.perf_counter()
+            if now >= deadline:
+                return refuse(f"asked for approval (request {aid}) and nobody answered "
+                              f"within {self.queue_deadline_s}s. Original refusal: {why}")
+            time.sleep(min(wait, max(0.0, deadline - now)))
+            wait = min(wait * 1.5, 30.0)
+            try:
+                ans = self._approvals.poll(aid)
+                misses = 0
+            except Exception as e:
+                misses += 1
+                if misses >= 5:
+                    return refuse(f"lost the approval service while waiting on request "
+                                  f"{aid}: {e}. Original refusal: {why}")
+                continue
+            state = ans.get("state")
+            if state == "pending":
+                continue
+            if ans.get("id") != aid or ans.get("digest") != req.digest:
+                return refuse(f"the answer to request {aid} was not bound to the question "
+                              f"that was asked. Original refusal: {why}")
+            who = str(ans.get("decided_by") or "unknown")
+            if state == "denied":
+                self.ledger.deny(req, who)
+                text = f"denied by {who} (request {aid}). Original refusal: {why}"
+                self._record(call, banded, False, text, True,
+                             (time.perf_counter() - t0) * 1000.0)
+                self._notify(call, text, approved=False)
+                return Decision(False, text, "policy", True, req)
+            if state == "approved":
+                break
+            return refuse(f"asked for approval (request {aid}) and nobody answered "
+                          f"in time. Original refusal: {why}")
+
+        # SPEND IT ON THIS CALL AND NO OTHER. The approval is recorded for
+        # this value, then the same call is evaluated again with the
+        # `confirmed` fragment the policy's predicate looks for; any other
+        # predicate that fails still refuses, because a person approved a
+        # value, not a call.
+        self.ledger.approve(req, who)
+        ctx = dict(call.context)
+        ctx.update(self.ledger.as_context(session=sess, action=call.tool,
+                                          args=call.args, epoch=self.gate.gov_epoch))
+        ok, why2 = self.issuer.evaluate(sess, call.tier, call.tool, banded, ctx)
+        text = (f"approved by {who} (request {aid}). {why2}" if ok
+                else f"approved by {who} (request {aid}) but still refused: {why2}")
+        if ok:
+            self._calls[call.session] = self._calls.get(call.session, 0) + 1
+        self._record(call, banded, ok, text, True, (time.perf_counter() - t0) * 1000.0)
+        self._notify(call, text, approved=ok)
+        return Decision(ok, text, None if ok else "policy", True, req)
 
     # -- ingestion: extract a document into banded, source-verified values --
     def ingest_document(self, session: str, source: str, schema: list,

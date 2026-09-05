@@ -49,6 +49,15 @@ HOSTED: Dict[str, str] = {
 #: Enterprise adds services that touch a customer's own infrastructure.
 ENTERPRISE_ONLY = {"byok_custody", "sso", "multi_tenancy"}
 
+#: Add-ons: one person, their own agents, something of ours running. Bought
+#: separately from Pro; a Pro key has them all. Like HOSTED, each is a
+#: service -- the client holds nothing to unlock.
+ADDONS: Dict[str, str] = {
+    "unattended": "a confirmable refusal waits for you instead of failing: the rendered "
+                  "question reaches your phone by email or Telegram, you approve or deny "
+                  "on a page, the agent carries on  (unattended.on_confirmable: queue)",
+}
+
 FREE, PRO, ENTERPRISE = "free", "pro", "enterprise"
 
 

@@ -308,6 +308,27 @@ class Issuer:
                           f"satisfied by its absence.", _gi)
                     continue
                 ok, why = taint_check_each(req, **(args or {}))
+                if not ok and g.get("confirmable"):
+                    # A PERSON ANSWERED THIS EXACT QUESTION. `confirmed` is
+                    # built per call from the values actually being passed
+                    # (confirm.py as_context), so it names an argument AND
+                    # the value a person approved. The band check is lifted
+                    # only for the arguments that fail it, only when every
+                    # such value is the approved one, and only under a grant
+                    # the policy marked confirmable. An approval for UK123
+                    # lifts nothing for US133, and nothing for a grant that
+                    # never offered a person the question.
+                    confirmed = (context or {}).get("confirmed")
+                    if isinstance(confirmed, dict) and confirmed:
+                        from trustband.predicates import plain as _plain_value
+                        failing = [k for k, need in req.items()
+                                   if k in (args or {})
+                                   and not at_least(taint_of(args[k]), need)]
+                        if failing and all(
+                                _plain_value(args[k]) in (confirmed.get(k) or ())
+                                for k in failing):
+                            ok, why = True, (f"band refusal lifted by a person's "
+                                             f"approval of {', '.join(failing)}")
                 if not ok:
                     _note(2, f"taint: {why} (grant for session {sess})", _gi)
                     # A BAND refusal may also be one a human is allowed to
