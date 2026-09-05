@@ -59,58 +59,67 @@ def catalog(pkg: str, version: str, args: List[str]) -> Dict[str, Any]:
     """Start one version and ask it for its tools. Returns {tools|error, seconds}."""
     t0 = time.time()
     env = {**os.environ, "NPM_CONFIG_LOGLEVEL": "error", "NO_COLOR": "1"}
+    # ALL THREE MESSAGES UP FRONT, THEN EOF, THEN READ. A select() loop over a
+    # buffered reader lost the second reply when it arrived in the same chunk
+    # as the first, and a stderr.read() after the timeout waited on the
+    # orphaned child forever. This shape answered in 0.6 s three ways.
+    import signal
+    import tempfile
+    import threading
+    errf = tempfile.TemporaryFile()
     try:
         p = subprocess.Popen(["npx", "-y", f"{pkg}@{version}", *args], stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, cwd="/private/tmp")
+                             stdout=subprocess.PIPE, stderr=errf, env=env, cwd="/private/tmp",
+                             start_new_session=True)
     except OSError as e:
         return {"error": f"spawn: {e}", "seconds": 0}
 
-    def send(o: Dict[str, Any]) -> None:
-        p.stdin.write((json.dumps(o) + "\n").encode()); p.stdin.flush()
+    def killall() -> None:
+        try:
+            os.killpg(p.pid, signal.SIGKILL)
+        except Exception:
+            pass
 
     tools: Optional[List[Dict[str, Any]]] = None
     err = ""
+    timer = threading.Timer(START_TIMEOUT, killall)
+    timer.start()
     try:
-        send({"jsonrpc": "2.0", "id": 1, "method": "initialize",
-              "params": {"protocolVersion": "2024-11-05", "capabilities": {},
-                         "clientInfo": {"name": "trustband-measure", "version": "0"}}})
-        deadline = time.time() + START_TIMEOUT
-        import select
-        while time.time() < deadline:
-            r, _, _ = select.select([p.stdout], [], [], 1.0)
-            if p.poll() is not None and not r:
-                err = "exited before answering"
-                break
-            if not r:
-                continue
-            line = p.stdout.readline()
-            if not line:
-                err = "stdout closed"
-                break
+        for m in ({"jsonrpc": "2.0", "id": 1, "method": "initialize",
+                   "params": {"protocolVersion": "2024-11-05", "capabilities": {},
+                              "clientInfo": {"name": "trustband-measure", "version": "0"}}},
+                  {"jsonrpc": "2.0", "method": "notifications/initialized"},
+                  {"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}}):
             try:
-                msg = json.loads(line.decode("utf-8", "replace"))
+                p.stdin.write((json.dumps(m) + "\n").encode()); p.stdin.flush()
+            except (BrokenPipeError, OSError):
+                break
+        try:
+            p.stdin.close()
+        except OSError:
+            pass
+        for raw in p.stdout:
+            try:
+                msg = json.loads(raw.decode("utf-8", "replace"))
             except ValueError:
                 continue
-            if msg.get("id") == 1:
-                send({"jsonrpc": "2.0", "method": "notifications/initialized"})
-                send({"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}})
-            elif msg.get("id") == 2:
+            if msg.get("id") == 2:
                 if "result" in msg:
                     tools = msg["result"].get("tools", [])
                 else:
                     err = f"tools/list error: {msg.get('error')}"
                 break
-        else:
-            err = "timed out"
+        if tools is None and not err:
+            err = "timed out" if time.time() - t0 >= START_TIMEOUT - 1 else "exited before answering"
     finally:
+        timer.cancel()
+        killall()
         try:
-            p.kill()
-        except Exception:
-            pass
-        try:
-            stderr = p.stderr.read().decode("utf-8", "replace")[-300:]
+            errf.seek(0)
+            stderr = errf.read().decode("utf-8", "replace")[-300:]
         except Exception:
             stderr = ""
+        errf.close()
     if tools is None:
         return {"error": err or "no answer", "stderr": stderr, "seconds": round(time.time() - t0, 1)}
     items = [observe("tool", t.get("name", "?"), t.get("description", ""), t.get("inputSchema"))
