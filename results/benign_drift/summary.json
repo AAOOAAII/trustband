@@ -1,0 +1,2676 @@
+{
+ "run": "2026-09-05",
+ "machine": "Darwin arm64, node v20.20.2",
+ "servers": 9,
+ "versions": 211,
+ "failed_to_start": 39,
+ "releases_compared": 164,
+ "pooled_kinds": {
+  "none": 100,
+  "tools-added-or-removed": 19,
+  "schema": 37,
+  "description-only": 8
+ },
+ "pooled_drift_rate_per_release": 0.39,
+ "pooled_drifts_per_month": 0.51,
+ "refused_tools_median": 1.5,
+ "refused_tools_max": 29,
+ "schema_releases_purely_additive_desc_same": 1,
+ "stability": {
+  "@modelcontextprotocol/server-filesystem": {
+   "version": "2026.8.31",
+   "runs": 3,
+   "stable": true,
+   "differing_tools": []
+  },
+  "@modelcontextprotocol/server-memory": {
+   "version": "2026.8.31",
+   "runs": 3,
+   "stable": true,
+   "differing_tools": []
+  },
+  "@modelcontextprotocol/server-everything": {
+   "version": "2026.8.31",
+   "runs": 3,
+   "stable": true,
+   "differing_tools": []
+  },
+  "@modelcontextprotocol/server-sequential-thinking": {
+   "version": "2026.8.31",
+   "runs": 3,
+   "stable": true,
+   "differing_tools": []
+  },
+  "@playwright/mcp": {
+   "version": "0.0.80",
+   "runs": 3,
+   "stable": true,
+   "differing_tools": []
+  },
+  "@upstash/context7-mcp": {
+   "version": "4.0.5",
+   "runs": 3,
+   "stable": true,
+   "differing_tools": []
+  },
+  "chrome-devtools-mcp": {
+   "version": "1.8.0",
+   "runs": 3,
+   "stable": true,
+   "differing_tools": []
+  },
+  "@notionhq/notion-mcp-server": {
+   "version": "2.5.1",
+   "runs": 3,
+   "stable": true,
+   "differing_tools": []
+  }
+ },
+ "per_server": {
+  "@modelcontextprotocol/server-everything": {
+   "versions": 28,
+   "started": 23,
+   "failed_to_start": 5,
+   "first": "2024-11-19",
+   "last": "2026-08-31",
+   "releases_compared": 22,
+   "kinds": {
+    "none": 15,
+    "tools-added-or-removed": 6,
+    "schema": 1
+   },
+   "drift_rate_per_release": 0.318,
+   "drifts_per_month": 0.33,
+   "refused_tools_median": 0,
+   "refused_tools_max": 11,
+   "releases": [
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.1.0",
+     "to": "0.2.0",
+     "date": "2024-11-21"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.2.0",
+     "to": "0.3.0",
+     "date": "2024-11-21"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.3.0",
+     "to": "0.5.0",
+     "date": "2024-11-25"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.5.0",
+     "to": "0.5.1",
+     "date": "2024-11-25"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.5.1",
+     "to": "0.6.0",
+     "date": "2024-12-03"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.6.0",
+     "to": "0.6.1",
+     "date": "2024-12-03"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.6.1",
+     "to": "0.6.2",
+     "date": "2024-12-04"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [],
+     "added": [
+      "printEnv"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.6.2",
+     "to": "2025.1.14",
+     "date": "2025-01-14"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [],
+     "added": [
+      "annotatedMessage"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.1.14",
+     "to": "2025.3.19",
+     "date": "2025-03-19"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [],
+     "added": [
+      "getResourceReference"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.3.19",
+     "to": "2025.4.8",
+     "date": "2025-04-08"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.4.8",
+     "to": "2025.4.25",
+     "date": "2025-04-25"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.4.25",
+     "to": "2025.4.28",
+     "date": "2025-04-28"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.4.28",
+     "to": "2025.5.12",
+     "date": "2025-05-12"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.5.12",
+     "to": "2025.7.1",
+     "date": "2025-07-01"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [],
+     "added": [
+      "getResourceLinks",
+      "startElicitation",
+      "structuredContent"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.7.1",
+     "to": "2025.7.29",
+     "date": "2025-07-31"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.7.29",
+     "to": "2025.8.4",
+     "date": "2025-08-04"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.8.4",
+     "to": "2025.8.18",
+     "date": "2025-08-18"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [
+      "echo"
+     ],
+     "schema": [],
+     "added": [
+      "get-annotated-message",
+      "get-env",
+      "get-resource-links",
+      "get-resource-reference",
+      "get-structured-content",
+      "get-sum",
+      "get-tiny-image",
+      "gzip-file-as-resource",
+      "toggle-simulated-logging",
+      "toggle-subscriber-updates",
+      "trigger-long-running-operation"
+     ],
+     "removed": [
+      "add",
+      "annotatedMessage",
+      "getResourceLinks",
+      "getResourceReference",
+      "getTinyImage",
+      "longRunningOperation",
+      "printEnv",
+      "sampleLLM",
+      "startElicitation",
+      "structuredContent"
+     ],
+     "schema_additive_desc_same": [],
+     "refused_tools": 11,
+     "from": "2025.8.18",
+     "to": "2026.1.14",
+     "date": "2026-01-14"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [],
+     "added": [
+      "simulate-research-query"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2026.1.14",
+     "to": "2026.1.26",
+     "date": "2026-01-27"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "get-resource-links",
+      "get-structured-content",
+      "simulate-research-query",
+      "echo",
+      "get-sum",
+      "trigger-long-running-operation",
+      "gzip-file-as-resource",
+      "get-resource-reference",
+      "get-annotated-message"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 9,
+     "from": "2026.1.26",
+     "to": "2026.7.4",
+     "date": "2026-07-04"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2026.7.4",
+     "to": "2026.8.18",
+     "date": "2026-08-18"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2026.8.18",
+     "to": "2026.8.31",
+     "date": "2026-08-31"
+    }
+   ]
+  },
+  "@modelcontextprotocol/server-filesystem": {
+   "versions": 19,
+   "started": 16,
+   "failed_to_start": 3,
+   "first": "2024-11-25",
+   "last": "2026-08-31",
+   "releases_compared": 15,
+   "kinds": {
+    "none": 9,
+    "tools-added-or-removed": 3,
+    "description-only": 2,
+    "schema": 1
+   },
+   "drift_rate_per_release": 0.4,
+   "drifts_per_month": 0.28,
+   "refused_tools_median": 1.0,
+   "refused_tools_max": 14,
+   "releases": [
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.5.1",
+     "to": "0.6.0",
+     "date": "2024-12-03"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.6.0",
+     "to": "0.6.1",
+     "date": "2024-12-03"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.6.1",
+     "to": "0.6.2",
+     "date": "2024-12-04"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [],
+     "added": [
+      "directory_tree",
+      "edit_file"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.6.2",
+     "to": "2025.1.14",
+     "date": "2025-01-14"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.1.14",
+     "to": "2025.3.28",
+     "date": "2025-03-28"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [
+      "read_file"
+     ],
+     "schema": [],
+     "added": [
+      "list_directory_with_sizes"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "2025.3.28",
+     "to": "2025.7.1",
+     "date": "2025-07-01"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [
+      "read_file",
+      "list_allowed_directories"
+     ],
+     "schema": [],
+     "added": [
+      "read_media_file",
+      "read_text_file"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 2,
+     "from": "2025.7.1",
+     "to": "2025.7.29",
+     "date": "2025-07-31"
+    },
+    {
+     "kind": "description-only",
+     "description_only": [
+      "list_allowed_directories"
+     ],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "2025.7.29",
+     "to": "2025.8.18",
+     "date": "2025-08-18"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.8.18",
+     "to": "2025.8.21",
+     "date": "2025-08-21"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "read_file",
+      "list_directory",
+      "list_directory_with_sizes",
+      "list_allowed_directories",
+      "move_file",
+      "get_file_info",
+      "write_file",
+      "create_directory",
+      "edit_file",
+      "search_files",
+      "read_text_file",
+      "read_multiple_files",
+      "directory_tree",
+      "read_media_file"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [
+      "list_allowed_directories"
+     ],
+     "refused_tools": 14,
+     "from": "2025.8.21",
+     "to": "2025.11.25",
+     "date": "2025-11-25"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.11.25",
+     "to": "2025.12.18",
+     "date": "2025-12-18"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.12.18",
+     "to": "2026.1.14",
+     "date": "2026-01-14"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2026.1.14",
+     "to": "2026.7.4",
+     "date": "2026-07-04"
+    },
+    {
+     "kind": "description-only",
+     "description_only": [
+      "read_media_file"
+     ],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "2026.7.4",
+     "to": "2026.7.10",
+     "date": "2026-07-10"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2026.7.10",
+     "to": "2026.8.31",
+     "date": "2026-08-31"
+    }
+   ]
+  },
+  "@modelcontextprotocol/server-memory": {
+   "versions": 14,
+   "started": 14,
+   "failed_to_start": 0,
+   "first": "2024-11-21",
+   "last": "2026-08-31",
+   "releases_compared": 13,
+   "kinds": {
+    "none": 11,
+    "schema": 2
+   },
+   "drift_rate_per_release": 0.154,
+   "drifts_per_month": 0.09,
+   "refused_tools_median": 9.0,
+   "refused_tools_max": 9,
+   "releases": [
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.2.0",
+     "to": "0.3.0",
+     "date": "2024-11-21"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.3.0",
+     "to": "0.5.0",
+     "date": "2024-11-25"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.5.0",
+     "to": "0.5.1",
+     "date": "2024-11-25"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.5.1",
+     "to": "0.6.0",
+     "date": "2024-12-03"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.6.0",
+     "to": "0.6.2",
+     "date": "2024-12-04"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.6.2",
+     "to": "2025.4.25",
+     "date": "2025-04-25"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.4.25",
+     "to": "2025.8.4",
+     "date": "2025-08-04"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "create_entities",
+      "create_relations",
+      "add_observations",
+      "read_graph",
+      "delete_observations",
+      "delete_entities",
+      "open_nodes",
+      "delete_relations",
+      "search_nodes"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [
+      "read_graph",
+      "delete_entities",
+      "open_nodes",
+      "search_nodes"
+     ],
+     "refused_tools": 9,
+     "from": "2025.8.4",
+     "to": "2025.9.24",
+     "date": "2025-09-25"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.9.24",
+     "to": "2025.9.25",
+     "date": "2025-09-25"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "create_entities",
+      "create_relations",
+      "add_observations",
+      "read_graph",
+      "delete_observations",
+      "delete_entities",
+      "open_nodes",
+      "delete_relations",
+      "search_nodes"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 9,
+     "from": "2025.9.25",
+     "to": "2025.11.25",
+     "date": "2025-11-25"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.11.25",
+     "to": "2026.1.26",
+     "date": "2026-01-27"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2026.1.26",
+     "to": "2026.7.4",
+     "date": "2026-07-04"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2026.7.4",
+     "to": "2026.8.31",
+     "date": "2026-08-31"
+    }
+   ]
+  },
+  "@modelcontextprotocol/server-sequential-thinking": {
+   "versions": 9,
+   "started": 9,
+   "failed_to_start": 0,
+   "first": "2024-12-03",
+   "last": "2026-08-31",
+   "releases_compared": 8,
+   "kinds": {
+    "none": 5,
+    "schema": 2,
+    "description-only": 1
+   },
+   "drift_rate_per_release": 0.375,
+   "drifts_per_month": 0.14,
+   "refused_tools_median": 1,
+   "refused_tools_max": 1,
+   "releases": [
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.5.1",
+     "to": "0.6.0",
+     "date": "2024-12-03"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.6.0",
+     "to": "0.6.1",
+     "date": "2024-12-03"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.6.1",
+     "to": "0.6.2",
+     "date": "2024-12-04"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.6.2",
+     "to": "2025.7.1",
+     "date": "2025-07-01"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "sequentialthinking"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "2025.7.1",
+     "to": "2025.11.25",
+     "date": "2025-11-25"
+    },
+    {
+     "kind": "description-only",
+     "description_only": [
+      "sequentialthinking"
+     ],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "2025.11.25",
+     "to": "2025.12.18",
+     "date": "2025-12-18"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2025.12.18",
+     "to": "2026.7.4",
+     "date": "2026-07-04"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "sequentialthinking"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "2026.7.4",
+     "to": "2026.8.31",
+     "date": "2026-08-31"
+    }
+   ]
+  },
+  "@notionhq/notion-mcp-server": {
+   "versions": 21,
+   "started": 21,
+   "failed_to_start": 0,
+   "first": "2025-04-03",
+   "last": "2026-07-25",
+   "releases_compared": 20,
+   "kinds": {
+    "none": 9,
+    "schema": 7,
+    "description-only": 1,
+    "tools-added-or-removed": 3
+   },
+   "drift_rate_per_release": 0.55,
+   "drifts_per_month": 0.7,
+   "refused_tools_median": 6,
+   "refused_tools_max": 22,
+   "releases": [
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "1.0.0",
+     "to": "1.1.0",
+     "date": "2025-04-07"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "API-get-users",
+      "API-retrieve-a-page",
+      "API-create-a-comment",
+      "API-create-a-database",
+      "API-retrieve-a-block",
+      "API-update-a-database",
+      "API-patch-page",
+      "API-get-user",
+      "API-post-search",
+      "API-post-page",
+      "API-get-self",
+      "API-retrieve-a-page-property",
+      "API-retrieve-a-comment",
+      "API-delete-a-block",
+      "API-patch-block-children",
+      "API-post-database-query",
+      "API-retrieve-a-database",
+      "API-update-a-block",
+      "API-get-block-children"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 19,
+     "from": "1.1.0",
+     "to": "1.2.0",
+     "date": "2025-04-08"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "API-update-a-database",
+      "API-patch-page"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 2,
+     "from": "1.2.0",
+     "to": "1.3.0",
+     "date": "2025-04-09"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "API-patch-page"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "1.3.0",
+     "to": "1.4.0",
+     "date": "2025-04-09"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "API-post-database-query"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "1.4.0",
+     "to": "1.5.0",
+     "date": "2025-04-11"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "API-patch-block-children"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "1.5.0",
+     "to": "1.6.0",
+     "date": "2025-04-16"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "API-create-a-database",
+      "API-update-a-database",
+      "API-patch-page",
+      "API-post-page",
+      "API-patch-block-children",
+      "API-post-database-query"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 6,
+     "from": "1.6.0",
+     "to": "1.7.0",
+     "date": "2025-05-11"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "1.7.0",
+     "to": "1.8.0",
+     "date": "2025-05-15"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "1.8.0",
+     "to": "1.8.1",
+     "date": "2025-05-19"
+    },
+    {
+     "kind": "description-only",
+     "description_only": [
+      "API-get-users",
+      "API-retrieve-a-page",
+      "API-create-a-comment",
+      "API-create-a-database",
+      "API-retrieve-a-block",
+      "API-update-a-database",
+      "API-patch-page",
+      "API-get-user",
+      "API-post-search",
+      "API-post-page",
+      "API-get-self",
+      "API-retrieve-a-page-property",
+      "API-retrieve-a-comment",
+      "API-delete-a-block",
+      "API-patch-block-children",
+      "API-post-database-query",
+      "API-retrieve-a-database",
+      "API-update-a-block",
+      "API-get-block-children"
+     ],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 19,
+     "from": "1.8.1",
+     "to": "1.9.0",
+     "date": "2025-08-22"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "1.9.0",
+     "to": "1.9.1",
+     "date": "2025-12-07"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [
+      "API-patch-block-children",
+      "API-patch-page",
+      "API-get-users",
+      "API-retrieve-a-page",
+      "API-retrieve-a-comment",
+      "API-create-a-comment",
+      "API-update-a-block",
+      "API-post-page",
+      "API-get-user",
+      "API-post-search",
+      "API-delete-a-block",
+      "API-get-block-children",
+      "API-retrieve-a-block",
+      "API-get-self",
+      "API-retrieve-a-page-property"
+     ],
+     "added": [
+      "API-create-a-data-source",
+      "API-list-data-source-templates",
+      "API-move-page",
+      "API-query-data-source",
+      "API-retrieve-a-data-source",
+      "API-update-a-data-source"
+     ],
+     "removed": [
+      "API-create-a-database",
+      "API-post-database-query",
+      "API-retrieve-a-database",
+      "API-update-a-database"
+     ],
+     "schema_additive_desc_same": [],
+     "refused_tools": 19,
+     "from": "1.9.1",
+     "to": "2.0.0",
+     "date": "2025-12-24"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [
+      "API-patch-page",
+      "API-post-page"
+     ],
+     "added": [
+      "API-retrieve-a-database"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 2,
+     "from": "2.0.0",
+     "to": "2.1.0",
+     "date": "2026-01-31"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "API-get-users",
+      "API-retrieve-a-page",
+      "API-create-a-comment",
+      "API-retrieve-a-block",
+      "API-patch-page",
+      "API-move-page",
+      "API-query-data-source",
+      "API-get-user",
+      "API-post-search",
+      "API-post-page",
+      "API-get-self",
+      "API-retrieve-a-page-property",
+      "API-retrieve-a-comment",
+      "API-list-data-source-templates",
+      "API-create-a-data-source",
+      "API-delete-a-block",
+      "API-patch-block-children",
+      "API-update-a-data-source",
+      "API-retrieve-a-database",
+      "API-retrieve-a-data-source",
+      "API-update-a-block",
+      "API-get-block-children"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 22,
+     "from": "2.1.0",
+     "to": "2.2.0",
+     "date": "2026-02-23"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.2.0",
+     "to": "2.2.1",
+     "date": "2026-03-05"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [
+      "API-get-users",
+      "API-retrieve-a-page",
+      "API-create-a-comment",
+      "API-retrieve-a-block",
+      "API-patch-page",
+      "API-move-page",
+      "API-query-data-source",
+      "API-get-user",
+      "API-post-search",
+      "API-post-page",
+      "API-get-self",
+      "API-retrieve-a-page-property",
+      "API-retrieve-a-comment",
+      "API-list-data-source-templates",
+      "API-create-a-data-source",
+      "API-delete-a-block",
+      "API-patch-block-children",
+      "API-update-a-data-source",
+      "API-retrieve-a-database",
+      "API-retrieve-a-data-source",
+      "API-update-a-block",
+      "API-get-block-children"
+     ],
+     "added": [
+      "API-retrieve-page-markdown",
+      "API-update-page-markdown"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 22,
+     "from": "2.2.1",
+     "to": "2.3.1",
+     "date": "2026-06-17"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.3.1",
+     "to": "2.4.0",
+     "date": "2026-06-17"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.4.0",
+     "to": "2.4.1",
+     "date": "2026-06-22"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.4.1",
+     "to": "2.5.0",
+     "date": "2026-07-24"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.5.0",
+     "to": "2.5.1",
+     "date": "2026-07-25"
+    }
+   ]
+  },
+  "@playwright/mcp": {
+   "versions": 30,
+   "started": 30,
+   "failed_to_start": 0,
+   "first": "2025-11-30",
+   "last": "2026-09-01",
+   "releases_compared": 29,
+   "kinds": {
+    "none": 19,
+    "schema": 6,
+    "tools-added-or-removed": 4
+   },
+   "drift_rate_per_release": 0.345,
+   "drifts_per_month": 1.11,
+   "refused_tools_median": 2.0,
+   "refused_tools_max": 22,
+   "releases": [
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.49",
+     "to": "0.0.50",
+     "date": "2025-12-05"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "browser_console_messages",
+      "browser_network_requests"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [
+      "browser_network_requests"
+     ],
+     "refused_tools": 2,
+     "from": "0.0.50",
+     "to": "0.0.51",
+     "date": "2025-12-08"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "browser_run_code",
+      "browser_snapshot"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [
+      "browser_snapshot"
+     ],
+     "refused_tools": 2,
+     "from": "0.0.51",
+     "to": "0.0.52",
+     "date": "2025-12-11"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.52",
+     "to": "0.0.53",
+     "date": "2025-12-20"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.53",
+     "to": "0.0.54",
+     "date": "2025-12-29"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.54",
+     "to": "0.0.55",
+     "date": "2026-01-09"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.55",
+     "to": "0.0.56",
+     "date": "2026-01-16"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "browser_run_code",
+      "browser_fill_form",
+      "browser_file_upload",
+      "browser_console_messages",
+      "browser_navigate_back",
+      "browser_click",
+      "browser_drag",
+      "browser_type",
+      "browser_install",
+      "browser_hover",
+      "browser_press_key",
+      "browser_network_requests",
+      "browser_wait_for",
+      "browser_resize",
+      "browser_handle_dialog",
+      "browser_close",
+      "browser_evaluate",
+      "browser_take_screenshot",
+      "browser_navigate",
+      "browser_snapshot",
+      "browser_tabs",
+      "browser_select_option"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 22,
+     "from": "0.0.56",
+     "to": "0.0.57",
+     "date": "2026-01-24"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.57",
+     "to": "0.0.58",
+     "date": "2026-01-24"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.58",
+     "to": "0.0.59",
+     "date": "2026-01-25"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.59",
+     "to": "0.0.60",
+     "date": "2026-01-26"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.60",
+     "to": "0.0.61",
+     "date": "2026-01-26"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.61",
+     "to": "0.0.62",
+     "date": "2026-01-31"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.62",
+     "to": "0.0.63",
+     "date": "2026-02-04"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.63",
+     "to": "0.0.64",
+     "date": "2026-02-06"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.64",
+     "to": "0.0.67",
+     "date": "2026-02-14"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.67",
+     "to": "0.0.68",
+     "date": "2026-02-14"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [
+      "browser_run_code",
+      "browser_fill_form",
+      "browser_console_messages",
+      "browser_network_requests",
+      "browser_evaluate",
+      "browser_snapshot"
+     ],
+     "added": [],
+     "removed": [
+      "browser_install"
+     ],
+     "schema_additive_desc_same": [
+      "browser_run_code",
+      "browser_console_messages",
+      "browser_evaluate",
+      "browser_snapshot"
+     ],
+     "refused_tools": 7,
+     "from": "0.0.68",
+     "to": "0.0.69",
+     "date": "2026-03-30"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.69",
+     "to": "0.0.70",
+     "date": "2026-04-01"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [
+      "browser_fill_form",
+      "browser_click",
+      "browser_drag",
+      "browser_type",
+      "browser_hover",
+      "browser_evaluate",
+      "browser_take_screenshot",
+      "browser_snapshot",
+      "browser_tabs",
+      "browser_select_option"
+     ],
+     "added": [
+      "browser_drop"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [
+      "browser_snapshot",
+      "browser_tabs"
+     ],
+     "refused_tools": 10,
+     "from": "0.0.70",
+     "to": "0.0.71",
+     "date": "2026-04-27"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [
+      "browser_network_requests"
+     ],
+     "added": [
+      "browser_network_request",
+      "browser_run_code_unsafe"
+     ],
+     "removed": [
+      "browser_run_code"
+     ],
+     "schema_additive_desc_same": [],
+     "refused_tools": 2,
+     "from": "0.0.71",
+     "to": "0.0.72",
+     "date": "2026-04-30"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.72",
+     "to": "0.0.73",
+     "date": "2026-05-01"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "browser_snapshot"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "0.0.73",
+     "to": "0.0.74",
+     "date": "2026-05-06"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.74",
+     "to": "0.0.75",
+     "date": "2026-05-07"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.75",
+     "to": "0.0.76",
+     "date": "2026-06-10"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "browser_take_screenshot"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "0.0.76",
+     "to": "0.0.77",
+     "date": "2026-06-29"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [],
+     "added": [
+      "browser_find"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.77",
+     "to": "0.0.78",
+     "date": "2026-07-09"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "browser_take_screenshot"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "0.0.78",
+     "to": "0.0.79",
+     "date": "2026-08-06"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.0.79",
+     "to": "0.0.80",
+     "date": "2026-09-01"
+    }
+   ]
+  },
+  "@supabase/mcp-server-supabase": {
+   "versions": 30,
+   "started": 0,
+   "failed_to_start": 30,
+   "first": null,
+   "last": null,
+   "releases_compared": 0,
+   "kinds": {},
+   "drift_rate_per_release": null,
+   "drifts_per_month": null,
+   "refused_tools_median": 0,
+   "refused_tools_max": 0,
+   "releases": []
+  },
+  "@upstash/context7-mcp": {
+   "versions": 30,
+   "started": 30,
+   "failed_to_start": 0,
+   "first": "2026-01-02",
+   "last": "2026-09-04",
+   "releases_compared": 29,
+   "kinds": {
+    "none": 19,
+    "schema": 10
+   },
+   "drift_rate_per_release": 0.345,
+   "drifts_per_month": 1.24,
+   "refused_tools_median": 1.0,
+   "refused_tools_max": 2,
+   "releases": [
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.0.2",
+     "to": "2.1.0",
+     "date": "2026-01-08"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "query-docs",
+      "resolve-library-id"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 2,
+     "from": "2.1.0",
+     "to": "2.1.1",
+     "date": "2026-01-29"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "query-docs",
+      "resolve-library-id"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 2,
+     "from": "2.1.1",
+     "to": "2.1.2",
+     "date": "2026-02-23"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.1.2",
+     "to": "2.1.3",
+     "date": "2026-03-04"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.1.3",
+     "to": "2.1.4",
+     "date": "2026-03-10"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.1.4",
+     "to": "2.1.6",
+     "date": "2026-03-27"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "resolve-library-id"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "2.1.6",
+     "to": "2.1.7",
+     "date": "2026-04-06"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.1.7",
+     "to": "2.1.8",
+     "date": "2026-04-13"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "query-docs"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "2.1.8",
+     "to": "2.2.0",
+     "date": "2026-04-24"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.2.0",
+     "to": "2.2.1",
+     "date": "2026-04-27"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "query-docs"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "2.2.1",
+     "to": "2.2.2",
+     "date": "2026-04-28"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "query-docs"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "2.2.2",
+     "to": "2.2.3",
+     "date": "2026-04-29"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "query-docs"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "2.2.3",
+     "to": "2.2.4",
+     "date": "2026-05-04"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.2.4",
+     "to": "2.2.5",
+     "date": "2026-05-11"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.2.5",
+     "to": "2.3.0",
+     "date": "2026-05-21"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "2.3.0",
+     "to": "3.0.0",
+     "date": "2026-05-22"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "3.0.0",
+     "to": "3.1.0",
+     "date": "2026-06-01"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "3.1.0",
+     "to": "3.2.0",
+     "date": "2026-06-11"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "3.2.0",
+     "to": "3.2.1",
+     "date": "2026-06-13"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "3.2.1",
+     "to": "3.2.2",
+     "date": "2026-06-22"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "query-docs"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "3.2.2",
+     "to": "3.2.3",
+     "date": "2026-07-06"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "3.2.3",
+     "to": "3.2.4",
+     "date": "2026-07-17"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "query-docs",
+      "resolve-library-id"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 2,
+     "from": "3.2.4",
+     "to": "3.2.5",
+     "date": "2026-07-25"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "query-docs",
+      "resolve-library-id"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 2,
+     "from": "3.2.5",
+     "to": "4.0.0",
+     "date": "2026-08-07"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "4.0.0",
+     "to": "4.0.1",
+     "date": "2026-08-11"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "4.0.1",
+     "to": "4.0.2",
+     "date": "2026-08-11"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "4.0.2",
+     "to": "4.0.3",
+     "date": "2026-08-21"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "4.0.3",
+     "to": "4.0.4",
+     "date": "2026-08-28"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "4.0.4",
+     "to": "4.0.5",
+     "date": "2026-09-04"
+    }
+   ]
+  },
+  "chrome-devtools-mcp": {
+   "versions": 30,
+   "started": 29,
+   "failed_to_start": 1,
+   "first": "2026-01-29",
+   "last": "2026-08-25",
+   "releases_compared": 28,
+   "kinds": {
+    "none": 13,
+    "description-only": 4,
+    "tools-added-or-removed": 3,
+    "schema": 8
+   },
+   "drift_rate_per_release": 0.536,
+   "drifts_per_month": 2.19,
+   "refused_tools_median": 2,
+   "refused_tools_max": 29,
+   "releases": [
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.15.0",
+     "to": "0.15.1",
+     "date": "2026-01-30"
+    },
+    {
+     "kind": "description-only",
+     "description_only": [
+      "evaluate_script"
+     ],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "0.15.1",
+     "to": "0.16.0",
+     "date": "2026-02-04"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.16.0",
+     "to": "0.17.0",
+     "date": "2026-02-10"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.17.0",
+     "to": "0.17.1",
+     "date": "2026-02-16"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.17.1",
+     "to": "0.17.3",
+     "date": "2026-02-19"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [
+      "new_page",
+      "wait_for"
+     ],
+     "added": [
+      "take_memory_snapshot",
+      "type_text"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [
+      "new_page"
+     ],
+     "refused_tools": 2,
+     "from": "0.17.3",
+     "to": "0.18.0",
+     "date": "2026-02-25"
+    },
+    {
+     "kind": "schema",
+     "description_only": [
+      "list_pages"
+     ],
+     "schema": [
+      "take_memory_snapshot"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 2,
+     "from": "0.18.0",
+     "to": "0.18.1",
+     "date": "2026-02-25"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [
+      "performance_stop_trace",
+      "navigate_page",
+      "new_page"
+     ],
+     "schema": [
+      "evaluate_script",
+      "emulate",
+      "performance_start_trace"
+     ],
+     "added": [
+      "lighthouse_audit"
+     ],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 6,
+     "from": "0.18.1",
+     "to": "0.19.0",
+     "date": "2026-03-05"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.19.0",
+     "to": "0.20.0",
+     "date": "2026-03-11"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.20.0",
+     "to": "0.20.1",
+     "date": "2026-03-17"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.20.1",
+     "to": "0.20.2",
+     "date": "2026-03-18"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.20.2",
+     "to": "0.20.3",
+     "date": "2026-03-20"
+    },
+    {
+     "kind": "description-only",
+     "description_only": [
+      "take_memory_snapshot"
+     ],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "0.20.3",
+     "to": "0.21.0",
+     "date": "2026-04-01"
+    },
+    {
+     "kind": "schema",
+     "description_only": [
+      "fill",
+      "list_pages"
+     ],
+     "schema": [
+      "evaluate_script",
+      "list_console_messages",
+      "get_network_request",
+      "take_screenshot",
+      "emulate"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [
+      "evaluate_script"
+     ],
+     "refused_tools": 7,
+     "from": "0.21.0",
+     "to": "0.22.0",
+     "date": "2026-04-21"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.22.0",
+     "to": "0.23.0",
+     "date": "2026-04-22"
+    },
+    {
+     "kind": "description-only",
+     "description_only": [
+      "lighthouse_audit"
+     ],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "0.23.0",
+     "to": "0.24.0",
+     "date": "2026-05-04"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "0.24.0",
+     "to": "0.25.0",
+     "date": "2026-05-06"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "fill",
+      "fill_form"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 2,
+     "from": "0.25.0",
+     "to": "0.26.0",
+     "date": "2026-05-12"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "list_network_requests",
+      "performance_stop_trace",
+      "navigate_page",
+      "evaluate_script",
+      "new_page",
+      "hover",
+      "get_console_message",
+      "type_text",
+      "close_page",
+      "upload_file",
+      "fill",
+      "handle_dialog",
+      "list_console_messages",
+      "performance_analyze_insight",
+      "lighthouse_audit",
+      "click",
+      "list_pages",
+      "resize_page",
+      "drag",
+      "get_network_request",
+      "take_memory_snapshot",
+      "take_snapshot",
+      "performance_start_trace",
+      "fill_form",
+      "select_page",
+      "press_key",
+      "take_screenshot",
+      "wait_for",
+      "emulate"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [
+      "list_pages"
+     ],
+     "refused_tools": 29,
+     "from": "0.26.0",
+     "to": "1.0.1",
+     "date": "2026-05-18"
+    },
+    {
+     "kind": "tools-added-or-removed",
+     "description_only": [],
+     "schema": [
+      "emulate"
+     ],
+     "added": [
+      "take_heapsnapshot"
+     ],
+     "removed": [
+      "take_memory_snapshot"
+     ],
+     "schema_additive_desc_same": [
+      "emulate"
+     ],
+     "refused_tools": 2,
+     "from": "1.0.1",
+     "to": "1.1.0",
+     "date": "2026-05-26"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "1.1.0",
+     "to": "1.1.1",
+     "date": "2026-05-27"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "list_console_messages"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [
+      "list_console_messages"
+     ],
+     "refused_tools": 1,
+     "from": "1.1.1",
+     "to": "1.2.0",
+     "date": "2026-06-08"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "1.2.0",
+     "to": "1.3.0",
+     "date": "2026-06-18"
+    },
+    {
+     "kind": "none",
+     "description_only": [],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 0,
+     "from": "1.3.0",
+     "to": "1.4.0",
+     "date": "2026-06-23"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "evaluate_script"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "1.4.0",
+     "to": "1.5.0",
+     "date": "2026-07-03"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "navigate_page"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "1.5.0",
+     "to": "1.6.0",
+     "date": "2026-07-14"
+    },
+    {
+     "kind": "description-only",
+     "description_only": [
+      "list_network_requests"
+     ],
+     "schema": [],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 1,
+     "from": "1.6.0",
+     "to": "1.7.0",
+     "date": "2026-08-10"
+    },
+    {
+     "kind": "schema",
+     "description_only": [],
+     "schema": [
+      "list_network_requests",
+      "performance_stop_trace",
+      "navigate_page",
+      "evaluate_script",
+      "hover",
+      "get_console_message",
+      "type_text",
+      "upload_file",
+      "fill",
+      "handle_dialog",
+      "list_console_messages",
+      "performance_analyze_insight",
+      "lighthouse_audit",
+      "take_heapsnapshot",
+      "click",
+      "resize_page",
+      "drag",
+      "get_network_request",
+      "take_snapshot",
+      "performance_start_trace",
+      "fill_form",
+      "press_key",
+      "take_screenshot",
+      "wait_for",
+      "emulate"
+     ],
+     "added": [],
+     "removed": [],
+     "schema_additive_desc_same": [],
+     "refused_tools": 25,
+     "from": "1.7.0",
+     "to": "1.8.0",
+     "date": "2026-08-25"
+    }
+   ]
+  }
+ }
+}

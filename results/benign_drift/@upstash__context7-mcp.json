@@ -1,0 +1,1822 @@
+{
+ "package": "@upstash/context7-mcp",
+ "args": [],
+ "versions": {
+  "2.0.2": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "5a41b24e46982b3d5d92cc16c3c856d82a6eaa27d3b9aae5f4e2f310b69ac03e",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'query-docs' to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nSelection Process:\n1. Analyze the query to understand what library/package the user is looking for\n2. Return the most relevant match based on:\n- Name similarity to the query (exact matches prioritized)\n- Description relevance to the query's intent\n- Documentation coverage (priorit",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The user's original question or task. This is used to rank library results by relevance to what the user is trying to accomplish. IMPORTANT: Do not include any sensitive or confidential information such as API keys, passwords, credentials, or personal data in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "9b82f075e58e562eda68d7945b21eb086d8093be5de5c1e8b1af377c1701bdff",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'resolve-library-id' first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nIMPORTANT: Do not call this tool more than 3 times per question. If you cannot find what you need after 3 calls, use the best information you have.",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. IMPORTANT: Do not include any sensitive or confidential information such as API keys, passwords, credentials, or personal data in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 50.5,
+   "date": "2026-01-02"
+  },
+  "2.1.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "5a41b24e46982b3d5d92cc16c3c856d82a6eaa27d3b9aae5f4e2f310b69ac03e",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'query-docs' to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nSelection Process:\n1. Analyze the query to understand what library/package the user is looking for\n2. Return the most relevant match based on:\n- Name similarity to the query (exact matches prioritized)\n- Description relevance to the query's intent\n- Documentation coverage (priorit",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The user's original question or task. This is used to rank library results by relevance to what the user is trying to accomplish. IMPORTANT: Do not include any sensitive or confidential information such as API keys, passwords, credentials, or personal data in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "9b82f075e58e562eda68d7945b21eb086d8093be5de5c1e8b1af377c1701bdff",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'resolve-library-id' first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nIMPORTANT: Do not call this tool more than 3 times per question. If you cannot find what you need after 3 calls, use the best information you have.",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. IMPORTANT: Do not include any sensitive or confidential information such as API keys, passwords, credentials, or personal data in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 45.9,
+   "date": "2026-01-08"
+  },
+  "2.1.1": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "f1cc4b49951db0b87be2b25d0dafaebea094d69efd439eecc07dc9d7a91e1c50",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'query-docs' to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nSelection Process:\n1. Analyze the query to understand what library/package the user is looking for\n2. Return the most relevant match based on:\n- Name similarity to the query (exact matches prioritized)\n- Description relevance to the query's intent\n- Documentation coverage (priorit",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The user's original question or task. This is used to rank library results by relevance to what the user is trying to accomplish. IMPORTANT: Do not include any sensitive or confidential information such as API keys, passwords, credentials, or personal data in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "c2204dcd3fe4d38aa9f35715f6087dd502a8fb1b2c858df84a7212112ebae6b3",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'resolve-library-id' first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nIMPORTANT: Do not call this tool more than 3 times per question. If you cannot find what you need after 3 calls, use the best information you have.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. IMPORTANT: Do not include any sensitive or confidential information such as API keys, passwords, credentials, or personal data in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 37.3,
+   "date": "2026-01-29"
+  },
+  "2.1.2": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "b48ea46d2852e103a00f9db506f3e6f1d10ea3f8c08a4f395b40a12b993cee8c",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "0d7cab065581e34e57a03ee95f04ef17204beb4785837bcab318968c2e9adda8",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nIMPORTANT: Do not call this tool more than 3 times per question. If you cannot find what you need after 3 calls, use the best information you have.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 17.5,
+   "date": "2026-02-23"
+  },
+  "2.1.3": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "b48ea46d2852e103a00f9db506f3e6f1d10ea3f8c08a4f395b40a12b993cee8c",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "0d7cab065581e34e57a03ee95f04ef17204beb4785837bcab318968c2e9adda8",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nIMPORTANT: Do not call this tool more than 3 times per question. If you cannot find what you need after 3 calls, use the best information you have.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 24.5,
+   "date": "2026-03-04"
+  },
+  "2.1.4": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "b48ea46d2852e103a00f9db506f3e6f1d10ea3f8c08a4f395b40a12b993cee8c",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "0d7cab065581e34e57a03ee95f04ef17204beb4785837bcab318968c2e9adda8",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nIMPORTANT: Do not call this tool more than 3 times per question. If you cannot find what you need after 3 calls, use the best information you have.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 61.5,
+   "date": "2026-03-10"
+  },
+  "2.1.6": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "b48ea46d2852e103a00f9db506f3e6f1d10ea3f8c08a4f395b40a12b993cee8c",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "0d7cab065581e34e57a03ee95f04ef17204beb4785837bcab318968c2e9adda8",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nIMPORTANT: Do not call this tool more than 3 times per question. If you cannot find what you need after 3 calls, use the best information you have.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 21.3,
+   "date": "2026-03-27"
+  },
+  "2.1.7": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "0d7cab065581e34e57a03ee95f04ef17204beb4785837bcab318968c2e9adda8",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nIMPORTANT: Do not call this tool more than 3 times per question. If you cannot find what you need after 3 calls, use the best information you have.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 27.4,
+   "date": "2026-04-06"
+  },
+  "2.1.8": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "0d7cab065581e34e57a03ee95f04ef17204beb4785837bcab318968c2e9adda8",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nIMPORTANT: Do not call this tool more than 3 times per question. If you cannot find what you need after 3 calls, use the best information you have.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 25.3,
+   "date": "2026-04-13"
+  },
+  "2.2.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "c440725eea8c2c4dddbd579c5a75807fb737df1ad5c38bece3096eecb2d647d6",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nWorkflow: call first without researchMode. If that doesn't answer the question, retry with researchMode: true. Do not call each tool more than 3 times per question",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "researchMode": {
+         "description": "Retry the query with deep research: spins up sandboxed agents that read the actual source repos and runs a live web search, then synthesizes a fresh answer. Set true on retry if you weren't satisfied with the first answer and want a more thorough one. Requires an API key \u2014 you can get one free at https://context7.com.",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 25.2,
+   "date": "2026-04-24"
+  },
+  "2.2.1": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "c440725eea8c2c4dddbd579c5a75807fb737df1ad5c38bece3096eecb2d647d6",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nWorkflow: call first without researchMode. If that doesn't answer the question, retry with researchMode: true. Do not call each tool more than 3 times per question",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "researchMode": {
+         "description": "Retry the query with deep research: spins up sandboxed agents that read the actual source repos and runs a live web search, then synthesizes a fresh answer. Set true on retry if you weren't satisfied with the first answer and want a more thorough one. Requires an API key \u2014 you can get one free at https://context7.com.",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 15.6,
+   "date": "2026-04-27"
+  },
+  "2.2.2": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "a73ea45ef928c43b8e9dfa7e21d273008139f2e1180c1366b4840bebc5b129c0",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 19.4,
+   "date": "2026-04-28"
+  },
+  "2.2.3": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "c11d56cf9f6efe548efedb07b9badc618f0a96446079ec0132f7e24afb6f35bb",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nWorkflow: call first without researchMode. If that doesn't answer the question, retry with researchMode: true. Do not call each tool more than 3 times per question.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "researchMode": {
+         "description": "Retry the query with deep research: spins up sandboxed agents that read the actual source repos and runs a live web search, then synthesizes a fresh answer. Set true on retry if you weren't satisfied with the first answer and want a more thorough one. Requires an API key. You can get one free at https://context7.com.",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 28.0,
+   "date": "2026-04-29"
+  },
+  "2.2.4": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "a73ea45ef928c43b8e9dfa7e21d273008139f2e1180c1366b4840bebc5b129c0",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 14.0,
+   "date": "2026-05-04"
+  },
+  "2.2.5": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "a73ea45ef928c43b8e9dfa7e21d273008139f2e1180c1366b4840bebc5b129c0",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 33.3,
+   "date": "2026-05-11"
+  },
+  "2.3.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "a73ea45ef928c43b8e9dfa7e21d273008139f2e1180c1366b4840bebc5b129c0",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 23.3,
+   "date": "2026-05-21"
+  },
+  "3.0.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "a73ea45ef928c43b8e9dfa7e21d273008139f2e1180c1366b4840bebc5b129c0",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 29.0,
+   "date": "2026-05-22"
+  },
+  "3.1.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "a73ea45ef928c43b8e9dfa7e21d273008139f2e1180c1366b4840bebc5b129c0",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 20.0,
+   "date": "2026-06-01"
+  },
+  "3.2.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "a73ea45ef928c43b8e9dfa7e21d273008139f2e1180c1366b4840bebc5b129c0",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 34.2,
+   "date": "2026-06-11"
+  },
+  "3.2.1": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "a73ea45ef928c43b8e9dfa7e21d273008139f2e1180c1366b4840bebc5b129c0",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 32.3,
+   "date": "2026-06-13"
+  },
+  "3.2.2": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "a73ea45ef928c43b8e9dfa7e21d273008139f2e1180c1366b4840bebc5b129c0",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. Be specific and include relevant details. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad: 'auth' or 'hooks'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 37.4,
+   "date": "2026-06-22"
+  },
+  "3.2.3": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "0bce8b1843ca31d017d5036e2c255fc66b39e36a540d796cfce50b5c0d3cb593",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with, scoped to a single concept. Be specific and include relevant details, but keep each query to one topic \u2014 if the user's question spans multiple distinct concepts, make a separate call per concept instead of combining them, unless the question is about how the concepts interact. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad (too vague): 'auth' or 'hooks'. Bad (too broad): 'routing and auth and caching in Next.js'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 67.8,
+   "date": "2026-07-06"
+  },
+  "3.2.4": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "3c2ddd34545d846ab6c8de9897d809a592385bbc6f0f2fa067f574d9154dab98",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "0bce8b1843ca31d017d5036e2c255fc66b39e36a540d796cfce50b5c0d3cb593",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "The question or task you need help with, scoped to a single concept. Be specific and include relevant details, but keep each query to one topic \u2014 if the user's question spans multiple distinct concepts, make a separate call per concept instead of combining them, unless the question is about how the concepts interact. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad (too vague): 'auth' or 'hooks'. Bad (too broad): 'routing and auth and caching in Next.js'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 22.5,
+   "date": "2026-07-17"
+  },
+  "3.2.5": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "06232036eda98de32b007cb505d6e28712f398a0bdb4f9e5297942bed57250a3",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "3170b674b30d13167751a99155175d3291ae17044b2619adeb2d901aa2b6a69e",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation, scoped to a single concept. Be specific and include relevant details, but keep each query to one topic \u2014 if the user's question spans multiple distinct concepts, make a separate call per concept instead of combining them, unless the question is about how the concepts interact. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad (too vague): 'auth' or 'hooks'. Bad (too broad): 'routing and auth and caching in Next.js'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 22.9,
+   "date": "2026-07-25"
+  },
+  "4.0.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "65c29acae4b8d081a7f29c60f46131378c18bd641a355965848fbad3494ac8de",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "type": "object",
+       "$schema": "https://json-schema.org/draft/2020-12/schema",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "4db30f06fe26955ed41083b176225961b1c6981c948f6849ae3c204415ce3526",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "type": "object",
+       "$schema": "https://json-schema.org/draft/2020-12/schema",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation, scoped to a single concept. Be specific and include relevant details, but keep each query to one topic \u2014 if the user's question spans multiple distinct concepts, make a separate call per concept instead of combining them, unless the question is about how the concepts interact. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad (too vague): 'auth' or 'hooks'. Bad (too broad): 'routing and auth and caching in Next.js'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 16.4,
+   "date": "2026-08-07"
+  },
+  "4.0.1": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "65c29acae4b8d081a7f29c60f46131378c18bd641a355965848fbad3494ac8de",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "type": "object",
+       "$schema": "https://json-schema.org/draft/2020-12/schema",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "4db30f06fe26955ed41083b176225961b1c6981c948f6849ae3c204415ce3526",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "type": "object",
+       "$schema": "https://json-schema.org/draft/2020-12/schema",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation, scoped to a single concept. Be specific and include relevant details, but keep each query to one topic \u2014 if the user's question spans multiple distinct concepts, make a separate call per concept instead of combining them, unless the question is about how the concepts interact. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad (too vague): 'auth' or 'hooks'. Bad (too broad): 'routing and auth and caching in Next.js'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 14.6,
+   "date": "2026-08-11"
+  },
+  "4.0.2": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "65c29acae4b8d081a7f29c60f46131378c18bd641a355965848fbad3494ac8de",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "type": "object",
+       "$schema": "https://json-schema.org/draft/2020-12/schema",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "4db30f06fe26955ed41083b176225961b1c6981c948f6849ae3c204415ce3526",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "type": "object",
+       "$schema": "https://json-schema.org/draft/2020-12/schema",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation, scoped to a single concept. Be specific and include relevant details, but keep each query to one topic \u2014 if the user's question spans multiple distinct concepts, make a separate call per concept instead of combining them, unless the question is about how the concepts interact. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad (too vague): 'auth' or 'hooks'. Bad (too broad): 'routing and auth and caching in Next.js'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 15.6,
+   "date": "2026-08-11"
+  },
+  "4.0.3": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "65c29acae4b8d081a7f29c60f46131378c18bd641a355965848fbad3494ac8de",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "type": "object",
+       "$schema": "https://json-schema.org/draft/2020-12/schema",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "4db30f06fe26955ed41083b176225961b1c6981c948f6849ae3c204415ce3526",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "type": "object",
+       "$schema": "https://json-schema.org/draft/2020-12/schema",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation, scoped to a single concept. Be specific and include relevant details, but keep each query to one topic \u2014 if the user's question spans multiple distinct concepts, make a separate call per concept instead of combining them, unless the question is about how the concepts interact. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad (too vague): 'auth' or 'hooks'. Bad (too broad): 'routing and auth and caching in Next.js'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 20.9,
+   "date": "2026-08-21"
+  },
+  "4.0.4": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "65c29acae4b8d081a7f29c60f46131378c18bd641a355965848fbad3494ac8de",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "type": "object",
+       "$schema": "https://json-schema.org/draft/2020-12/schema",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "4db30f06fe26955ed41083b176225961b1c6981c948f6849ae3c204415ce3526",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "type": "object",
+       "$schema": "https://json-schema.org/draft/2020-12/schema",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation, scoped to a single concept. Be specific and include relevant details, but keep each query to one topic \u2014 if the user's question spans multiple distinct concepts, make a separate call per concept instead of combining them, unless the question is about how the concepts interact. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad (too vague): 'auth' or 'hooks'. Bad (too broad): 'routing and auth and caching in Next.js'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 19.3,
+   "date": "2026-08-28"
+  },
+  "4.0.5": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "resolve-library-id",
+     "digest": "65c29acae4b8d081a7f29c60f46131378c18bd641a355965848fbad3494ac8de",
+     "summary": {
+      "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or U",
+      "schema": {
+       "type": "object",
+       "$schema": "https://json-schema.org/draft/2020-12/schema",
+       "properties": {
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        },
+        "libraryName": {
+         "type": "string",
+         "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation \u2014 e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+        }
+       },
+       "required": [
+        "query",
+        "libraryName"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "query-docs",
+     "digest": "4db30f06fe26955ed41083b176225961b1c6981c948f6849ae3c204415ce3526",
+     "summary": {
+      "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+      "schema": {
+       "type": "object",
+       "$schema": "https://json-schema.org/draft/2020-12/schema",
+       "properties": {
+        "libraryId": {
+         "type": "string",
+         "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "query": {
+         "type": "string",
+         "description": "What to look up in the library's documentation, scoped to a single concept. Be specific and include relevant details, but keep each query to one topic \u2014 if the user's question spans multiple distinct concepts, make a separate call per concept instead of combining them, unless the question is about how the concepts interact. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad (too vague): 'auth' or 'hooks'. Bad (too broad): 'routing and auth and caching in Next.js'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+        }
+       },
+       "required": [
+        "libraryId",
+        "query"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 17.3,
+   "date": "2026-09-04"
+  }
+ }
+}

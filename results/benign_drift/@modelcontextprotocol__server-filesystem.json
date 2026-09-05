@@ -1,0 +1,3700 @@
+{
+ "package": "@modelcontextprotocol/server-filesystem",
+ "args": [
+  "/private/tmp"
+ ],
+ "versions": {
+  "0.2.0": {
+   "error": "exited before answering",
+   "stderr": "ules/esm/loader:657:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)\n    at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {\n  code: 'ERR_MODULE_NOT_FOUND'\n}\n\nNode.js v20.20.2\n",
+   "seconds": 0.7,
+   "date": "2024-11-21"
+  },
+  "0.3.0": {
+   "error": "exited before answering",
+   "stderr": "ules/esm/loader:657:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)\n    at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {\n  code: 'ERR_MODULE_NOT_FOUND'\n}\n\nNode.js v20.20.2\n",
+   "seconds": 0.8,
+   "date": "2024-11-21"
+  },
+  "0.5.0": {
+   "error": "exited before answering",
+   "stderr": "ules/esm/loader:657:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)\n    at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {\n  code: 'ERR_MODULE_NOT_FOUND'\n}\n\nNode.js v20.20.2\n",
+   "seconds": 0.6,
+   "date": "2024-11-25"
+  },
+  "0.5.1": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "b4477d3178e90c1d36163e099b2e2154db87d4004d5127d278bd13ed214390e9",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "09715a666a70cad4766b9d8e23508c320abe9f99f602e917bb85727ef289878f",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "a8dc5a5fe464f2b1415e08bf5751159c4218701ee0bc11af131028b3358aaee6",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "4d8a7fb2898a00d485766e4f92c85afca1f98e6c75309e3446973195f0889ccc",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "5cac0ec67ea6f005b2b7c061aa83bc6b13f2fc166f6d8263ba07c338e9c981d2",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "43c8efc2646cda067a1255c9eb8d1fc379691276c06d660274b37db2069e3276",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "a3953225deb26bf5fc18aae13b53598a0f8197dce27b03ab59dc59b7acc1782f",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. Searches through all subdirectories from the starting path. The search is case-insensitive and matches partial names. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "bba1ee27a8ea13b0cfa1b4015c2bcd491f39654f67034d618b48a42faa438ac7",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "36efb6d84ae8590dbbc8f1a47c469d6e07b17596e270cde1c35a268cb1aa11b3",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Use this to understand which directories are available before trying to access files.",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "required": []
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 0.7,
+   "date": "2024-11-25"
+  },
+  "0.6.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "b4477d3178e90c1d36163e099b2e2154db87d4004d5127d278bd13ed214390e9",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "09715a666a70cad4766b9d8e23508c320abe9f99f602e917bb85727ef289878f",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "a8dc5a5fe464f2b1415e08bf5751159c4218701ee0bc11af131028b3358aaee6",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "4d8a7fb2898a00d485766e4f92c85afca1f98e6c75309e3446973195f0889ccc",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "5cac0ec67ea6f005b2b7c061aa83bc6b13f2fc166f6d8263ba07c338e9c981d2",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "43c8efc2646cda067a1255c9eb8d1fc379691276c06d660274b37db2069e3276",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "a3953225deb26bf5fc18aae13b53598a0f8197dce27b03ab59dc59b7acc1782f",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. Searches through all subdirectories from the starting path. The search is case-insensitive and matches partial names. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "bba1ee27a8ea13b0cfa1b4015c2bcd491f39654f67034d618b48a42faa438ac7",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "36efb6d84ae8590dbbc8f1a47c469d6e07b17596e270cde1c35a268cb1aa11b3",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Use this to understand which directories are available before trying to access files.",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "required": []
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 3.6,
+   "date": "2024-12-03"
+  },
+  "0.6.1": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "b4477d3178e90c1d36163e099b2e2154db87d4004d5127d278bd13ed214390e9",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "09715a666a70cad4766b9d8e23508c320abe9f99f602e917bb85727ef289878f",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "a8dc5a5fe464f2b1415e08bf5751159c4218701ee0bc11af131028b3358aaee6",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "4d8a7fb2898a00d485766e4f92c85afca1f98e6c75309e3446973195f0889ccc",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "5cac0ec67ea6f005b2b7c061aa83bc6b13f2fc166f6d8263ba07c338e9c981d2",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "43c8efc2646cda067a1255c9eb8d1fc379691276c06d660274b37db2069e3276",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "a3953225deb26bf5fc18aae13b53598a0f8197dce27b03ab59dc59b7acc1782f",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. Searches through all subdirectories from the starting path. The search is case-insensitive and matches partial names. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "bba1ee27a8ea13b0cfa1b4015c2bcd491f39654f67034d618b48a42faa438ac7",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "36efb6d84ae8590dbbc8f1a47c469d6e07b17596e270cde1c35a268cb1aa11b3",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Use this to understand which directories are available before trying to access files.",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "required": []
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 1.9,
+   "date": "2024-12-03"
+  },
+  "0.6.2": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "b4477d3178e90c1d36163e099b2e2154db87d4004d5127d278bd13ed214390e9",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "09715a666a70cad4766b9d8e23508c320abe9f99f602e917bb85727ef289878f",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "a8dc5a5fe464f2b1415e08bf5751159c4218701ee0bc11af131028b3358aaee6",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "4d8a7fb2898a00d485766e4f92c85afca1f98e6c75309e3446973195f0889ccc",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "5cac0ec67ea6f005b2b7c061aa83bc6b13f2fc166f6d8263ba07c338e9c981d2",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "43c8efc2646cda067a1255c9eb8d1fc379691276c06d660274b37db2069e3276",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "a3953225deb26bf5fc18aae13b53598a0f8197dce27b03ab59dc59b7acc1782f",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. Searches through all subdirectories from the starting path. The search is case-insensitive and matches partial names. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "bba1ee27a8ea13b0cfa1b4015c2bcd491f39654f67034d618b48a42faa438ac7",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "36efb6d84ae8590dbbc8f1a47c469d6e07b17596e270cde1c35a268cb1aa11b3",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Use this to understand which directories are available before trying to access files.",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "required": []
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 1.7,
+   "date": "2024-12-04"
+  },
+  "2025.1.14": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "b4477d3178e90c1d36163e099b2e2154db87d4004d5127d278bd13ed214390e9",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "09715a666a70cad4766b9d8e23508c320abe9f99f602e917bb85727ef289878f",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "a8dc5a5fe464f2b1415e08bf5751159c4218701ee0bc11af131028b3358aaee6",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "edit_file",
+     "digest": "33084c0355416c029fc3eebd69031d33b34672293f32f53569819a0a9e742cd9",
+     "summary": {
+      "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "4d8a7fb2898a00d485766e4f92c85afca1f98e6c75309e3446973195f0889ccc",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "5cac0ec67ea6f005b2b7c061aa83bc6b13f2fc166f6d8263ba07c338e9c981d2",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "directory_tree",
+     "digest": "ce474e3edd0f12c369fd574f890728eb37dcc3a75007e7f1eff682a653588bb4",
+     "summary": {
+      "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "43c8efc2646cda067a1255c9eb8d1fc379691276c06d660274b37db2069e3276",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "a3953225deb26bf5fc18aae13b53598a0f8197dce27b03ab59dc59b7acc1782f",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. Searches through all subdirectories from the starting path. The search is case-insensitive and matches partial names. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "bba1ee27a8ea13b0cfa1b4015c2bcd491f39654f67034d618b48a42faa438ac7",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "36efb6d84ae8590dbbc8f1a47c469d6e07b17596e270cde1c35a268cb1aa11b3",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Use this to understand which directories are available before trying to access files.",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "required": []
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 1.9,
+   "date": "2025-01-14"
+  },
+  "2025.3.28": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "b4477d3178e90c1d36163e099b2e2154db87d4004d5127d278bd13ed214390e9",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "09715a666a70cad4766b9d8e23508c320abe9f99f602e917bb85727ef289878f",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "a8dc5a5fe464f2b1415e08bf5751159c4218701ee0bc11af131028b3358aaee6",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "edit_file",
+     "digest": "33084c0355416c029fc3eebd69031d33b34672293f32f53569819a0a9e742cd9",
+     "summary": {
+      "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "4d8a7fb2898a00d485766e4f92c85afca1f98e6c75309e3446973195f0889ccc",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "5cac0ec67ea6f005b2b7c061aa83bc6b13f2fc166f6d8263ba07c338e9c981d2",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "directory_tree",
+     "digest": "ce474e3edd0f12c369fd574f890728eb37dcc3a75007e7f1eff682a653588bb4",
+     "summary": {
+      "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "43c8efc2646cda067a1255c9eb8d1fc379691276c06d660274b37db2069e3276",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "a3953225deb26bf5fc18aae13b53598a0f8197dce27b03ab59dc59b7acc1782f",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. Searches through all subdirectories from the starting path. The search is case-insensitive and matches partial names. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "bba1ee27a8ea13b0cfa1b4015c2bcd491f39654f67034d618b48a42faa438ac7",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "36efb6d84ae8590dbbc8f1a47c469d6e07b17596e270cde1c35a268cb1aa11b3",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Use this to understand which directories are available before trying to access files.",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "required": []
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 1.8,
+   "date": "2025-03-28"
+  },
+  "2025.7.1": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "f29e848367851b8456fbba93ac38017a95b1dcb838d38dac447b97f012cb9e25",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "09715a666a70cad4766b9d8e23508c320abe9f99f602e917bb85727ef289878f",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "a8dc5a5fe464f2b1415e08bf5751159c4218701ee0bc11af131028b3358aaee6",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "edit_file",
+     "digest": "33084c0355416c029fc3eebd69031d33b34672293f32f53569819a0a9e742cd9",
+     "summary": {
+      "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "4d8a7fb2898a00d485766e4f92c85afca1f98e6c75309e3446973195f0889ccc",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "5cac0ec67ea6f005b2b7c061aa83bc6b13f2fc166f6d8263ba07c338e9c981d2",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory_with_sizes",
+     "digest": "0809b3438125e770f365129fbcfb05afc20ad7aa6ca09960814c7bad3863cff6",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "directory_tree",
+     "digest": "ce474e3edd0f12c369fd574f890728eb37dcc3a75007e7f1eff682a653588bb4",
+     "summary": {
+      "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "43c8efc2646cda067a1255c9eb8d1fc379691276c06d660274b37db2069e3276",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "a3953225deb26bf5fc18aae13b53598a0f8197dce27b03ab59dc59b7acc1782f",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. Searches through all subdirectories from the starting path. The search is case-insensitive and matches partial names. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "bba1ee27a8ea13b0cfa1b4015c2bcd491f39654f67034d618b48a42faa438ac7",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "36efb6d84ae8590dbbc8f1a47c469d6e07b17596e270cde1c35a268cb1aa11b3",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Use this to understand which directories are available before trying to access files.",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "required": []
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 115.7,
+   "date": "2025-07-01"
+  },
+  "2025.7.29": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "8e3d3f09fb37e74495a29ab0395691d8e4fac559839526e3f1a77514eb512a24",
+     "summary": {
+      "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_text_file",
+     "digest": "45cde9fb47de6f4922483a8520edd3ba6d2a7c86a6cdbecbbccbb458c53ec190",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_media_file",
+     "digest": "3ba90c29f08e5ce18fef7eac32f1fdd7ace0e1af29455964c979a16c02a0ece2",
+     "summary": {
+      "description": "Read an image or audio file. Returns the base64 encoded data and MIME type. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "09715a666a70cad4766b9d8e23508c320abe9f99f602e917bb85727ef289878f",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "a8dc5a5fe464f2b1415e08bf5751159c4218701ee0bc11af131028b3358aaee6",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "edit_file",
+     "digest": "33084c0355416c029fc3eebd69031d33b34672293f32f53569819a0a9e742cd9",
+     "summary": {
+      "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "4d8a7fb2898a00d485766e4f92c85afca1f98e6c75309e3446973195f0889ccc",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "5cac0ec67ea6f005b2b7c061aa83bc6b13f2fc166f6d8263ba07c338e9c981d2",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory_with_sizes",
+     "digest": "0809b3438125e770f365129fbcfb05afc20ad7aa6ca09960814c7bad3863cff6",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "directory_tree",
+     "digest": "ce474e3edd0f12c369fd574f890728eb37dcc3a75007e7f1eff682a653588bb4",
+     "summary": {
+      "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "43c8efc2646cda067a1255c9eb8d1fc379691276c06d660274b37db2069e3276",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "a3953225deb26bf5fc18aae13b53598a0f8197dce27b03ab59dc59b7acc1782f",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. Searches through all subdirectories from the starting path. The search is case-insensitive and matches partial names. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "bba1ee27a8ea13b0cfa1b4015c2bcd491f39654f67034d618b48a42faa438ac7",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "49e5a56f3826808a7c490d05aff7d7faef1cab2e0f4c6df9fa2465e305aa5a07",
+     "summary": {
+      "description": "Returns the list of root directories that this server is allowed to access. Use this to understand which directories are available before trying to access files. ",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "required": []
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 50.7,
+   "date": "2025-07-31"
+  },
+  "2025.8.18": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "8e3d3f09fb37e74495a29ab0395691d8e4fac559839526e3f1a77514eb512a24",
+     "summary": {
+      "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_text_file",
+     "digest": "45cde9fb47de6f4922483a8520edd3ba6d2a7c86a6cdbecbbccbb458c53ec190",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_media_file",
+     "digest": "3ba90c29f08e5ce18fef7eac32f1fdd7ace0e1af29455964c979a16c02a0ece2",
+     "summary": {
+      "description": "Read an image or audio file. Returns the base64 encoded data and MIME type. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "09715a666a70cad4766b9d8e23508c320abe9f99f602e917bb85727ef289878f",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "a8dc5a5fe464f2b1415e08bf5751159c4218701ee0bc11af131028b3358aaee6",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "edit_file",
+     "digest": "33084c0355416c029fc3eebd69031d33b34672293f32f53569819a0a9e742cd9",
+     "summary": {
+      "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "4d8a7fb2898a00d485766e4f92c85afca1f98e6c75309e3446973195f0889ccc",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "5cac0ec67ea6f005b2b7c061aa83bc6b13f2fc166f6d8263ba07c338e9c981d2",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory_with_sizes",
+     "digest": "0809b3438125e770f365129fbcfb05afc20ad7aa6ca09960814c7bad3863cff6",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "directory_tree",
+     "digest": "ce474e3edd0f12c369fd574f890728eb37dcc3a75007e7f1eff682a653588bb4",
+     "summary": {
+      "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "43c8efc2646cda067a1255c9eb8d1fc379691276c06d660274b37db2069e3276",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "a3953225deb26bf5fc18aae13b53598a0f8197dce27b03ab59dc59b7acc1782f",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. Searches through all subdirectories from the starting path. The search is case-insensitive and matches partial names. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "bba1ee27a8ea13b0cfa1b4015c2bcd491f39654f67034d618b48a42faa438ac7",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "20a65b2a92c99d9ba12fe798370d782a2850dc7664f6aa25672f3a42a46bf0a6",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Subdirectories within these allowed directories are also accessible. Use this to understand which directories and their nested paths are available before trying to access files.",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "required": []
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 79.4,
+   "date": "2025-08-18"
+  },
+  "2025.8.21": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "8e3d3f09fb37e74495a29ab0395691d8e4fac559839526e3f1a77514eb512a24",
+     "summary": {
+      "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_text_file",
+     "digest": "45cde9fb47de6f4922483a8520edd3ba6d2a7c86a6cdbecbbccbb458c53ec190",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_media_file",
+     "digest": "3ba90c29f08e5ce18fef7eac32f1fdd7ace0e1af29455964c979a16c02a0ece2",
+     "summary": {
+      "description": "Read an image or audio file. Returns the base64 encoded data and MIME type. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "09715a666a70cad4766b9d8e23508c320abe9f99f602e917bb85727ef289878f",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "a8dc5a5fe464f2b1415e08bf5751159c4218701ee0bc11af131028b3358aaee6",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "edit_file",
+     "digest": "33084c0355416c029fc3eebd69031d33b34672293f32f53569819a0a9e742cd9",
+     "summary": {
+      "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "4d8a7fb2898a00d485766e4f92c85afca1f98e6c75309e3446973195f0889ccc",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "5cac0ec67ea6f005b2b7c061aa83bc6b13f2fc166f6d8263ba07c338e9c981d2",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory_with_sizes",
+     "digest": "0809b3438125e770f365129fbcfb05afc20ad7aa6ca09960814c7bad3863cff6",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "directory_tree",
+     "digest": "ce474e3edd0f12c369fd574f890728eb37dcc3a75007e7f1eff682a653588bb4",
+     "summary": {
+      "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "43c8efc2646cda067a1255c9eb8d1fc379691276c06d660274b37db2069e3276",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "a3953225deb26bf5fc18aae13b53598a0f8197dce27b03ab59dc59b7acc1782f",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. Searches through all subdirectories from the starting path. The search is case-insensitive and matches partial names. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "bba1ee27a8ea13b0cfa1b4015c2bcd491f39654f67034d618b48a42faa438ac7",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "20a65b2a92c99d9ba12fe798370d782a2850dc7664f6aa25672f3a42a46bf0a6",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Subdirectories within these allowed directories are also accessible. Use this to understand which directories and their nested paths are available before trying to access files.",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "required": []
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 56.2,
+   "date": "2025-08-21"
+  },
+  "2025.11.25": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "f731bdc1d2e81d16b33e0c4cfac677a0f69f4e3c54667d0e3665988f7168bd73",
+     "summary": {
+      "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "tail": {
+         "description": "If provided, returns only the last N lines of the file",
+         "type": "number"
+        },
+        "head": {
+         "description": "If provided, returns only the first N lines of the file",
+         "type": "number"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_text_file",
+     "digest": "01e8e20278a122c5829069bdc2f51e8185e6d1cf4142da724910ac654e6bce7c",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "tail": {
+         "description": "If provided, returns only the last N lines of the file",
+         "type": "number"
+        },
+        "head": {
+         "description": "If provided, returns only the first N lines of the file",
+         "type": "number"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_media_file",
+     "digest": "d573dab135f81920511da2e1bf5aed75abb5859eba16d059855de6b1895ccb5a",
+     "summary": {
+      "description": "Read an image or audio file. Returns the base64 encoded data and MIME type. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "99af24ad5893248ec08fed5bdf7403e19319e2c336f674657ae237c91a316d04",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "paths": {
+         "minItems": 1,
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "description": "Array of file paths to read. Each path must be a string pointing to a valid file within allowed directories."
+        }
+       },
+       "required": [
+        "paths"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "dcc6ea7ca802cd4db57e9f21992b49ac7b1109f0805acceaf45654f34d27f4da",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "content": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path",
+        "content"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "edit_file",
+     "digest": "9a87fc18412c4da316e38bd2902580c976b0cc8b2f48b6a37dbf8ffebb37a165",
+     "summary": {
+      "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "edits": {
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "oldText": {
+            "type": "string",
+            "description": "Text to search for - must match exactly"
+           },
+           "newText": {
+            "type": "string",
+            "description": "Text to replace with"
+           }
+          },
+          "required": [
+           "oldText",
+           "newText"
+          ]
+         }
+        },
+        "dryRun": {
+         "default": false,
+         "description": "Preview changes using git-style diff format",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "path",
+        "edits"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "1ffed369a5c471c4d3531676f5221a18253451fc82368cb39268bbf0370b0e44",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "6ae41bfcb24201bcb72ff81960b25212ad8324d5844721360a0bc4c33dc216f0",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory_with_sizes",
+     "digest": "9b8fe7fc3cda50861855fc420a13d4ab1a1be8047a26a8ac2b65101a8dda34bf",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "sortBy": {
+         "default": "name",
+         "description": "Sort entries by name or size",
+         "type": "string",
+         "enum": [
+          "name",
+          "size"
+         ]
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "directory_tree",
+     "digest": "3b0358a47884e272e51e6d752de52f339efe261098f82dfff4c9c6b2b6ae360c",
+     "summary": {
+      "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "excludePatterns": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "c16c59ce1a46c0c6202adeb38951cea8066a3e7928c7366aff77cc6c56dc67c5",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "source": {
+         "type": "string"
+        },
+        "destination": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "source",
+        "destination"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "ce0039f14caecba743d7dd117881bb60f16ecd5add4e37576be05deb760af5db",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. The patterns should be glob-style patterns that match paths relative to the working directory. Use pattern like '*.ext' to match files in current directory, and '**/*.ext' to match files in all subdirectories. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "pattern": {
+         "type": "string"
+        },
+        "excludePatterns": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "path",
+        "pattern"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "544b2d05a419b76fd2b69874edd3b3bb59bf29b8b4a444d5e40a8f2a461a4975",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "74088deb343e419439d983e899b0ea9f8fdff4b102e99d3e4111c4c07f7347f3",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Subdirectories within these allowed directories are also accessible. Use this to understand which directories and their nested paths are available before trying to access files.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 22.4,
+   "date": "2025-11-25"
+  },
+  "2025.12.18": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "f731bdc1d2e81d16b33e0c4cfac677a0f69f4e3c54667d0e3665988f7168bd73",
+     "summary": {
+      "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "tail": {
+         "description": "If provided, returns only the last N lines of the file",
+         "type": "number"
+        },
+        "head": {
+         "description": "If provided, returns only the first N lines of the file",
+         "type": "number"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_text_file",
+     "digest": "01e8e20278a122c5829069bdc2f51e8185e6d1cf4142da724910ac654e6bce7c",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "tail": {
+         "description": "If provided, returns only the last N lines of the file",
+         "type": "number"
+        },
+        "head": {
+         "description": "If provided, returns only the first N lines of the file",
+         "type": "number"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_media_file",
+     "digest": "d573dab135f81920511da2e1bf5aed75abb5859eba16d059855de6b1895ccb5a",
+     "summary": {
+      "description": "Read an image or audio file. Returns the base64 encoded data and MIME type. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "99af24ad5893248ec08fed5bdf7403e19319e2c336f674657ae237c91a316d04",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "paths": {
+         "minItems": 1,
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "description": "Array of file paths to read. Each path must be a string pointing to a valid file within allowed directories."
+        }
+       },
+       "required": [
+        "paths"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "dcc6ea7ca802cd4db57e9f21992b49ac7b1109f0805acceaf45654f34d27f4da",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "content": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path",
+        "content"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "edit_file",
+     "digest": "9a87fc18412c4da316e38bd2902580c976b0cc8b2f48b6a37dbf8ffebb37a165",
+     "summary": {
+      "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "edits": {
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "oldText": {
+            "type": "string",
+            "description": "Text to search for - must match exactly"
+           },
+           "newText": {
+            "type": "string",
+            "description": "Text to replace with"
+           }
+          },
+          "required": [
+           "oldText",
+           "newText"
+          ]
+         }
+        },
+        "dryRun": {
+         "default": false,
+         "description": "Preview changes using git-style diff format",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "path",
+        "edits"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "1ffed369a5c471c4d3531676f5221a18253451fc82368cb39268bbf0370b0e44",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "6ae41bfcb24201bcb72ff81960b25212ad8324d5844721360a0bc4c33dc216f0",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory_with_sizes",
+     "digest": "9b8fe7fc3cda50861855fc420a13d4ab1a1be8047a26a8ac2b65101a8dda34bf",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "sortBy": {
+         "default": "name",
+         "description": "Sort entries by name or size",
+         "type": "string",
+         "enum": [
+          "name",
+          "size"
+         ]
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "directory_tree",
+     "digest": "3b0358a47884e272e51e6d752de52f339efe261098f82dfff4c9c6b2b6ae360c",
+     "summary": {
+      "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "excludePatterns": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "c16c59ce1a46c0c6202adeb38951cea8066a3e7928c7366aff77cc6c56dc67c5",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "source": {
+         "type": "string"
+        },
+        "destination": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "source",
+        "destination"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "ce0039f14caecba743d7dd117881bb60f16ecd5add4e37576be05deb760af5db",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. The patterns should be glob-style patterns that match paths relative to the working directory. Use pattern like '*.ext' to match files in current directory, and '**/*.ext' to match files in all subdirectories. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "pattern": {
+         "type": "string"
+        },
+        "excludePatterns": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "path",
+        "pattern"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "544b2d05a419b76fd2b69874edd3b3bb59bf29b8b4a444d5e40a8f2a461a4975",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "74088deb343e419439d983e899b0ea9f8fdff4b102e99d3e4111c4c07f7347f3",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Subdirectories within these allowed directories are also accessible. Use this to understand which directories and their nested paths are available before trying to access files.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 24.3,
+   "date": "2025-12-18"
+  },
+  "2026.1.14": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "f731bdc1d2e81d16b33e0c4cfac677a0f69f4e3c54667d0e3665988f7168bd73",
+     "summary": {
+      "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "tail": {
+         "description": "If provided, returns only the last N lines of the file",
+         "type": "number"
+        },
+        "head": {
+         "description": "If provided, returns only the first N lines of the file",
+         "type": "number"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_text_file",
+     "digest": "01e8e20278a122c5829069bdc2f51e8185e6d1cf4142da724910ac654e6bce7c",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "tail": {
+         "description": "If provided, returns only the last N lines of the file",
+         "type": "number"
+        },
+        "head": {
+         "description": "If provided, returns only the first N lines of the file",
+         "type": "number"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_media_file",
+     "digest": "d573dab135f81920511da2e1bf5aed75abb5859eba16d059855de6b1895ccb5a",
+     "summary": {
+      "description": "Read an image or audio file. Returns the base64 encoded data and MIME type. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "99af24ad5893248ec08fed5bdf7403e19319e2c336f674657ae237c91a316d04",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "paths": {
+         "minItems": 1,
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "description": "Array of file paths to read. Each path must be a string pointing to a valid file within allowed directories."
+        }
+       },
+       "required": [
+        "paths"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "dcc6ea7ca802cd4db57e9f21992b49ac7b1109f0805acceaf45654f34d27f4da",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "content": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path",
+        "content"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "edit_file",
+     "digest": "9a87fc18412c4da316e38bd2902580c976b0cc8b2f48b6a37dbf8ffebb37a165",
+     "summary": {
+      "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "edits": {
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "oldText": {
+            "type": "string",
+            "description": "Text to search for - must match exactly"
+           },
+           "newText": {
+            "type": "string",
+            "description": "Text to replace with"
+           }
+          },
+          "required": [
+           "oldText",
+           "newText"
+          ]
+         }
+        },
+        "dryRun": {
+         "default": false,
+         "description": "Preview changes using git-style diff format",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "path",
+        "edits"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "1ffed369a5c471c4d3531676f5221a18253451fc82368cb39268bbf0370b0e44",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "6ae41bfcb24201bcb72ff81960b25212ad8324d5844721360a0bc4c33dc216f0",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory_with_sizes",
+     "digest": "9b8fe7fc3cda50861855fc420a13d4ab1a1be8047a26a8ac2b65101a8dda34bf",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "sortBy": {
+         "default": "name",
+         "description": "Sort entries by name or size",
+         "type": "string",
+         "enum": [
+          "name",
+          "size"
+         ]
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "directory_tree",
+     "digest": "3b0358a47884e272e51e6d752de52f339efe261098f82dfff4c9c6b2b6ae360c",
+     "summary": {
+      "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "excludePatterns": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "c16c59ce1a46c0c6202adeb38951cea8066a3e7928c7366aff77cc6c56dc67c5",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "source": {
+         "type": "string"
+        },
+        "destination": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "source",
+        "destination"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "ce0039f14caecba743d7dd117881bb60f16ecd5add4e37576be05deb760af5db",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. The patterns should be glob-style patterns that match paths relative to the working directory. Use pattern like '*.ext' to match files in current directory, and '**/*.ext' to match files in all subdirectories. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "pattern": {
+         "type": "string"
+        },
+        "excludePatterns": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "path",
+        "pattern"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "544b2d05a419b76fd2b69874edd3b3bb59bf29b8b4a444d5e40a8f2a461a4975",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "74088deb343e419439d983e899b0ea9f8fdff4b102e99d3e4111c4c07f7347f3",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Subdirectories within these allowed directories are also accessible. Use this to understand which directories and their nested paths are available before trying to access files.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 23.3,
+   "date": "2026-01-14"
+  },
+  "2026.7.4": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "f731bdc1d2e81d16b33e0c4cfac677a0f69f4e3c54667d0e3665988f7168bd73",
+     "summary": {
+      "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "tail": {
+         "description": "If provided, returns only the last N lines of the file",
+         "type": "number"
+        },
+        "head": {
+         "description": "If provided, returns only the first N lines of the file",
+         "type": "number"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_text_file",
+     "digest": "01e8e20278a122c5829069bdc2f51e8185e6d1cf4142da724910ac654e6bce7c",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "tail": {
+         "description": "If provided, returns only the last N lines of the file",
+         "type": "number"
+        },
+        "head": {
+         "description": "If provided, returns only the first N lines of the file",
+         "type": "number"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_media_file",
+     "digest": "d573dab135f81920511da2e1bf5aed75abb5859eba16d059855de6b1895ccb5a",
+     "summary": {
+      "description": "Read an image or audio file. Returns the base64 encoded data and MIME type. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "99af24ad5893248ec08fed5bdf7403e19319e2c336f674657ae237c91a316d04",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "paths": {
+         "minItems": 1,
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "description": "Array of file paths to read. Each path must be a string pointing to a valid file within allowed directories."
+        }
+       },
+       "required": [
+        "paths"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "dcc6ea7ca802cd4db57e9f21992b49ac7b1109f0805acceaf45654f34d27f4da",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "content": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path",
+        "content"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "edit_file",
+     "digest": "9a87fc18412c4da316e38bd2902580c976b0cc8b2f48b6a37dbf8ffebb37a165",
+     "summary": {
+      "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "edits": {
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "oldText": {
+            "type": "string",
+            "description": "Text to search for - must match exactly"
+           },
+           "newText": {
+            "type": "string",
+            "description": "Text to replace with"
+           }
+          },
+          "required": [
+           "oldText",
+           "newText"
+          ]
+         }
+        },
+        "dryRun": {
+         "default": false,
+         "description": "Preview changes using git-style diff format",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "path",
+        "edits"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "1ffed369a5c471c4d3531676f5221a18253451fc82368cb39268bbf0370b0e44",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "6ae41bfcb24201bcb72ff81960b25212ad8324d5844721360a0bc4c33dc216f0",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory_with_sizes",
+     "digest": "9b8fe7fc3cda50861855fc420a13d4ab1a1be8047a26a8ac2b65101a8dda34bf",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "sortBy": {
+         "default": "name",
+         "description": "Sort entries by name or size",
+         "type": "string",
+         "enum": [
+          "name",
+          "size"
+         ]
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "directory_tree",
+     "digest": "3b0358a47884e272e51e6d752de52f339efe261098f82dfff4c9c6b2b6ae360c",
+     "summary": {
+      "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "excludePatterns": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "c16c59ce1a46c0c6202adeb38951cea8066a3e7928c7366aff77cc6c56dc67c5",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "source": {
+         "type": "string"
+        },
+        "destination": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "source",
+        "destination"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "ce0039f14caecba743d7dd117881bb60f16ecd5add4e37576be05deb760af5db",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. The patterns should be glob-style patterns that match paths relative to the working directory. Use pattern like '*.ext' to match files in current directory, and '**/*.ext' to match files in all subdirectories. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "pattern": {
+         "type": "string"
+        },
+        "excludePatterns": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "path",
+        "pattern"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "544b2d05a419b76fd2b69874edd3b3bb59bf29b8b4a444d5e40a8f2a461a4975",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "74088deb343e419439d983e899b0ea9f8fdff4b102e99d3e4111c4c07f7347f3",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Subdirectories within these allowed directories are also accessible. Use this to understand which directories and their nested paths are available before trying to access files.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 29.2,
+   "date": "2026-07-04"
+  },
+  "2026.7.10": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "f731bdc1d2e81d16b33e0c4cfac677a0f69f4e3c54667d0e3665988f7168bd73",
+     "summary": {
+      "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "tail": {
+         "description": "If provided, returns only the last N lines of the file",
+         "type": "number"
+        },
+        "head": {
+         "description": "If provided, returns only the first N lines of the file",
+         "type": "number"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_text_file",
+     "digest": "01e8e20278a122c5829069bdc2f51e8185e6d1cf4142da724910ac654e6bce7c",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "tail": {
+         "description": "If provided, returns only the last N lines of the file",
+         "type": "number"
+        },
+        "head": {
+         "description": "If provided, returns only the first N lines of the file",
+         "type": "number"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_media_file",
+     "digest": "f851ef54774c036283938e1d96d432b3c94c3f48026525e94bd1e0f13ef1e00a",
+     "summary": {
+      "description": "Read a file and return it as a base64-encoded content block with its MIME type. Image and audio files are returned as image/audio content; any other file type is returned as an embedded resource. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "99af24ad5893248ec08fed5bdf7403e19319e2c336f674657ae237c91a316d04",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "paths": {
+         "minItems": 1,
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "description": "Array of file paths to read. Each path must be a string pointing to a valid file within allowed directories."
+        }
+       },
+       "required": [
+        "paths"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "dcc6ea7ca802cd4db57e9f21992b49ac7b1109f0805acceaf45654f34d27f4da",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "content": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path",
+        "content"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "edit_file",
+     "digest": "9a87fc18412c4da316e38bd2902580c976b0cc8b2f48b6a37dbf8ffebb37a165",
+     "summary": {
+      "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "edits": {
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "oldText": {
+            "type": "string",
+            "description": "Text to search for - must match exactly"
+           },
+           "newText": {
+            "type": "string",
+            "description": "Text to replace with"
+           }
+          },
+          "required": [
+           "oldText",
+           "newText"
+          ]
+         }
+        },
+        "dryRun": {
+         "default": false,
+         "description": "Preview changes using git-style diff format",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "path",
+        "edits"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "1ffed369a5c471c4d3531676f5221a18253451fc82368cb39268bbf0370b0e44",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "6ae41bfcb24201bcb72ff81960b25212ad8324d5844721360a0bc4c33dc216f0",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory_with_sizes",
+     "digest": "9b8fe7fc3cda50861855fc420a13d4ab1a1be8047a26a8ac2b65101a8dda34bf",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "sortBy": {
+         "default": "name",
+         "description": "Sort entries by name or size",
+         "type": "string",
+         "enum": [
+          "name",
+          "size"
+         ]
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "directory_tree",
+     "digest": "3b0358a47884e272e51e6d752de52f339efe261098f82dfff4c9c6b2b6ae360c",
+     "summary": {
+      "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "excludePatterns": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "c16c59ce1a46c0c6202adeb38951cea8066a3e7928c7366aff77cc6c56dc67c5",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "source": {
+         "type": "string"
+        },
+        "destination": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "source",
+        "destination"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "ce0039f14caecba743d7dd117881bb60f16ecd5add4e37576be05deb760af5db",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. The patterns should be glob-style patterns that match paths relative to the working directory. Use pattern like '*.ext' to match files in current directory, and '**/*.ext' to match files in all subdirectories. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "pattern": {
+         "type": "string"
+        },
+        "excludePatterns": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "path",
+        "pattern"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "544b2d05a419b76fd2b69874edd3b3bb59bf29b8b4a444d5e40a8f2a461a4975",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "74088deb343e419439d983e899b0ea9f8fdff4b102e99d3e4111c4c07f7347f3",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Subdirectories within these allowed directories are also accessible. Use this to understand which directories and their nested paths are available before trying to access files.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 30.1,
+   "date": "2026-07-10"
+  },
+  "2026.8.31": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "read_file",
+     "digest": "f731bdc1d2e81d16b33e0c4cfac677a0f69f4e3c54667d0e3665988f7168bd73",
+     "summary": {
+      "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "tail": {
+         "description": "If provided, returns only the last N lines of the file",
+         "type": "number"
+        },
+        "head": {
+         "description": "If provided, returns only the first N lines of the file",
+         "type": "number"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_text_file",
+     "digest": "01e8e20278a122c5829069bdc2f51e8185e6d1cf4142da724910ac654e6bce7c",
+     "summary": {
+      "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "tail": {
+         "description": "If provided, returns only the last N lines of the file",
+         "type": "number"
+        },
+        "head": {
+         "description": "If provided, returns only the first N lines of the file",
+         "type": "number"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_media_file",
+     "digest": "f851ef54774c036283938e1d96d432b3c94c3f48026525e94bd1e0f13ef1e00a",
+     "summary": {
+      "description": "Read a file and return it as a base64-encoded content block with its MIME type. Image and audio files are returned as image/audio content; any other file type is returned as an embedded resource. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "read_multiple_files",
+     "digest": "99af24ad5893248ec08fed5bdf7403e19319e2c336f674657ae237c91a316d04",
+     "summary": {
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "paths": {
+         "minItems": 1,
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "description": "Array of file paths to read. Each path must be a string pointing to a valid file within allowed directories."
+        }
+       },
+       "required": [
+        "paths"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "write_file",
+     "digest": "dcc6ea7ca802cd4db57e9f21992b49ac7b1109f0805acceaf45654f34d27f4da",
+     "summary": {
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "content": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path",
+        "content"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "edit_file",
+     "digest": "9a87fc18412c4da316e38bd2902580c976b0cc8b2f48b6a37dbf8ffebb37a165",
+     "summary": {
+      "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "edits": {
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "oldText": {
+            "type": "string",
+            "description": "Text to search for - must match exactly"
+           },
+           "newText": {
+            "type": "string",
+            "description": "Text to replace with"
+           }
+          },
+          "required": [
+           "oldText",
+           "newText"
+          ]
+         }
+        },
+        "dryRun": {
+         "default": false,
+         "description": "Preview changes using git-style diff format",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "path",
+        "edits"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "create_directory",
+     "digest": "1ffed369a5c471c4d3531676f5221a18253451fc82368cb39268bbf0370b0e44",
+     "summary": {
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory",
+     "digest": "6ae41bfcb24201bcb72ff81960b25212ad8324d5844721360a0bc4c33dc216f0",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_directory_with_sizes",
+     "digest": "9b8fe7fc3cda50861855fc420a13d4ab1a1be8047a26a8ac2b65101a8dda34bf",
+     "summary": {
+      "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "sortBy": {
+         "default": "name",
+         "description": "Sort entries by name or size",
+         "type": "string",
+         "enum": [
+          "name",
+          "size"
+         ]
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "directory_tree",
+     "digest": "3b0358a47884e272e51e6d752de52f339efe261098f82dfff4c9c6b2b6ae360c",
+     "summary": {
+      "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "excludePatterns": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "move_file",
+     "digest": "c16c59ce1a46c0c6202adeb38951cea8066a3e7928c7366aff77cc6c56dc67c5",
+     "summary": {
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "source": {
+         "type": "string"
+        },
+        "destination": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "source",
+        "destination"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "search_files",
+     "digest": "ce0039f14caecba743d7dd117881bb60f16ecd5add4e37576be05deb760af5db",
+     "summary": {
+      "description": "Recursively search for files and directories matching a pattern. The patterns should be glob-style patterns that match paths relative to the working directory. Use pattern like '*.ext' to match files in current directory, and '**/*.ext' to match files in all subdirectories. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        },
+        "pattern": {
+         "type": "string"
+        },
+        "excludePatterns": {
+         "default": [],
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       },
+       "required": [
+        "path",
+        "pattern"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get_file_info",
+     "digest": "544b2d05a419b76fd2b69874edd3b3bb59bf29b8b4a444d5e40a8f2a461a4975",
+     "summary": {
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "path"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "list_allowed_directories",
+     "digest": "74088deb343e419439d983e899b0ea9f8fdff4b102e99d3e4111c4c07f7347f3",
+     "summary": {
+      "description": "Returns the list of directories that this server is allowed to access. Subdirectories within these allowed directories are also accessible. Use this to understand which directories and their nested paths are available before trying to access files.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 25.9,
+   "date": "2026-08-31"
+  }
+ }
+}

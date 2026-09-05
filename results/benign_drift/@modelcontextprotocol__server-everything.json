@@ -1,0 +1,4662 @@
+{
+ "package": "@modelcontextprotocol/server-everything",
+ "args": [],
+ "versions": {
+  "0.1.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 6.6,
+   "date": "2024-11-19"
+  },
+  "0.2.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 6.0,
+   "date": "2024-11-21"
+  },
+  "0.3.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 28.5,
+   "date": "2024-11-21"
+  },
+  "0.5.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 12.2,
+   "date": "2024-11-25"
+  },
+  "0.5.1": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 5.7,
+   "date": "2024-11-25"
+  },
+  "0.6.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 12.6,
+   "date": "2024-12-03"
+  },
+  "0.6.1": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 16.7,
+   "date": "2024-12-03"
+  },
+  "0.6.2": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 17.5,
+   "date": "2024-12-04"
+  },
+  "2025.1.14": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "printEnv",
+     "digest": "ae11ecf6af73a63ecce43ce4b2e80d106e64af8fced21edf10c46ecc52c7d071",
+     "summary": {
+      "description": "Prints all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 7.8,
+   "date": "2025-01-14"
+  },
+  "2025.3.19": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "printEnv",
+     "digest": "ae11ecf6af73a63ecce43ce4b2e80d106e64af8fced21edf10c46ecc52c7d071",
+     "summary": {
+      "description": "Prints all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "annotatedMessage",
+     "digest": "0ffcdb9a2772303ded8d969f82588f4d79bdd7ac9c4533d4d5f8fb96e797dcb6",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "type": "boolean",
+         "default": false,
+         "description": "Whether to include an example image"
+        }
+       },
+       "required": [
+        "messageType"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 12.1,
+   "date": "2025-03-19"
+  },
+  "2025.4.8": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "printEnv",
+     "digest": "ae11ecf6af73a63ecce43ce4b2e80d106e64af8fced21edf10c46ecc52c7d071",
+     "summary": {
+      "description": "Prints all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "annotatedMessage",
+     "digest": "0ffcdb9a2772303ded8d969f82588f4d79bdd7ac9c4533d4d5f8fb96e797dcb6",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "type": "boolean",
+         "default": false,
+         "description": "Whether to include an example image"
+        }
+       },
+       "required": [
+        "messageType"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getResourceReference",
+     "digest": "a036a43d012aaeda5d30813e1d2b313248ef7bacd2f38d90b5801887cb8a496f",
+     "summary": {
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "resourceId": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 100,
+         "description": "ID of the resource to reference (1-100)"
+        }
+       },
+       "required": [
+        "resourceId"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 17.7,
+   "date": "2025-04-08"
+  },
+  "2025.4.25": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "printEnv",
+     "digest": "ae11ecf6af73a63ecce43ce4b2e80d106e64af8fced21edf10c46ecc52c7d071",
+     "summary": {
+      "description": "Prints all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "annotatedMessage",
+     "digest": "0ffcdb9a2772303ded8d969f82588f4d79bdd7ac9c4533d4d5f8fb96e797dcb6",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "type": "boolean",
+         "default": false,
+         "description": "Whether to include an example image"
+        }
+       },
+       "required": [
+        "messageType"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getResourceReference",
+     "digest": "a036a43d012aaeda5d30813e1d2b313248ef7bacd2f38d90b5801887cb8a496f",
+     "summary": {
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "resourceId": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 100,
+         "description": "ID of the resource to reference (1-100)"
+        }
+       },
+       "required": [
+        "resourceId"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 12.7,
+   "date": "2025-04-25"
+  },
+  "2025.4.28": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "printEnv",
+     "digest": "ae11ecf6af73a63ecce43ce4b2e80d106e64af8fced21edf10c46ecc52c7d071",
+     "summary": {
+      "description": "Prints all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "annotatedMessage",
+     "digest": "0ffcdb9a2772303ded8d969f82588f4d79bdd7ac9c4533d4d5f8fb96e797dcb6",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "type": "boolean",
+         "default": false,
+         "description": "Whether to include an example image"
+        }
+       },
+       "required": [
+        "messageType"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getResourceReference",
+     "digest": "a036a43d012aaeda5d30813e1d2b313248ef7bacd2f38d90b5801887cb8a496f",
+     "summary": {
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "resourceId": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 100,
+         "description": "ID of the resource to reference (1-100)"
+        }
+       },
+       "required": [
+        "resourceId"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 7.9,
+   "date": "2025-04-28"
+  },
+  "2025.5.12": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "printEnv",
+     "digest": "ae11ecf6af73a63ecce43ce4b2e80d106e64af8fced21edf10c46ecc52c7d071",
+     "summary": {
+      "description": "Prints all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "annotatedMessage",
+     "digest": "0ffcdb9a2772303ded8d969f82588f4d79bdd7ac9c4533d4d5f8fb96e797dcb6",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "type": "boolean",
+         "default": false,
+         "description": "Whether to include an example image"
+        }
+       },
+       "required": [
+        "messageType"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getResourceReference",
+     "digest": "a036a43d012aaeda5d30813e1d2b313248ef7bacd2f38d90b5801887cb8a496f",
+     "summary": {
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "resourceId": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 100,
+         "description": "ID of the resource to reference (1-100)"
+        }
+       },
+       "required": [
+        "resourceId"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 58.9,
+   "date": "2025-05-12"
+  },
+  "2025.7.1": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "printEnv",
+     "digest": "ae11ecf6af73a63ecce43ce4b2e80d106e64af8fced21edf10c46ecc52c7d071",
+     "summary": {
+      "description": "Prints all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "annotatedMessage",
+     "digest": "0ffcdb9a2772303ded8d969f82588f4d79bdd7ac9c4533d4d5f8fb96e797dcb6",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "type": "boolean",
+         "default": false,
+         "description": "Whether to include an example image"
+        }
+       },
+       "required": [
+        "messageType"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getResourceReference",
+     "digest": "a036a43d012aaeda5d30813e1d2b313248ef7bacd2f38d90b5801887cb8a496f",
+     "summary": {
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "resourceId": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 100,
+         "description": "ID of the resource to reference (1-100)"
+        }
+       },
+       "required": [
+        "resourceId"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 55.4,
+   "date": "2025-07-01"
+  },
+  "2025.7.29": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "printEnv",
+     "digest": "ae11ecf6af73a63ecce43ce4b2e80d106e64af8fced21edf10c46ecc52c7d071",
+     "summary": {
+      "description": "Prints all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "annotatedMessage",
+     "digest": "0ffcdb9a2772303ded8d969f82588f4d79bdd7ac9c4533d4d5f8fb96e797dcb6",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "type": "boolean",
+         "default": false,
+         "description": "Whether to include an example image"
+        }
+       },
+       "required": [
+        "messageType"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getResourceReference",
+     "digest": "a036a43d012aaeda5d30813e1d2b313248ef7bacd2f38d90b5801887cb8a496f",
+     "summary": {
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "resourceId": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 100,
+         "description": "ID of the resource to reference (1-100)"
+        }
+       },
+       "required": [
+        "resourceId"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "startElicitation",
+     "digest": "3279587a10811109cb037a3feeff8901cd9b0b5f640498db2a5254ad7a629da2",
+     "summary": {
+      "description": "Demonstrates the Elicitation feature by asking the user to provide information about their favorite color, number, and pets.",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getResourceLinks",
+     "digest": "35615316db28103c4f053c23497f8055f17930c148c63cffcb6d851a4890ae54",
+     "summary": {
+      "description": "Returns multiple resource links that reference different types of resources",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "count": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 10,
+         "default": 3,
+         "description": "Number of resource links to return (1-10)"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "structuredContent",
+     "digest": "1b00a7a454714a46230cd9a336d802c0e6568fd16bebf6b08dfedd0ac741d80b",
+     "summary": {
+      "description": "Returns structured content along with an output schema for client data validation",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "location": {
+         "type": "string",
+         "minLength": 1,
+         "description": "City name or zip code"
+        }
+       },
+       "required": [
+        "location"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 35.3,
+   "date": "2025-07-31"
+  },
+  "2025.8.4": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "printEnv",
+     "digest": "ae11ecf6af73a63ecce43ce4b2e80d106e64af8fced21edf10c46ecc52c7d071",
+     "summary": {
+      "description": "Prints all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "annotatedMessage",
+     "digest": "0ffcdb9a2772303ded8d969f82588f4d79bdd7ac9c4533d4d5f8fb96e797dcb6",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "type": "boolean",
+         "default": false,
+         "description": "Whether to include an example image"
+        }
+       },
+       "required": [
+        "messageType"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getResourceReference",
+     "digest": "a036a43d012aaeda5d30813e1d2b313248ef7bacd2f38d90b5801887cb8a496f",
+     "summary": {
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "resourceId": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 100,
+         "description": "ID of the resource to reference (1-100)"
+        }
+       },
+       "required": [
+        "resourceId"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "startElicitation",
+     "digest": "3279587a10811109cb037a3feeff8901cd9b0b5f640498db2a5254ad7a629da2",
+     "summary": {
+      "description": "Demonstrates the Elicitation feature by asking the user to provide information about their favorite color, number, and pets.",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getResourceLinks",
+     "digest": "35615316db28103c4f053c23497f8055f17930c148c63cffcb6d851a4890ae54",
+     "summary": {
+      "description": "Returns multiple resource links that reference different types of resources",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "count": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 10,
+         "default": 3,
+         "description": "Number of resource links to return (1-10)"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "structuredContent",
+     "digest": "1b00a7a454714a46230cd9a336d802c0e6568fd16bebf6b08dfedd0ac741d80b",
+     "summary": {
+      "description": "Returns structured content along with an output schema for client data validation",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "location": {
+         "type": "string",
+         "minLength": 1,
+         "description": "City name or zip code"
+        }
+       },
+       "required": [
+        "location"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 49.1,
+   "date": "2025-08-04"
+  },
+  "2025.8.18": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "a99e11b1e162ec1f9c3275962cf6c3970b3009d423f3801b25b7e3c7314dcacc",
+     "summary": {
+      "description": "Echoes back the input",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "add",
+     "digest": "b5fca9b2d8e5158ea4461bd3fba702e5ce4417d5fc2f2fdcbbff50a2a314ac69",
+     "summary": {
+      "description": "Adds two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "longRunningOperation",
+     "digest": "5f16cc72fd3799c376bb77e8f2b5a996a1d30afc437f48f9d8212f0186660f82",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "printEnv",
+     "digest": "ae11ecf6af73a63ecce43ce4b2e80d106e64af8fced21edf10c46ecc52c7d071",
+     "summary": {
+      "description": "Prints all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "sampleLLM",
+     "digest": "9093242e9a2e16b7f34161ae8d89a44efbb6eeeaafe2673c6acfa5f18c7af355",
+     "summary": {
+      "description": "Samples from an LLM using MCP's sampling feature",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "prompt": {
+         "type": "string",
+         "description": "The prompt to send to the LLM"
+        },
+        "maxTokens": {
+         "type": "number",
+         "default": 100,
+         "description": "Maximum number of tokens to generate"
+        }
+       },
+       "required": [
+        "prompt"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getTinyImage",
+     "digest": "29215951073b0c2330dc5b58daef33ec62e06c7d0174b2c68fe68a9a05cd3846",
+     "summary": {
+      "description": "Returns the MCP_TINY_IMAGE",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "annotatedMessage",
+     "digest": "0ffcdb9a2772303ded8d969f82588f4d79bdd7ac9c4533d4d5f8fb96e797dcb6",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "type": "boolean",
+         "default": false,
+         "description": "Whether to include an example image"
+        }
+       },
+       "required": [
+        "messageType"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getResourceReference",
+     "digest": "a036a43d012aaeda5d30813e1d2b313248ef7bacd2f38d90b5801887cb8a496f",
+     "summary": {
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "resourceId": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 100,
+         "description": "ID of the resource to reference (1-100)"
+        }
+       },
+       "required": [
+        "resourceId"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "startElicitation",
+     "digest": "3279587a10811109cb037a3feeff8901cd9b0b5f640498db2a5254ad7a629da2",
+     "summary": {
+      "description": "Demonstrates the Elicitation feature by asking the user to provide information about their favorite color, number, and pets.",
+      "schema": {
+       "type": "object",
+       "properties": {},
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "getResourceLinks",
+     "digest": "35615316db28103c4f053c23497f8055f17930c148c63cffcb6d851a4890ae54",
+     "summary": {
+      "description": "Returns multiple resource links that reference different types of resources",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "count": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 10,
+         "default": 3,
+         "description": "Number of resource links to return (1-10)"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "structuredContent",
+     "digest": "1b00a7a454714a46230cd9a336d802c0e6568fd16bebf6b08dfedd0ac741d80b",
+     "summary": {
+      "description": "Returns structured content along with an output schema for client data validation",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "location": {
+         "type": "string",
+         "minLength": 1,
+         "description": "City name or zip code"
+        }
+       },
+       "required": [
+        "location"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 18.5,
+   "date": "2025-08-18"
+  },
+  "2025.9.12": {
+   "error": "tools/list error: {'code': -32603, 'message': \"Cannot read properties of undefined (reading 'roots')\"}",
+   "stderr": "Starting default (STDIO) server...\nStarting logs update interval\n",
+   "seconds": 22.0,
+   "date": "2025-09-15"
+  },
+  "2025.9.24": {
+   "error": "tools/list error: {'code': -32603, 'message': \"Cannot read properties of undefined (reading 'roots')\"}",
+   "stderr": "Starting default (STDIO) server...\nStarting logs update interval\n",
+   "seconds": 16.7,
+   "date": "2025-09-25"
+  },
+  "2025.9.25": {
+   "error": "tools/list error: {'code': -32603, 'message': \"Cannot read properties of undefined (reading 'roots')\"}",
+   "stderr": "Starting default (STDIO) server...\nStarting logs update interval\n",
+   "seconds": 7.7,
+   "date": "2025-09-25"
+  },
+  "2025.11.25": {
+   "error": "tools/list error: {'code': -32603, 'message': \"Cannot read properties of undefined (reading 'roots')\"}",
+   "stderr": "Starting default (STDIO) server...\nStarting logs update interval\n",
+   "seconds": 18.5,
+   "date": "2025-11-25"
+  },
+  "2025.12.18": {
+   "error": "tools/list error: {'code': -32603, 'message': \"Cannot read properties of undefined (reading 'roots')\"}",
+   "stderr": "Starting default (STDIO) server...\nStarting logs update interval\n",
+   "seconds": 10.7,
+   "date": "2025-12-18"
+  },
+  "2026.1.14": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "00ee33e0bb88cdfd69d94da8e66f337d4377f7a8108539d63b2e99a14328df66",
+     "summary": {
+      "description": "Echoes back the input string",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-annotated-message",
+     "digest": "48e7736fc943064040f8168962cd25004b7a973574c1894a14a7f32a5c7645c6",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content.",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "type": "boolean",
+         "default": false,
+         "description": "Whether to include an example image"
+        }
+       },
+       "required": [
+        "messageType"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-env",
+     "digest": "839c93275769e7a40d37fb372524a40994f14cf0f9a87cc4995ed71cd82d971e",
+     "summary": {
+      "description": "Returns all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-resource-links",
+     "digest": "5a77e281edd554654b903e48315b87b3deef402e2cf2a6af5692b81c9a2ef621",
+     "summary": {
+      "description": "Returns up to ten resource links that reference different types of resources",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "count": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 10,
+         "default": 3,
+         "description": "Number of resource links to return (1-10)"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-resource-reference",
+     "digest": "8266547e986b47482dd25740edb95d1f790ed80b626d648946b0e4210f9ddc01",
+     "summary": {
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "resourceType": {
+         "type": "string",
+         "enum": [
+          "Text",
+          "Blob"
+         ],
+         "default": "Text"
+        },
+        "resourceId": {
+         "type": "number",
+         "default": 1,
+         "description": "ID of the text resource to fetch"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-structured-content",
+     "digest": "b8984d30cf07338b217a214b2612742519b751d89804afb7a3b1e71c08fccc45",
+     "summary": {
+      "description": "Returns structured content along with an output schema for client data validation",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "location": {
+         "type": "string",
+         "enum": [
+          "New York",
+          "Chicago",
+          "Los Angeles"
+         ],
+         "description": "Choose city"
+        }
+       },
+       "required": [
+        "location"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-sum",
+     "digest": "8601e336fe6521ed7ebdf0508a89cac95a90ee23257f1a2cccc0371ed7a8a3ff",
+     "summary": {
+      "description": "Returns the sum of two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-tiny-image",
+     "digest": "95eed4e4c1e0c267235c53c74d356cd9514a0588c3b31394e3f2a7064126463d",
+     "summary": {
+      "description": "Returns a tiny MCP logo image.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "gzip-file-as-resource",
+     "digest": "71b064ee791803c9a369dfa7c05f55e45032c14973acdecf40d0c9ff6367ea10",
+     "summary": {
+      "description": "Compresses a single file using gzip compression. Depending upon the selected output type, returns either the compressed data as a gzipped resource or a resource link, allowing it to be downloaded in a subsequent request during the current session.",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "name": {
+         "type": "string",
+         "description": "Name of the output file",
+         "default": "README.md.gz"
+        },
+        "data": {
+         "type": "string",
+         "format": "uri",
+         "description": "URL or data URI of the file content to compress",
+         "default": "https://raw.githubusercontent.com/modelcontextprotocol/servers/refs/heads/main/README.md"
+        },
+        "outputType": {
+         "type": "string",
+         "enum": [
+          "resourceLink",
+          "resource"
+         ],
+         "default": "resourceLink",
+         "description": "How the resulting gzipped file should be returned. 'resourceLink' returns a link to a resource that can be read later, 'resource' returns a full resource object."
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "toggle-simulated-logging",
+     "digest": "3a98a5fb6f9db00658064a14b89010c215089ad5dac613086c5a6c6873f7b942",
+     "summary": {
+      "description": "Toggles simulated, random-leveled logging on or off.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "toggle-subscriber-updates",
+     "digest": "02d6254eabe12115c49ca739bc65494a8c85667474f67357b82609603a6122c8",
+     "summary": {
+      "description": "Toggles simulated resource subscription updates on or off.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "trigger-long-running-operation",
+     "digest": "7196ae5e46fe984aeffae873c9708d9aedba37e9c1cdbd755df6f15aec2fced4",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates.",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 9.2,
+   "date": "2026-01-14"
+  },
+  "2026.1.26": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "00ee33e0bb88cdfd69d94da8e66f337d4377f7a8108539d63b2e99a14328df66",
+     "summary": {
+      "description": "Echoes back the input string",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-annotated-message",
+     "digest": "48e7736fc943064040f8168962cd25004b7a973574c1894a14a7f32a5c7645c6",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content.",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "type": "boolean",
+         "default": false,
+         "description": "Whether to include an example image"
+        }
+       },
+       "required": [
+        "messageType"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-env",
+     "digest": "839c93275769e7a40d37fb372524a40994f14cf0f9a87cc4995ed71cd82d971e",
+     "summary": {
+      "description": "Returns all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-resource-links",
+     "digest": "5a77e281edd554654b903e48315b87b3deef402e2cf2a6af5692b81c9a2ef621",
+     "summary": {
+      "description": "Returns up to ten resource links that reference different types of resources",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "count": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 10,
+         "default": 3,
+         "description": "Number of resource links to return (1-10)"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-resource-reference",
+     "digest": "8266547e986b47482dd25740edb95d1f790ed80b626d648946b0e4210f9ddc01",
+     "summary": {
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "resourceType": {
+         "type": "string",
+         "enum": [
+          "Text",
+          "Blob"
+         ],
+         "default": "Text"
+        },
+        "resourceId": {
+         "type": "number",
+         "default": 1,
+         "description": "ID of the text resource to fetch"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-structured-content",
+     "digest": "b8984d30cf07338b217a214b2612742519b751d89804afb7a3b1e71c08fccc45",
+     "summary": {
+      "description": "Returns structured content along with an output schema for client data validation",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "location": {
+         "type": "string",
+         "enum": [
+          "New York",
+          "Chicago",
+          "Los Angeles"
+         ],
+         "description": "Choose city"
+        }
+       },
+       "required": [
+        "location"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-sum",
+     "digest": "8601e336fe6521ed7ebdf0508a89cac95a90ee23257f1a2cccc0371ed7a8a3ff",
+     "summary": {
+      "description": "Returns the sum of two numbers",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-tiny-image",
+     "digest": "95eed4e4c1e0c267235c53c74d356cd9514a0588c3b31394e3f2a7064126463d",
+     "summary": {
+      "description": "Returns a tiny MCP logo image.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "gzip-file-as-resource",
+     "digest": "71b064ee791803c9a369dfa7c05f55e45032c14973acdecf40d0c9ff6367ea10",
+     "summary": {
+      "description": "Compresses a single file using gzip compression. Depending upon the selected output type, returns either the compressed data as a gzipped resource or a resource link, allowing it to be downloaded in a subsequent request during the current session.",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "name": {
+         "type": "string",
+         "description": "Name of the output file",
+         "default": "README.md.gz"
+        },
+        "data": {
+         "type": "string",
+         "format": "uri",
+         "description": "URL or data URI of the file content to compress",
+         "default": "https://raw.githubusercontent.com/modelcontextprotocol/servers/refs/heads/main/README.md"
+        },
+        "outputType": {
+         "type": "string",
+         "enum": [
+          "resourceLink",
+          "resource"
+         ],
+         "default": "resourceLink",
+         "description": "How the resulting gzipped file should be returned. 'resourceLink' returns a link to a resource that can be read later, 'resource' returns a full resource object."
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "toggle-simulated-logging",
+     "digest": "3a98a5fb6f9db00658064a14b89010c215089ad5dac613086c5a6c6873f7b942",
+     "summary": {
+      "description": "Toggles simulated, random-leveled logging on or off.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "toggle-subscriber-updates",
+     "digest": "02d6254eabe12115c49ca739bc65494a8c85667474f67357b82609603a6122c8",
+     "summary": {
+      "description": "Toggles simulated resource subscription updates on or off.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "trigger-long-running-operation",
+     "digest": "7196ae5e46fe984aeffae873c9708d9aedba37e9c1cdbd755df6f15aec2fced4",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates.",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "duration": {
+         "type": "number",
+         "default": 10,
+         "description": "Duration of the operation in seconds"
+        },
+        "steps": {
+         "type": "number",
+         "default": 5,
+         "description": "Number of steps in the operation"
+        }
+       },
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "simulate-research-query",
+     "digest": "26700362602a3fe3c9c47e51239476371e8a1b3dca8e9b2ce7a04dbcf41c24c1",
+     "summary": {
+      "description": "Simulates a deep research operation that gathers, analyzes, and synthesizes information. Demonstrates MCP task-based operations with progress through multiple stages. If 'ambiguous' is true and client supports elicitation, sends an elicitation request for clarification.",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "topic": {
+         "type": "string",
+         "description": "The research topic to investigate"
+        },
+        "ambiguous": {
+         "type": "boolean",
+         "default": false,
+         "description": "Simulate an ambiguous query that requires clarification (triggers input_required status)"
+        }
+       },
+       "required": [
+        "topic"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 39.3,
+   "date": "2026-01-27"
+  },
+  "2026.7.4": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "18a4d0209f5a9db58b88ec3576b51e98619aec45fa5fd3c3ea2016dc3a9b1133",
+     "summary": {
+      "description": "Echoes back the input string",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-annotated-message",
+     "digest": "1e3c2aebeb0768e930c57e58e1c66dffde5efcde5e49ce5953f4cd678bb53885",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "default": false,
+         "description": "Whether to include an example image",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "messageType"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-env",
+     "digest": "839c93275769e7a40d37fb372524a40994f14cf0f9a87cc4995ed71cd82d971e",
+     "summary": {
+      "description": "Returns all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-resource-links",
+     "digest": "c90a3c299812c79975780cababee9402fef0d98eac577c286cd5a4b7667887b5",
+     "summary": {
+      "description": "Returns up to ten resource links that reference different types of resources",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "count": {
+         "default": 3,
+         "description": "Number of resource links to return (1-10)",
+         "type": "number",
+         "minimum": 1,
+         "maximum": 10
+        }
+       }
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-resource-reference",
+     "digest": "e5d681c9bc1359c36c8ac137e2e4f8c0c739816db8e0926fd949b92e8568f46b",
+     "summary": {
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "resourceType": {
+         "default": "Text",
+         "type": "string",
+         "enum": [
+          "Text",
+          "Blob"
+         ]
+        },
+        "resourceId": {
+         "default": 1,
+         "description": "ID of the text resource to fetch",
+         "type": "number"
+        }
+       }
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-structured-content",
+     "digest": "26fd30d9f2bc1333a328536b8baaaadb0ca90ece6a28777fe591578043382fdc",
+     "summary": {
+      "description": "Returns structured content along with an output schema for client data validation",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "location": {
+         "type": "string",
+         "enum": [
+          "New York",
+          "Chicago",
+          "Los Angeles"
+         ],
+         "description": "Choose city"
+        }
+       },
+       "required": [
+        "location"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-sum",
+     "digest": "1d5d349baa307182b88497a1d62127187d8ca9bc79822b5c21da4f0fd3001f05",
+     "summary": {
+      "description": "Returns the sum of two numbers",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-tiny-image",
+     "digest": "95eed4e4c1e0c267235c53c74d356cd9514a0588c3b31394e3f2a7064126463d",
+     "summary": {
+      "description": "Returns a tiny MCP logo image.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "gzip-file-as-resource",
+     "digest": "e2ba95495f58cc5cb00d19af6ef2558bc9cc8288dafafc8bb80fa7b143f8f454",
+     "summary": {
+      "description": "Compresses a single file using gzip compression. Depending upon the selected output type, returns either the compressed data as a gzipped resource or a resource link, allowing it to be downloaded in a subsequent request during the current session.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "name": {
+         "default": "README.md.gz",
+         "type": "string",
+         "description": "Name of the output file"
+        },
+        "data": {
+         "default": "https://raw.githubusercontent.com/modelcontextprotocol/servers/refs/heads/main/README.md",
+         "type": "string",
+         "format": "uri",
+         "description": "URL or data URI of the file content to compress"
+        },
+        "outputType": {
+         "default": "resourceLink",
+         "description": "How the resulting gzipped file should be returned. 'resourceLink' returns a link to a resource that can be read later, 'resource' returns a full resource object.",
+         "type": "string",
+         "enum": [
+          "resourceLink",
+          "resource"
+         ]
+        }
+       }
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "toggle-simulated-logging",
+     "digest": "3a98a5fb6f9db00658064a14b89010c215089ad5dac613086c5a6c6873f7b942",
+     "summary": {
+      "description": "Toggles simulated, random-leveled logging on or off.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "toggle-subscriber-updates",
+     "digest": "02d6254eabe12115c49ca739bc65494a8c85667474f67357b82609603a6122c8",
+     "summary": {
+      "description": "Toggles simulated resource subscription updates on or off.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "trigger-long-running-operation",
+     "digest": "13b34284ab1e409a91206ecc046871744c97a9e06c5306f2acac355ae74644da",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "duration": {
+         "default": 10,
+         "description": "Duration of the operation in seconds",
+         "type": "number"
+        },
+        "steps": {
+         "default": 5,
+         "description": "Number of steps in the operation",
+         "type": "number"
+        }
+       }
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "simulate-research-query",
+     "digest": "5f15a703e99673b910175d896067d3c95b2cf834e41ddb9da30859bbc8c4c871",
+     "summary": {
+      "description": "Simulates a deep research operation that gathers, analyzes, and synthesizes information. Demonstrates MCP task-based operations with progress through multiple stages. If 'ambiguous' is true and client supports elicitation, sends an elicitation request for clarification.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "topic": {
+         "type": "string",
+         "description": "The research topic to investigate"
+        },
+        "ambiguous": {
+         "default": false,
+         "description": "Simulate an ambiguous query that requires clarification (triggers input_required status)",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "topic"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 40.1,
+   "date": "2026-07-04"
+  },
+  "2026.8.18": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "18a4d0209f5a9db58b88ec3576b51e98619aec45fa5fd3c3ea2016dc3a9b1133",
+     "summary": {
+      "description": "Echoes back the input string",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-annotated-message",
+     "digest": "1e3c2aebeb0768e930c57e58e1c66dffde5efcde5e49ce5953f4cd678bb53885",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "default": false,
+         "description": "Whether to include an example image",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "messageType"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-env",
+     "digest": "839c93275769e7a40d37fb372524a40994f14cf0f9a87cc4995ed71cd82d971e",
+     "summary": {
+      "description": "Returns all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-resource-links",
+     "digest": "c90a3c299812c79975780cababee9402fef0d98eac577c286cd5a4b7667887b5",
+     "summary": {
+      "description": "Returns up to ten resource links that reference different types of resources",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "count": {
+         "default": 3,
+         "description": "Number of resource links to return (1-10)",
+         "type": "number",
+         "minimum": 1,
+         "maximum": 10
+        }
+       }
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-resource-reference",
+     "digest": "e5d681c9bc1359c36c8ac137e2e4f8c0c739816db8e0926fd949b92e8568f46b",
+     "summary": {
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "resourceType": {
+         "default": "Text",
+         "type": "string",
+         "enum": [
+          "Text",
+          "Blob"
+         ]
+        },
+        "resourceId": {
+         "default": 1,
+         "description": "ID of the text resource to fetch",
+         "type": "number"
+        }
+       }
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-structured-content",
+     "digest": "26fd30d9f2bc1333a328536b8baaaadb0ca90ece6a28777fe591578043382fdc",
+     "summary": {
+      "description": "Returns structured content along with an output schema for client data validation",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "location": {
+         "type": "string",
+         "enum": [
+          "New York",
+          "Chicago",
+          "Los Angeles"
+         ],
+         "description": "Choose city"
+        }
+       },
+       "required": [
+        "location"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-sum",
+     "digest": "1d5d349baa307182b88497a1d62127187d8ca9bc79822b5c21da4f0fd3001f05",
+     "summary": {
+      "description": "Returns the sum of two numbers",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-tiny-image",
+     "digest": "95eed4e4c1e0c267235c53c74d356cd9514a0588c3b31394e3f2a7064126463d",
+     "summary": {
+      "description": "Returns a tiny MCP logo image.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "gzip-file-as-resource",
+     "digest": "e2ba95495f58cc5cb00d19af6ef2558bc9cc8288dafafc8bb80fa7b143f8f454",
+     "summary": {
+      "description": "Compresses a single file using gzip compression. Depending upon the selected output type, returns either the compressed data as a gzipped resource or a resource link, allowing it to be downloaded in a subsequent request during the current session.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "name": {
+         "default": "README.md.gz",
+         "type": "string",
+         "description": "Name of the output file"
+        },
+        "data": {
+         "default": "https://raw.githubusercontent.com/modelcontextprotocol/servers/refs/heads/main/README.md",
+         "type": "string",
+         "format": "uri",
+         "description": "URL or data URI of the file content to compress"
+        },
+        "outputType": {
+         "default": "resourceLink",
+         "description": "How the resulting gzipped file should be returned. 'resourceLink' returns a link to a resource that can be read later, 'resource' returns a full resource object.",
+         "type": "string",
+         "enum": [
+          "resourceLink",
+          "resource"
+         ]
+        }
+       }
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "toggle-simulated-logging",
+     "digest": "3a98a5fb6f9db00658064a14b89010c215089ad5dac613086c5a6c6873f7b942",
+     "summary": {
+      "description": "Toggles simulated, random-leveled logging on or off.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "toggle-subscriber-updates",
+     "digest": "02d6254eabe12115c49ca739bc65494a8c85667474f67357b82609603a6122c8",
+     "summary": {
+      "description": "Toggles simulated resource subscription updates on or off.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "trigger-long-running-operation",
+     "digest": "13b34284ab1e409a91206ecc046871744c97a9e06c5306f2acac355ae74644da",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "duration": {
+         "default": 10,
+         "description": "Duration of the operation in seconds",
+         "type": "number"
+        },
+        "steps": {
+         "default": 5,
+         "description": "Number of steps in the operation",
+         "type": "number"
+        }
+       }
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "simulate-research-query",
+     "digest": "5f15a703e99673b910175d896067d3c95b2cf834e41ddb9da30859bbc8c4c871",
+     "summary": {
+      "description": "Simulates a deep research operation that gathers, analyzes, and synthesizes information. Demonstrates MCP task-based operations with progress through multiple stages. If 'ambiguous' is true and client supports elicitation, sends an elicitation request for clarification.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "topic": {
+         "type": "string",
+         "description": "The research topic to investigate"
+        },
+        "ambiguous": {
+         "default": false,
+         "description": "Simulate an ambiguous query that requires clarification (triggers input_required status)",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "topic"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 44.6,
+   "date": "2026-08-18"
+  },
+  "2026.8.31": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "echo",
+     "digest": "18a4d0209f5a9db58b88ec3576b51e98619aec45fa5fd3c3ea2016dc3a9b1133",
+     "summary": {
+      "description": "Echoes back the input string",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "message": {
+         "type": "string",
+         "description": "Message to echo"
+        }
+       },
+       "required": [
+        "message"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-annotated-message",
+     "digest": "1e3c2aebeb0768e930c57e58e1c66dffde5efcde5e49ce5953f4cd678bb53885",
+     "summary": {
+      "description": "Demonstrates how annotations can be used to provide metadata about content.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "messageType": {
+         "type": "string",
+         "enum": [
+          "error",
+          "success",
+          "debug"
+         ],
+         "description": "Type of message to demonstrate different annotation patterns"
+        },
+        "includeImage": {
+         "default": false,
+         "description": "Whether to include an example image",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "messageType"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-env",
+     "digest": "839c93275769e7a40d37fb372524a40994f14cf0f9a87cc4995ed71cd82d971e",
+     "summary": {
+      "description": "Returns all environment variables, helpful for debugging MCP server configuration",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-resource-links",
+     "digest": "c90a3c299812c79975780cababee9402fef0d98eac577c286cd5a4b7667887b5",
+     "summary": {
+      "description": "Returns up to ten resource links that reference different types of resources",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "count": {
+         "default": 3,
+         "description": "Number of resource links to return (1-10)",
+         "type": "number",
+         "minimum": 1,
+         "maximum": 10
+        }
+       }
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-resource-reference",
+     "digest": "e5d681c9bc1359c36c8ac137e2e4f8c0c739816db8e0926fd949b92e8568f46b",
+     "summary": {
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "resourceType": {
+         "default": "Text",
+         "type": "string",
+         "enum": [
+          "Text",
+          "Blob"
+         ]
+        },
+        "resourceId": {
+         "default": 1,
+         "description": "ID of the text resource to fetch",
+         "type": "number"
+        }
+       }
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-structured-content",
+     "digest": "26fd30d9f2bc1333a328536b8baaaadb0ca90ece6a28777fe591578043382fdc",
+     "summary": {
+      "description": "Returns structured content along with an output schema for client data validation",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "location": {
+         "type": "string",
+         "enum": [
+          "New York",
+          "Chicago",
+          "Los Angeles"
+         ],
+         "description": "Choose city"
+        }
+       },
+       "required": [
+        "location"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-sum",
+     "digest": "1d5d349baa307182b88497a1d62127187d8ca9bc79822b5c21da4f0fd3001f05",
+     "summary": {
+      "description": "Returns the sum of two numbers",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "number",
+         "description": "First number"
+        },
+        "b": {
+         "type": "number",
+         "description": "Second number"
+        }
+       },
+       "required": [
+        "a",
+        "b"
+       ]
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "get-tiny-image",
+     "digest": "95eed4e4c1e0c267235c53c74d356cd9514a0588c3b31394e3f2a7064126463d",
+     "summary": {
+      "description": "Returns a tiny MCP logo image.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "gzip-file-as-resource",
+     "digest": "e2ba95495f58cc5cb00d19af6ef2558bc9cc8288dafafc8bb80fa7b143f8f454",
+     "summary": {
+      "description": "Compresses a single file using gzip compression. Depending upon the selected output type, returns either the compressed data as a gzipped resource or a resource link, allowing it to be downloaded in a subsequent request during the current session.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "name": {
+         "default": "README.md.gz",
+         "type": "string",
+         "description": "Name of the output file"
+        },
+        "data": {
+         "default": "https://raw.githubusercontent.com/modelcontextprotocol/servers/refs/heads/main/README.md",
+         "type": "string",
+         "format": "uri",
+         "description": "URL or data URI of the file content to compress"
+        },
+        "outputType": {
+         "default": "resourceLink",
+         "description": "How the resulting gzipped file should be returned. 'resourceLink' returns a link to a resource that can be read later, 'resource' returns a full resource object.",
+         "type": "string",
+         "enum": [
+          "resourceLink",
+          "resource"
+         ]
+        }
+       }
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "toggle-simulated-logging",
+     "digest": "3a98a5fb6f9db00658064a14b89010c215089ad5dac613086c5a6c6873f7b942",
+     "summary": {
+      "description": "Toggles simulated, random-leveled logging on or off.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "toggle-subscriber-updates",
+     "digest": "02d6254eabe12115c49ca739bc65494a8c85667474f67357b82609603a6122c8",
+     "summary": {
+      "description": "Toggles simulated resource subscription updates on or off.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {}
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "trigger-long-running-operation",
+     "digest": "13b34284ab1e409a91206ecc046871744c97a9e06c5306f2acac355ae74644da",
+     "summary": {
+      "description": "Demonstrates a long running operation with progress updates.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "duration": {
+         "default": 10,
+         "description": "Duration of the operation in seconds",
+         "type": "number"
+        },
+        "steps": {
+         "default": 5,
+         "description": "Number of steps in the operation",
+         "type": "number"
+        }
+       }
+      },
+      "version": null
+     }
+    },
+    {
+     "kind": "tool",
+     "name": "simulate-research-query",
+     "digest": "5f15a703e99673b910175d896067d3c95b2cf834e41ddb9da30859bbc8c4c871",
+     "summary": {
+      "description": "Simulates a deep research operation that gathers, analyzes, and synthesizes information. Demonstrates MCP task-based operations with progress through multiple stages. If 'ambiguous' is true and client supports elicitation, sends an elicitation request for clarification.",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "topic": {
+         "type": "string",
+         "description": "The research topic to investigate"
+        },
+        "ambiguous": {
+         "default": false,
+         "description": "Simulate an ambiguous query that requires clarification (triggers input_required status)",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "topic"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 23.0,
+   "date": "2026-08-31"
+  }
+ }
+}

@@ -1,0 +1,629 @@
+{
+ "package": "@modelcontextprotocol/server-sequential-thinking",
+ "args": [],
+ "versions": {
+  "0.5.1": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "sequentialthinking",
+     "digest": "b5c553c89d20461ceded576e5a35e6f44af62536da4ec61a754cda0a9b24cc87",
+     "summary": {
+      "description": "A detailed tool for dynamic and reflective problem-solving through thoughts.\nThis tool helps analyze problems through a flexible thinking process that can adapt and evolve.\nEach thought can build on, question, or revise previous insights as understanding deepens.\n\nWhen to use this tool:\n- Breaking down complex problems into steps\n- Planning and design with room for revision\n- Analysis that might need course correction\n- Problems where the full scope might not be clear initially\n- Problems that require a multi-step solution\n- Tasks that need to maintain context over multiple steps\n- Situations ",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "thought": {
+         "type": "string",
+         "description": "Your current thinking step"
+        },
+        "nextThoughtNeeded": {
+         "type": "boolean",
+         "description": "Whether another thought step is needed"
+        },
+        "thoughtNumber": {
+         "type": "integer",
+         "description": "Current thought number",
+         "minimum": 1
+        },
+        "totalThoughts": {
+         "type": "integer",
+         "description": "Estimated total thoughts needed",
+         "minimum": 1
+        },
+        "isRevision": {
+         "type": "boolean",
+         "description": "Whether this revises previous thinking"
+        },
+        "revisesThought": {
+         "type": "integer",
+         "description": "Which thought is being reconsidered",
+         "minimum": 1
+        },
+        "branchFromThought": {
+         "type": "integer",
+         "description": "Branching point thought number",
+         "minimum": 1
+        },
+        "branchId": {
+         "type": "string",
+         "description": "Branch identifier"
+        },
+        "needsMoreThoughts": {
+         "type": "boolean",
+         "description": "If more thoughts are needed"
+        }
+       },
+       "required": [
+        "thought",
+        "nextThoughtNeeded",
+        "thoughtNumber",
+        "totalThoughts"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 13.1,
+   "date": "2024-12-03"
+  },
+  "0.6.0": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "sequentialthinking",
+     "digest": "b5c553c89d20461ceded576e5a35e6f44af62536da4ec61a754cda0a9b24cc87",
+     "summary": {
+      "description": "A detailed tool for dynamic and reflective problem-solving through thoughts.\nThis tool helps analyze problems through a flexible thinking process that can adapt and evolve.\nEach thought can build on, question, or revise previous insights as understanding deepens.\n\nWhen to use this tool:\n- Breaking down complex problems into steps\n- Planning and design with room for revision\n- Analysis that might need course correction\n- Problems where the full scope might not be clear initially\n- Problems that require a multi-step solution\n- Tasks that need to maintain context over multiple steps\n- Situations ",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "thought": {
+         "type": "string",
+         "description": "Your current thinking step"
+        },
+        "nextThoughtNeeded": {
+         "type": "boolean",
+         "description": "Whether another thought step is needed"
+        },
+        "thoughtNumber": {
+         "type": "integer",
+         "description": "Current thought number",
+         "minimum": 1
+        },
+        "totalThoughts": {
+         "type": "integer",
+         "description": "Estimated total thoughts needed",
+         "minimum": 1
+        },
+        "isRevision": {
+         "type": "boolean",
+         "description": "Whether this revises previous thinking"
+        },
+        "revisesThought": {
+         "type": "integer",
+         "description": "Which thought is being reconsidered",
+         "minimum": 1
+        },
+        "branchFromThought": {
+         "type": "integer",
+         "description": "Branching point thought number",
+         "minimum": 1
+        },
+        "branchId": {
+         "type": "string",
+         "description": "Branch identifier"
+        },
+        "needsMoreThoughts": {
+         "type": "boolean",
+         "description": "If more thoughts are needed"
+        }
+       },
+       "required": [
+        "thought",
+        "nextThoughtNeeded",
+        "thoughtNumber",
+        "totalThoughts"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 10.0,
+   "date": "2024-12-03"
+  },
+  "0.6.1": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "sequentialthinking",
+     "digest": "b5c553c89d20461ceded576e5a35e6f44af62536da4ec61a754cda0a9b24cc87",
+     "summary": {
+      "description": "A detailed tool for dynamic and reflective problem-solving through thoughts.\nThis tool helps analyze problems through a flexible thinking process that can adapt and evolve.\nEach thought can build on, question, or revise previous insights as understanding deepens.\n\nWhen to use this tool:\n- Breaking down complex problems into steps\n- Planning and design with room for revision\n- Analysis that might need course correction\n- Problems where the full scope might not be clear initially\n- Problems that require a multi-step solution\n- Tasks that need to maintain context over multiple steps\n- Situations ",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "thought": {
+         "type": "string",
+         "description": "Your current thinking step"
+        },
+        "nextThoughtNeeded": {
+         "type": "boolean",
+         "description": "Whether another thought step is needed"
+        },
+        "thoughtNumber": {
+         "type": "integer",
+         "description": "Current thought number",
+         "minimum": 1
+        },
+        "totalThoughts": {
+         "type": "integer",
+         "description": "Estimated total thoughts needed",
+         "minimum": 1
+        },
+        "isRevision": {
+         "type": "boolean",
+         "description": "Whether this revises previous thinking"
+        },
+        "revisesThought": {
+         "type": "integer",
+         "description": "Which thought is being reconsidered",
+         "minimum": 1
+        },
+        "branchFromThought": {
+         "type": "integer",
+         "description": "Branching point thought number",
+         "minimum": 1
+        },
+        "branchId": {
+         "type": "string",
+         "description": "Branch identifier"
+        },
+        "needsMoreThoughts": {
+         "type": "boolean",
+         "description": "If more thoughts are needed"
+        }
+       },
+       "required": [
+        "thought",
+        "nextThoughtNeeded",
+        "thoughtNumber",
+        "totalThoughts"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 18.5,
+   "date": "2024-12-03"
+  },
+  "0.6.2": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "sequentialthinking",
+     "digest": "b5c553c89d20461ceded576e5a35e6f44af62536da4ec61a754cda0a9b24cc87",
+     "summary": {
+      "description": "A detailed tool for dynamic and reflective problem-solving through thoughts.\nThis tool helps analyze problems through a flexible thinking process that can adapt and evolve.\nEach thought can build on, question, or revise previous insights as understanding deepens.\n\nWhen to use this tool:\n- Breaking down complex problems into steps\n- Planning and design with room for revision\n- Analysis that might need course correction\n- Problems where the full scope might not be clear initially\n- Problems that require a multi-step solution\n- Tasks that need to maintain context over multiple steps\n- Situations ",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "thought": {
+         "type": "string",
+         "description": "Your current thinking step"
+        },
+        "nextThoughtNeeded": {
+         "type": "boolean",
+         "description": "Whether another thought step is needed"
+        },
+        "thoughtNumber": {
+         "type": "integer",
+         "description": "Current thought number",
+         "minimum": 1
+        },
+        "totalThoughts": {
+         "type": "integer",
+         "description": "Estimated total thoughts needed",
+         "minimum": 1
+        },
+        "isRevision": {
+         "type": "boolean",
+         "description": "Whether this revises previous thinking"
+        },
+        "revisesThought": {
+         "type": "integer",
+         "description": "Which thought is being reconsidered",
+         "minimum": 1
+        },
+        "branchFromThought": {
+         "type": "integer",
+         "description": "Branching point thought number",
+         "minimum": 1
+        },
+        "branchId": {
+         "type": "string",
+         "description": "Branch identifier"
+        },
+        "needsMoreThoughts": {
+         "type": "boolean",
+         "description": "If more thoughts are needed"
+        }
+       },
+       "required": [
+        "thought",
+        "nextThoughtNeeded",
+        "thoughtNumber",
+        "totalThoughts"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 16.9,
+   "date": "2024-12-04"
+  },
+  "2025.7.1": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "sequentialthinking",
+     "digest": "b5c553c89d20461ceded576e5a35e6f44af62536da4ec61a754cda0a9b24cc87",
+     "summary": {
+      "description": "A detailed tool for dynamic and reflective problem-solving through thoughts.\nThis tool helps analyze problems through a flexible thinking process that can adapt and evolve.\nEach thought can build on, question, or revise previous insights as understanding deepens.\n\nWhen to use this tool:\n- Breaking down complex problems into steps\n- Planning and design with room for revision\n- Analysis that might need course correction\n- Problems where the full scope might not be clear initially\n- Problems that require a multi-step solution\n- Tasks that need to maintain context over multiple steps\n- Situations ",
+      "schema": {
+       "type": "object",
+       "properties": {
+        "thought": {
+         "type": "string",
+         "description": "Your current thinking step"
+        },
+        "nextThoughtNeeded": {
+         "type": "boolean",
+         "description": "Whether another thought step is needed"
+        },
+        "thoughtNumber": {
+         "type": "integer",
+         "description": "Current thought number",
+         "minimum": 1
+        },
+        "totalThoughts": {
+         "type": "integer",
+         "description": "Estimated total thoughts needed",
+         "minimum": 1
+        },
+        "isRevision": {
+         "type": "boolean",
+         "description": "Whether this revises previous thinking"
+        },
+        "revisesThought": {
+         "type": "integer",
+         "description": "Which thought is being reconsidered",
+         "minimum": 1
+        },
+        "branchFromThought": {
+         "type": "integer",
+         "description": "Branching point thought number",
+         "minimum": 1
+        },
+        "branchId": {
+         "type": "string",
+         "description": "Branch identifier"
+        },
+        "needsMoreThoughts": {
+         "type": "boolean",
+         "description": "If more thoughts are needed"
+        }
+       },
+       "required": [
+        "thought",
+        "nextThoughtNeeded",
+        "thoughtNumber",
+        "totalThoughts"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 8.4,
+   "date": "2025-07-01"
+  },
+  "2025.11.25": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "sequentialthinking",
+     "digest": "3ea13ce9b3c9266dd995df4ab4bf35a436a6e5f9ee5c98ff72be815f26b8eac6",
+     "summary": {
+      "description": "A detailed tool for dynamic and reflective problem-solving through thoughts.\nThis tool helps analyze problems through a flexible thinking process that can adapt and evolve.\nEach thought can build on, question, or revise previous insights as understanding deepens.\n\nWhen to use this tool:\n- Breaking down complex problems into steps\n- Planning and design with room for revision\n- Analysis that might need course correction\n- Problems where the full scope might not be clear initially\n- Problems that require a multi-step solution\n- Tasks that need to maintain context over multiple steps\n- Situations ",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "thought": {
+         "type": "string",
+         "description": "Your current thinking step"
+        },
+        "nextThoughtNeeded": {
+         "type": "boolean",
+         "description": "Whether another thought step is needed"
+        },
+        "thoughtNumber": {
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991,
+         "description": "Current thought number (numeric value, e.g., 1, 2, 3)"
+        },
+        "totalThoughts": {
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991,
+         "description": "Estimated total thoughts needed (numeric value, e.g., 5, 10)"
+        },
+        "isRevision": {
+         "description": "Whether this revises previous thinking",
+         "type": "boolean"
+        },
+        "revisesThought": {
+         "description": "Which thought is being reconsidered",
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991
+        },
+        "branchFromThought": {
+         "description": "Branching point thought number",
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991
+        },
+        "branchId": {
+         "description": "Branch identifier",
+         "type": "string"
+        },
+        "needsMoreThoughts": {
+         "description": "If more thoughts are needed",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "thought",
+        "nextThoughtNeeded",
+        "thoughtNumber",
+        "totalThoughts"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 37.9,
+   "date": "2025-11-25"
+  },
+  "2025.12.18": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "sequentialthinking",
+     "digest": "ffe24999b0506051dabac114b0206065a0b12c2e8c5aa670e3c6132a9f62f095",
+     "summary": {
+      "description": "A detailed tool for dynamic and reflective problem-solving through thoughts.\nThis tool helps analyze problems through a flexible thinking process that can adapt and evolve.\nEach thought can build on, question, or revise previous insights as understanding deepens.\n\nWhen to use this tool:\n- Breaking down complex problems into steps\n- Planning and design with room for revision\n- Analysis that might need course correction\n- Problems where the full scope might not be clear initially\n- Problems that require a multi-step solution\n- Tasks that need to maintain context over multiple steps\n- Situations ",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "thought": {
+         "type": "string",
+         "description": "Your current thinking step"
+        },
+        "nextThoughtNeeded": {
+         "type": "boolean",
+         "description": "Whether another thought step is needed"
+        },
+        "thoughtNumber": {
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991,
+         "description": "Current thought number (numeric value, e.g., 1, 2, 3)"
+        },
+        "totalThoughts": {
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991,
+         "description": "Estimated total thoughts needed (numeric value, e.g., 5, 10)"
+        },
+        "isRevision": {
+         "description": "Whether this revises previous thinking",
+         "type": "boolean"
+        },
+        "revisesThought": {
+         "description": "Which thought is being reconsidered",
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991
+        },
+        "branchFromThought": {
+         "description": "Branching point thought number",
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991
+        },
+        "branchId": {
+         "description": "Branch identifier",
+         "type": "string"
+        },
+        "needsMoreThoughts": {
+         "description": "If more thoughts are needed",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "thought",
+        "nextThoughtNeeded",
+        "thoughtNumber",
+        "totalThoughts"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 51.3,
+   "date": "2025-12-18"
+  },
+  "2026.7.4": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "sequentialthinking",
+     "digest": "ffe24999b0506051dabac114b0206065a0b12c2e8c5aa670e3c6132a9f62f095",
+     "summary": {
+      "description": "A detailed tool for dynamic and reflective problem-solving through thoughts.\nThis tool helps analyze problems through a flexible thinking process that can adapt and evolve.\nEach thought can build on, question, or revise previous insights as understanding deepens.\n\nWhen to use this tool:\n- Breaking down complex problems into steps\n- Planning and design with room for revision\n- Analysis that might need course correction\n- Problems where the full scope might not be clear initially\n- Problems that require a multi-step solution\n- Tasks that need to maintain context over multiple steps\n- Situations ",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "thought": {
+         "type": "string",
+         "description": "Your current thinking step"
+        },
+        "nextThoughtNeeded": {
+         "description": "Whether another thought step is needed",
+         "type": "boolean"
+        },
+        "thoughtNumber": {
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991,
+         "description": "Current thought number (numeric value, e.g., 1, 2, 3)"
+        },
+        "totalThoughts": {
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991,
+         "description": "Estimated total thoughts needed (numeric value, e.g., 5, 10)"
+        },
+        "isRevision": {
+         "description": "Whether this revises previous thinking",
+         "type": "boolean"
+        },
+        "revisesThought": {
+         "description": "Which thought is being reconsidered",
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991
+        },
+        "branchFromThought": {
+         "description": "Branching point thought number",
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991
+        },
+        "branchId": {
+         "description": "Branch identifier",
+         "type": "string"
+        },
+        "needsMoreThoughts": {
+         "description": "If more thoughts are needed",
+         "type": "boolean"
+        }
+       },
+       "required": [
+        "thought",
+        "nextThoughtNeeded",
+        "thoughtNumber",
+        "totalThoughts"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 61.1,
+   "date": "2026-07-04"
+  },
+  "2026.8.31": {
+   "tools": [
+    {
+     "kind": "tool",
+     "name": "sequentialthinking",
+     "digest": "5f279252d2aa94e32f9cb26dd506d5c86c5a238394d6c17205fccd3ba98704ed",
+     "summary": {
+      "description": "A detailed tool for dynamic and reflective problem-solving through thoughts.\nThis tool helps analyze problems through a flexible thinking process that can adapt and evolve.\nEach thought can build on, question, or revise previous insights as understanding deepens.\n\nWhen to use this tool:\n- Breaking down complex problems into steps\n- Planning and design with room for revision\n- Analysis that might need course correction\n- Problems where the full scope might not be clear initially\n- Problems that require a multi-step solution\n- Tasks that need to maintain context over multiple steps\n- Situations ",
+      "schema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "thought": {
+         "type": "string",
+         "description": "Your current thinking step"
+        },
+        "nextThoughtNeeded": {
+         "description": "Whether another thought step is needed",
+         "type": [
+          "boolean",
+          "string"
+         ]
+        },
+        "thoughtNumber": {
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991,
+         "description": "Current thought number (numeric value, e.g., 1, 2, 3)"
+        },
+        "totalThoughts": {
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991,
+         "description": "Estimated total thoughts needed (numeric value, e.g., 5, 10)"
+        },
+        "isRevision": {
+         "description": "Whether this revises previous thinking",
+         "type": [
+          "boolean",
+          "string"
+         ]
+        },
+        "revisesThought": {
+         "description": "Which thought is being reconsidered",
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991
+        },
+        "branchFromThought": {
+         "description": "Branching point thought number",
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 9007199254740991
+        },
+        "branchId": {
+         "description": "Branch identifier",
+         "type": "string"
+        },
+        "needsMoreThoughts": {
+         "description": "If more thoughts are needed",
+         "type": [
+          "boolean",
+          "string"
+         ]
+        }
+       },
+       "required": [
+        "thought",
+        "nextThoughtNeeded",
+        "thoughtNumber",
+        "totalThoughts"
+       ]
+      },
+      "version": null
+     }
+    }
+   ],
+   "seconds": 32.1,
+   "date": "2026-08-31"
+  }
+ }
+}

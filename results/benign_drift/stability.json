@@ -1,0 +1,50 @@
+{
+ "@modelcontextprotocol/server-filesystem": {
+  "version": "2026.8.31",
+  "runs": 3,
+  "stable": true,
+  "differing_tools": []
+ },
+ "@modelcontextprotocol/server-memory": {
+  "version": "2026.8.31",
+  "runs": 3,
+  "stable": true,
+  "differing_tools": []
+ },
+ "@modelcontextprotocol/server-everything": {
+  "version": "2026.8.31",
+  "runs": 3,
+  "stable": true,
+  "differing_tools": []
+ },
+ "@modelcontextprotocol/server-sequential-thinking": {
+  "version": "2026.8.31",
+  "runs": 3,
+  "stable": true,
+  "differing_tools": []
+ },
+ "@playwright/mcp": {
+  "version": "0.0.80",
+  "runs": 3,
+  "stable": true,
+  "differing_tools": []
+ },
+ "@upstash/context7-mcp": {
+  "version": "4.0.5",
+  "runs": 3,
+  "stable": true,
+  "differing_tools": []
+ },
+ "chrome-devtools-mcp": {
+  "version": "1.8.0",
+  "runs": 3,
+  "stable": true,
+  "differing_tools": []
+ },
+ "@notionhq/notion-mcp-server": {
+  "version": "2.5.1",
+  "runs": 3,
+  "stable": true,
+  "differing_tools": []
+ }
+}

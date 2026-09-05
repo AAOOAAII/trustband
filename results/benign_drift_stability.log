@@ -1,0 +1,8 @@
+  @modelcontextprotocol/server-filesystem@2026.8.31: stable over 3 starts
+  @modelcontextprotocol/server-memory@2026.8.31: stable over 3 starts
+  @modelcontextprotocol/server-everything@2026.8.31: stable over 3 starts
+  @modelcontextprotocol/server-sequential-thinking@2026.8.31: stable over 3 starts
+  @playwright/mcp@0.0.80: stable over 3 starts
+  @upstash/context7-mcp@4.0.5: stable over 3 starts
+  chrome-devtools-mcp@1.8.0: stable over 3 starts
+  @notionhq/notion-mcp-server@2.5.1: stable over 3 starts

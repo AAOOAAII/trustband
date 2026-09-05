@@ -187,6 +187,16 @@ def classify(prev: List[Dict[str, Any]], cur: List[Dict[str, Any]]) -> Dict[str,
             desc_only.append(n)
         else:
             schema.append(n)
+    # P-BD.3's candidate class: schema changed, description untouched, and the
+    # new schema only ADDS (properties added, nothing removed, required not
+    # widened). Counted so the rule can be restated against it.
+    additive = []
+    for n in schema:
+        sa, sb = a[n]["summary"], b[n]["summary"]
+        if sa["description"] != sb["description"] or sa["version"] != sb["version"]:
+            continue
+        if _additive(sa["schema"], sb["schema"]):
+            additive.append(n)
     changed = len(desc_only) + len(schema) + len(added) + len(removed)
     if not changed:
         kind = "none"
@@ -197,7 +207,26 @@ def classify(prev: List[Dict[str, Any]], cur: List[Dict[str, Any]]) -> Dict[str,
     else:
         kind = "tools-added-or-removed"
     return {"kind": kind, "description_only": desc_only, "schema": schema, "added": added,
-            "removed": removed, "refused_tools": len(desc_only) + len(schema) + len(removed)}
+            "removed": removed, "schema_additive_desc_same": additive,
+            "refused_tools": len(desc_only) + len(schema) + len(removed)}
+
+
+def _additive(old: Any, new: Any) -> bool:
+    """`new` extends `old`: every old property survives unchanged, required
+    does not grow, and anything else differs only by addition."""
+    if not isinstance(old, dict) or not isinstance(new, dict):
+        return False
+    op, np_ = old.get("properties") or {}, new.get("properties") or {}
+    if not isinstance(op, dict) or not isinstance(np_, dict):
+        return False
+    if any(k not in np_ or np_[k] != v for k, v in op.items()):
+        return False
+    oreq, nreq = set(old.get("required") or []), set(new.get("required") or [])
+    if not nreq <= oreq:
+        return False
+    rest_old = {k: v for k, v in old.items() if k not in ("properties", "required")}
+    rest_new = {k: v for k, v in new.items() if k not in ("properties", "required")}
+    return all(k in rest_new and rest_new[k] == v for k, v in rest_old.items())
 
 
 def report() -> None:
@@ -237,6 +266,8 @@ def report() -> None:
         }
         pooled.update(kinds); pooled_refused += [r["refused_tools"] for r in drifting]
     n_rel = sum(pooled.values()); n_drift = n_rel - pooled.get("none", 0)
+    additive_rel = sum(1 for p in per.values() for r in p["releases"]
+                       if r["kind"] == "schema" and r["schema"] and len(r["schema_additive_desc_same"]) == len(r["schema"]))
     stab = json.loads((OUT / "stability.json").read_text()) if (OUT / "stability.json").exists() else {}
     summary = {
         "run": time.strftime("%Y-%m-%d"), "machine": f"{platform.system()} {platform.machine()}, node {_node()}",
@@ -246,6 +277,7 @@ def report() -> None:
         "pooled_drifts_per_month": round(n_drift / months_pooled, 2) if months_pooled else None,
         "refused_tools_median": median(pooled_refused) if pooled_refused else 0,
         "refused_tools_max": max(pooled_refused) if pooled_refused else 0,
+        "schema_releases_purely_additive_desc_same": additive_rel,
         "stability": stab, "per_server": per,
     }
     (OUT / "summary.json").write_text(json.dumps(summary, indent=1))
@@ -263,7 +295,9 @@ def report() -> None:
     lines += ["", f"pooled: drift on {n_drift}/{n_rel} releases = {summary['pooled_drift_rate_per_release']}; "
                   f"{summary['pooled_drifts_per_month']} drifts per server-month; refused tools per drifting release "
                   f"median {summary['refused_tools_median']} max {summary['refused_tools_max']}",
-              f"kinds pooled: {dict(pooled)}"]
+              f"kinds pooled: {dict(pooled)}",
+              f"schema-class releases that are purely additive with the description untouched "
+              f"(P-BD.3's candidate): {additive_rel}/{pooled.get('schema', 0)}"]
     (OUT / "summary.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
 
