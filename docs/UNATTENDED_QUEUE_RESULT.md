@@ -129,6 +129,30 @@ Live objects exist (product, price, Payment Link with the metadata). No
 live purchase has been made yet; the first is the first test of that seam,
 as it was for Pro.
 
+## The first live approval
+
+2026-09-05, 19:59:41 BST. A gate on a laptop in `queue` mode, a Pro key for
+the Cittela tenant, the public service. A document-derived recipient on
+`send_payment` was refused, queued as `ap_956a14b3…`, delivered by email
+and by Telegram (bot `trustband_bot`, linked from the account page minutes
+earlier), and approved from the page by the owner:
+
+```
+decided at 20:00:46 after 65 s: allowed=True
+reason: approved by luis@meta.co.com (request ap_956a14b3cb29f267). granted by session … for 'send_payment'
+```
+
+The 65 s is the person's. The record on the laptop names them.
+
+## A deploy defect found on the way
+
+The cloud image installs `trustband` from PyPI under a floor pin, and the
+cloud suite had been run with `PYTHONPATH` at the working tree, so a route
+importing a 0.6.0 name passed every test and answered 500 in production
+(no CORS headers on a 500, so the browser said "Failed to fetch"). Fixed by
+releasing first, raising the pin, and moving the import to module top so a
+missing name fails the boot and Fly keeps the previous release.
+
 ## What is still out
 
 - Hosted delivery of ordinary alerts while the machine is off. The request
