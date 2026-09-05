@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.6.1 — 2026-09-05
+
+### `hosted`: alerts ride the approvals path
+
+One more value for a `policy.alerts` destination. `"alerts": {"*": "hosted"}`
+sends the free events — refusals, runaways, chain breaks, cost thresholds,
+contract failures, revoked agents, lock drift, the shadow digest — to the
+service, which carries them to every Telegram chat linked to the account
+and lists them on the account page. Part of the Unattended add-on; a Pro
+key has it too.
+
+- The decision path is unchanged: `fire()` writes the same one file.
+- A spooled job says `hosted` and nothing more. The key is read from the
+  config beside the spool at delivery time, by the approvals module; the
+  alerts module still contains no reference to a key (pair 6 of 8a).
+- No key configured: the job goes to `alerts_failed.jsonl` with a reason
+  naming the add-on; webhook destinations in the same policy still deliver.
+- The service answers 402 without entitlement and 429 over 600 per hour;
+  either is one line in the failed log and the spool is emptied.
+- Shadow still alerts on nothing per event; the digest goes through `hosted`.
+
+Gates and measurements: `docs/HOSTED_ALERTS_GATES.md`,
+`docs/HOSTED_ALERTS_RESULT.md`.
+
 ## 0.6.0 — 2026-09-05
 
 ### `queue`: a person answers from their phone

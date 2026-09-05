@@ -51,6 +51,13 @@ CLASSES = ("refusal", "runaway", "chain_break", "cost_threshold",
            "contract_failure", "agent_revoked", "lock_drift", "shadow_digest")
 SPOOL_DIR = "alerts_spool"
 FAILED_LOG = "alerts_failed.jsonl"
+#: The one destination that is not a URL: our service, which carries the
+#: event to the phone approvals already reach (the Unattended add-on). A
+#: spooled job says only this word; the key is read from the config beside
+#: the spool at delivery time and is never written into a spool file.
+HOSTED = "hosted"
+NO_KEY = ("hosted alerts need the Unattended add-on (trust.band/add-ons) and "
+          "`trustband login`; no key in config. Other destinations are unaffected.")
 
 
 class AlertConfigError(ValueError):
@@ -68,8 +75,8 @@ def validate(cfg: Any) -> Dict[str, str]:
         if k != "*" and k not in CLASSES:
             raise AlertConfigError(
                 f"policy.alerts: unknown event class {k!r}; one of {CLASSES} or '*'")
-        if not isinstance(v, str) or not v.startswith(("http://", "https://")):
-            raise AlertConfigError(f"policy.alerts[{k!r}] must be an http(s) URL")
+        if not isinstance(v, str) or not (v == HOSTED or v.startswith(("http://", "https://"))):
+            raise AlertConfigError(f"policy.alerts[{k!r}] must be an http(s) URL or {HOSTED!r}")
         out[k] = v
     return out
 
@@ -116,28 +123,53 @@ def _line(cls: str, body: Dict[str, Any]) -> str:
 # delivery: one job, then the spool
 # --------------------------------------------------------------------------
 
+def _fail(job: Dict[str, Any], error: str) -> bool:
+    log = job.get("failed_log")
+    if log:
+        try:
+            with open(log, "a", encoding="utf-8") as fh:
+                fh.write(json.dumps({
+                    "ts": time.time(), "class": job["payload"].get("class"),
+                    "url": job["url"], "error": error[:200],
+                }) + "\n")
+        except OSError:
+            pass
+    return False
+
+
+def _hosted_target(job: Dict[str, Any]) -> Optional[Dict[str, str]]:
+    """Resolved at delivery time by the approvals module, which is the one
+    place that reads the config for a hosted destination. This module never
+    does (P-HA.2, and pair 6 of Phase 8a)."""
+    from trustband.approvals import hosted_alert_target
+    return hosted_alert_target(job.get("home"))
+
+
 def deliver(job: Dict[str, Any], timeout: float = 5.0) -> bool:
+    import urllib.error
     import urllib.request
     data = json.dumps(job["payload"]).encode()
-    req = urllib.request.Request(
-        job["url"], data=data,
-        headers={"Content-Type": "application/json",
-                 "User-Agent": "trustband-alerts"})
+    headers = {"Content-Type": "application/json", "User-Agent": "trustband-alerts"}
+    url = job["url"]
+    if job.get("hosted"):
+        target = _hosted_target(job)
+        if target is None:
+            return _fail(job, NO_KEY)
+        url = target["url"]
+        headers["Authorization"] = f"Bearer {target['key']}"
+    req = urllib.request.Request(url, data=data, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return 200 <= r.status < 300
+    except urllib.error.HTTPError as exc:
+        # The service says why (402 names the add-on, 429 the cap); keep it.
+        try:
+            reason = json.load(exc).get("detail", {}).get("reason", "")
+        except Exception:
+            reason = ""
+        return _fail(job, f"HTTP {exc.code}: {reason or exc.reason}")
     except Exception as exc:
-        log = job.get("failed_log")
-        if log:
-            try:
-                with open(log, "a", encoding="utf-8") as fh:
-                    fh.write(json.dumps({
-                        "ts": time.time(), "class": job["payload"].get("class"),
-                        "url": job["url"], "error": f"{type(exc).__name__}: {exc}"[:200],
-                    }) + "\n")
-            except OSError:
-                pass
-        return False
+        return _fail(job, f"{type(exc).__name__}: {exc}")
 
 
 def _alive(pid: int) -> bool:
@@ -247,6 +279,10 @@ class Alerter:
         }
         job = {"url": url, "payload": payload,
                "failed_log": str(self.home / FAILED_LOG) if self.home else None}
+        if url == HOSTED:
+            # The word, and where to look for the key later. Never the key.
+            job["hosted"] = True
+            job["home"] = str(self.home) if self.home else None
         try:
             if self.home is not None:
                 spool = self.home / SPOOL_DIR

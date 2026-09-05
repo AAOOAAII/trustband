@@ -51,6 +51,24 @@ class NoCourier:
         raise ApprovalError(self.reason)
 
 
+def hosted_alert_target(home: Optional[str]) -> Optional[Dict[str, str]]:
+    """Where a `hosted` alert goes and the key it carries, read NOW from the
+    config beside the spool. None when there is no key. Lives here, not in
+    alerts.py, so the alert module never reads a key (pair 6 of Phase 8a)."""
+    if not home:
+        return None
+    try:
+        from pathlib import Path
+        cfg = json.loads((Path(home) / "config.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    key = cfg.get("api_key")
+    if not key or not isinstance(key, str):
+        return None
+    return {"url": (cfg.get("api_url") or DEFAULT_URL).rstrip("/") + "/v1/alerts",
+            "key": key}
+
+
 def courier_from_config(cfg: Optional[Dict[str, Any]]) -> Any:
     """The courier for a config. THIS is the only place the key is read for
     approvals; the guard is handed the object and never sees the key."""
